@@ -19,7 +19,7 @@ def dictionaryGen(D):
     (the step size \gamma, np array of D integers evenly distributed around 0)
          
     """
-    d_pos = np.linspace(-3, 3, num= D, retstep=True, dtype=np.float32)
+    d_pos = np.linspace(-2, 2, num= D, retstep=True, dtype=np.float32)
     return (d_pos[1], d_pos[0])
 
 

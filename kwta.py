@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import tensorflow as tf
-import math
 
 from tensorflow.keras.layers import Layer
 
@@ -16,21 +15,22 @@ class Kwta(Layer):
         super(Kwta, self).__init__(**kwargs)
 
         self.conv = conv
-        self.ratio = ratio
+        self.ratio = tf.Variable(ratio, trainable=False)
         self.data_format = data_format
         
 
     def build(self, input_shape):
         
         # dim = C*H*W when conv=True, #units otherwise
-        self.dim = tf.math.reduce_prod(input_shape[1:]).numpy() 
+        self.dim = tf.math.reduce_prod(input_shape[1:]).numpy()
+        super(Kwta, self).build(input_shape)
 
 
 
     def call(self, inputs):
         
         # In case of incremental learning we want to update k 
-        k = int(math.ceil(self.ratio*self.dim))
+        k = tf.cast(tf.math.ceil(self.ratio*self.dim), dtype=tf.int32)
 
         # Store input shape to the layer
         shape = tf.shape(inputs)
@@ -55,18 +55,4 @@ class Kwta(Layer):
             outputs = tf.reshape(outputs, shape)
         
         return outputs
-
-    
-    def get_config(self):
-        
-        my_config = {
-            
-            'conv' : self.conv,
-            'ratio' : self.ratio,
-            'data_format' : self.data_format,
-            'dim' : self.dim
-        }
-
-        base_config = super(Kwta, self).get_config()
-        return dict(list(base_config.items()) + list(my_config.items()))
 
