@@ -7,6 +7,7 @@
 
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 from tensorflow.keras import layers
 from tensorflow.keras import callbacks
@@ -99,8 +100,11 @@ class Kwta(layers.Layer):
 
 
 
-# Round with decimal precision in tf
+
 def my_tf_round(x, decimals = 0):
+    """
+    Round with decimal precision in tf
+    """
     multiplier = tf.constant(10**decimals, dtype=x.dtype)
     return tf.round(x * multiplier) / multiplier
 
@@ -125,13 +129,16 @@ class incremental_learning_withDecreasing_ratio(callbacks.Callback):
     
     """
 
-    def __init__(self, delta = 0.01, end_ratio = 0.15, num_layers):
+    def __init__(self, num_layers, delta = 0.01, end_ratio = 0.15):
+
         super(incremental_learning_withDecreasing_ratio, self).__init__()
         self.delta = delta
         self.end_ratio = end_ratio
         self.num_layers = num_layers
 
+
     def on_epoch_begin(self, epoch, logs=None):
+        
         # The update occurs at the beginning of every 2 epochs
         if epoch % 2 == 0: 
             for i in range(1, self.num_layers + 1): # For each kwta layer
@@ -141,7 +148,9 @@ class incremental_learning_withDecreasing_ratio(callbacks.Callback):
             
             print('\n Fine tuning: current ratio {:.2f} \n'.format(layer.ratio.numpy()))
     
+
     def on_epoch_end(self, epoch, logs=None):
+        
         layer = self.model.get_layer('kwta_1')
         if ( my_tf_round(layer.ratio, 2) == self.end_ratio ) and epoch % 2 == 1: 
                 print('\n Desired Ratio reached, stop training...')
@@ -183,7 +192,7 @@ class Kaf(layers.Layer):
    """
     def __init__(self, D, conv=False, ridge=None, **kwargs):
 
-        super(Kaf, self).__init__()
+        super(Kaf, self).__init__(**kwargs)
         
         # Init constants
         self.D = D
@@ -246,6 +255,7 @@ class Kaf(layers.Layer):
 
 
     def call(self, inputs):
+        
         inputs = tf.expand_dims(inputs, -1)
         return kafActivation(inputs, self.a, self.d, self.k_bandw)
 
@@ -302,3 +312,62 @@ def kernelMatrix(d, k_bwidth):
     """
     d = tf.expand_dims(d, -1)
     return tf.exp(- k_bwidth * tf.square(d - tf.transpose(d)))
+
+
+
+class plot_kafs_epoch_wise(callbacks.Callback):
+    '''
+    Plot learned Kafs during training for every epoch. One Kaf is displayed per layer
+
+    Parameters
+    ----------
+    num_layers: integer
+                number of Kaf Layers in the model
+    
+    Warning: every Kaf Layer needs to be named 'kaf_i' where i the i-th kaf layer
+    '''
+    def __init__(self, num_layers):
+        
+        super(plot_kafs_epoch_wise, self).__init__()
+        self.num_layers = num_layers
+
+    
+    def on_epoch_begin(self, epoch, logs=None):
+        
+        # Get Kaf's invariants: kernel bandwidth and dictionary
+        kaf1 = self.model.get_layer(name = 'kaf_1')
+        kb = kaf1.k_bandw
+        d_tmp = tf.squeeze(kaf1.d)
+        d = tf.expand_dims(d_tmp, 0)
+        
+        # We want to evaluate Kafs on the same input: use dictionary itself as activation
+        x = tf.expand_dims(d_tmp, -1)
+
+        # Prepare plot settings
+        fig=plt.figure(figsize=(15, 8))
+        plt.subplots_adjust(wspace = 0.5, hspace = 0.3)
+        columns = int(self.num_layers/2) + 1
+        rows = 2
+        ax = []
+        
+        for i in range(1, self.num_layers + 1): # For each Kaf layer
+          
+          name = 'kaf_'+str(i)
+          layer = self.model.get_layer(name = name)
+          
+          # Get mixing coefficients and compute Kaf
+          a = tf.expand_dims(tf.squeeze(layer.a)[0], 0)
+          kaf = kafActivation(x, a, d, kb)
+
+          # Plot
+          ax.append( fig.add_subplot(rows, columns, i) )
+          ax[-1].set_title('{}, Epoch {}'.format(name,epoch+1))  
+          plt.plot(d_tmp, kaf, 'r')
+        
+        
+        plt.show()
+
+
+       
+
+            
