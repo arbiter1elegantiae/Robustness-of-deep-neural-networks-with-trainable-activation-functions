@@ -216,14 +216,26 @@ class Kaf(layers.Layer):
                 raise ValueError("The input shape for Kaf must be either a dense batch (b, x) \n or a gridlike batch (b, x, y, f)")
 
         # Init mix coefficients
+        regularizer_l2 = tf.keras.regularizers.l2(0.001)
+        if self.conv:
+          self.a = self.add_weight(shape=(1, 1, 1, input_shape[-1], self.D),
+                                name = 'mix_coeffs',   
+                                initializer= 'random_normal',
+                                regularizer= regularizer_l2,
+                                trainable=True) 
+        else:
+          self.a = self.add_weight(shape=(1, input_shape[-1], self.D),
+                                 name = 'mix_coeffs',   
+                                 initializer= 'random_normal',
+                                 regularizer= regularizer_l2,
+                                 trainable=True) 
+
         if self.ridge is not None:
-            
             eps = 1e-06 # stick to the paper's design choice
             
             if self.ridge == 'tanh':
                 t = tf.keras.activations.tanh(self.d)
                 
-
             elif self.ridge == 'elu':
                 t = tf.keras.activations.elu(self.d)
 
@@ -233,27 +245,24 @@ class Kaf(layers.Layer):
             K = kernelMatrix(self.d, self.k_bandw)
             
             a = tf.reshape(np.linalg.solve(K + eps*tf.eye(self.D), t), shape=(1, 1, -1)) # solve ridge regression and get 'a' coeffs
-            a_init = a * tf.ones(shape=(1, input_shape[-1], self.D)) # reshape a
-           
-            self.a = tf.Variable(initial_value=a_init, trainable=True, name = 'mix_coeffs')
 
-        else:
-            # regularizer_l2 = tf.keras.regularizers.l2(0.0001)
-            self.a = self.add_weight(shape=(1, input_shape[-1], self.D),
-                                 name = 'mix_coeffs',   
-                                 initializer= 'random_normal',
-                                 #regularizer= regularizer_l2,
-                                 trainable=True) 
-        
-        # Adjust dimensions in order to exploit broadcasting and compute the entire batch all at once
+            # Adjust mix coeffs dimension
+            if self.conv:
+              a = a * tf.ones(shape=(1, 1, 1, input_shape[-1], self.D))
+              
+            else:
+              a = a * tf.ones(shape=(1, input_shape[-1], self.D))
+           
+            self.set_weights(a)
+
+        # Adjust dictionary dimension
         if not self.conv:
             self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, self.D)), name='dictionary', trainable=False)
         
         else:
-            self.a = tf.Variable(tf.reshape(self.a, shape=(1,1,1,-1,self.D)), name = 'mix_coeffs')
             self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, 1, 1, self.D)), name='dictionary', trainable=False)
 
-
+ 
     def call(self, inputs):
         
         inputs = tf.expand_dims(inputs, -1)
