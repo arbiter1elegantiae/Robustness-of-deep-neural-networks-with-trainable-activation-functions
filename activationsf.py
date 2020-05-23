@@ -1,5 +1,4 @@
-# A TensorFlow 2 implementation of the following activation functions 
-    
+# A TensorFlow2 implementation of the following activation functions 
     # K-Winners Take All as described in https://arxiv.org/pdf/1905.10510.pdf
     # Kernel-Based Activation Functions as described in https://arxiv.org/pdf/1707.04035.pdf
 
@@ -11,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from tensorflow.keras import layers
 from tensorflow.keras import callbacks
-
+from tensorflow import math 
 
 # ------ Kwta ------- #
 
@@ -72,7 +71,7 @@ class Kwta(layers.Layer):
     def call(self, inputs):
         
         # In case of incremental learning we want to update k 
-        k = tf.cast(tf.math.ceil(self.ratio*self.dim), dtype=tf.int32)
+        k = tf.cast(math.ceil(self.ratio*self.dim), dtype=tf.int32)
 
         # Store input shape to the layer
         shape = tf.shape(inputs)
@@ -200,8 +199,8 @@ class Kaf(layers.Layer):
         self.ridge = ridge
         
         step, dict = dictionaryGen(D)
-        self.d = tf.stack(dict)
-        self.k_bandw = 1/(6*(np.power(step,2)))
+        self.d = tf.cast( tf.stack(dict), dtype=tf.float16 )
+        self.k_bandw = tf.cast( 1/(6*(tf.math.pow(step,2))), dtype=tf.float16)
         
 
     def build(self, input_shape):
@@ -216,7 +215,7 @@ class Kaf(layers.Layer):
                 raise ValueError("The input shape for Kaf must be either a dense batch (b, x) \n or a gridlike batch (b, x, y, f)")
 
         # Init mix coefficients
-        regularizer_l2 = tf.keras.regularizers.l2(0.001)
+        regularizer_l2 = tf.keras.regularizers.l2(0.0005)
         if self.conv:
           self.a = self.add_weight(shape=(1, 1, 1, input_shape[-1], self.D),
                                 name = 'mix_coeffs',   
@@ -244,16 +243,19 @@ class Kaf(layers.Layer):
 
             K = kernelMatrix(self.d, self.k_bandw)
             
-            a = tf.reshape(np.linalg.solve(K + eps*tf.eye(self.D), t), shape=(1, 1, -1)) # solve ridge regression and get 'a' coeffs
 
-            # Adjust mix coeffs dimension
+            # Compute and adjust mix coeffs 
             if self.conv:
+              a = tf.reshape(np.linalg.solve(tf.cast(K, dtype=tf.float32) + eps*tf.eye(self.D), tf.cast(t, dtype=tf.float32)), shape=(1, 1, 1, 1, -1)) # solve ridge regression and get 'a' coeffs
               a = a * tf.ones(shape=(1, 1, 1, input_shape[-1], self.D))
               
             else:
+              a = tf.reshape(np.linalg.solve(tf.cast(K, dtype=tf.float32) + eps*tf.eye(self.D), tf.cast(t, dtype=tf.float32)), shape=(1, 1, -1)) # solve ridge regression and get 'a' coeffs
               a = a * tf.ones(shape=(1, input_shape[-1], self.D))
-           
-            self.set_weights(a)
+            
+            # Set mix coeff
+            # Weights are stored in a list, thus we need to add a first dimension as the list index
+            self.set_weights(tf.expand_dims(a, 0))
 
         # Adjust dictionary dimension
         if not self.conv:
@@ -289,7 +291,6 @@ def dictionaryGen(D):
     return (d_pos[1], d_pos[0])
 
 
-
 def kafActivation(x, a, d, k_bwidth):
     """
     For each element in x, compute the weighted sum of the 1D-Gaussian kernel
@@ -308,9 +309,7 @@ def kafActivation(x, a, d, k_bwidth):
     k_bwidth: tf.float32
             kernel bandwidth
     """
-    x = tf.math.square(x - d)
-    x = a * tf.math.exp((-k_bwidth) * x)
-
+    x = a * math.exp((-k_bwidth) * math.square(x - d))
     return tf.reduce_sum(x, -1)
 
 
@@ -320,7 +319,7 @@ def kernelMatrix(d, k_bwidth):
     Return the kernel matrix K \in R^D*D where K_ij = ker(d_i, d_j) 
     """
     d = tf.expand_dims(d, -1)
-    return tf.exp(- k_bwidth * tf.square(d - tf.transpose(d)))
+    return math.exp(- k_bwidth * math.square(d - tf.transpose(d)))
 
 
 
@@ -333,7 +332,7 @@ class plot_kafs_epoch_wise(callbacks.Callback):
     num_layers: integer
                 number of Kaf Layers in the model
     
-    Warning: every Kaf Layer needs to be named 'kaf_i' where i the i-th kaf layer
+    Warning: every Kaf Layer needs to be named 'kaf_i' where i the i-th kaf layer    
     '''
     def __init__(self, num_layers):
         
@@ -365,7 +364,7 @@ class plot_kafs_epoch_wise(callbacks.Callback):
           layer = self.model.get_layer(name = name)
           
           # Get mixing coefficients and compute Kaf
-          a = tf.expand_dims(tf.squeeze(layer.a)[0], 0)
+          a = tf.cast( tf.expand_dims(tf.squeeze(layer.a)[0], 0), dtype = tf.float16 )
           kaf = kafActivation(x, a, d, kb)
 
           # Plot
@@ -373,9 +372,7 @@ class plot_kafs_epoch_wise(callbacks.Callback):
           ax[-1].set_title('{}, Epoch {}'.format(name,epoch+1))  
           plt.plot(d_tmp, kaf, 'r')
         
-        
         plt.show()
-
 
        
 
