@@ -3,3 +3,6 @@ __pycache__/
 
 # Ignore VSCODE
 .vscode/
+
+# Ignore Saved Models
+light_custom_models/

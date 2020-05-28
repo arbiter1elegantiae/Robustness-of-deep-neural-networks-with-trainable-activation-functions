@@ -98,6 +98,16 @@ class Kwta(layers.Layer):
         return outputs
 
 
+    def get_config(self):
+        
+        config = super(Kwta, self).get_config()
+        config.update({
+            'conv': self.conv,
+            'data_format': self.data_format
+            })
+        return config
+
+
 
 
 def my_tf_round(x, decimals = 0):
@@ -269,6 +279,17 @@ class Kaf(layers.Layer):
         
         inputs = tf.expand_dims(inputs, -1)
         return kafActivation(inputs, self.a, self.d, self.k_bandw)
+    
+
+    def get_config(self):
+        
+        config = super(Kaf, self).get_config()
+        config.update({
+            'D': self.D,
+            'conv': self.conv,
+            'ridge': self.ridge
+            })
+        return config
 
 
 
@@ -309,7 +330,7 @@ def kafActivation(x, a, d, k_bwidth):
     k_bwidth: tf.float32
             kernel bandwidth
     """
-    x = a * math.exp((-k_bwidth) * math.square(x - d))
+    x = math.multiply(a, math.exp(math.multiply(-k_bwidth, math.square(x - d))))
     return tf.reduce_sum(x, -1)
 
 
