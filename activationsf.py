@@ -121,7 +121,7 @@ def my_tf_round(x, decimals = 0):
 
 class incremental_learning_withDecreasing_ratio(callbacks.Callback):
     """
-    Callback to icrementally adjust during training the Kwta ratio  every 2 epochs until desired ratio is reached.
+    Callback to icrementally adjust during training the Kwta ratio every 2 epochs until desired ratio is reached.
     
     Parameters
     ----------
