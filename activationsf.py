@@ -187,11 +187,9 @@ class Kaf(layers.Layer):
             - A batch of 2DConvolutions i.e. of shape = (b, x, y, f) where f is supposed to be the channels size
         if the shape does not match with any of the latter, an error is thrown 
 
-    ridge: string
-        \in {tanh, elu, None} 
-        specifies how the mixing coefficients need to be initialized in order to approximate the resulting 
-        to either a tanh or elu activation function. If None than mixing coefficients are initialized randomly
-        again, if ridge assumes other values, a ValueError is fired
+    ridge: tf.keras.activations
+        specifies how the mixing coefficients need to be initialized in order to approximate the given ridge function.
+        If None then mixing coefficients are initialized randomly
 
     References
     ----------
@@ -225,7 +223,7 @@ class Kaf(layers.Layer):
                 raise ValueError("The input shape for Kaf must be either a dense batch (b, x) \n or a gridlike batch (b, x, y, f)")
 
         # Init mix coefficients
-        regularizer_l2 = tf.keras.regularizers.l2(0.0005)
+        regularizer_l2 = tf.keras.regularizers.l2(0.001)
         if self.conv:
           self.a = self.add_weight(shape=(1, 1, 1, input_shape[-1], self.D),
                                 name = 'mix_coeffs',   
@@ -240,21 +238,17 @@ class Kaf(layers.Layer):
                                  trainable=True) 
 
         if self.ridge is not None:
-            eps = 1e-06 # stick to the paper's design choice
+
+            try:
+                t = self.ridge(self.d)
             
-            if self.ridge == 'tanh':
-                t = tf.keras.activations.tanh(self.d)
-                
-            elif self.ridge == 'elu':
-                t = tf.keras.activations.elu(self.d)
-
-            else:
-                raise ValueError("The Kaf layer supports approximation only for 'tanh' and 'elu'")
-
+            except ValueError: 
+                print("Unknown activation function {} use functions from tf.keras.activations instead".format(self.ridge))
+            
             K = kernelMatrix(self.d, self.k_bandw)
-            
 
             # Compute and adjust mix coeffs 
+            eps = 1e-06 # stick to the paper's design choice
             if self.conv:
               a = tf.reshape(np.linalg.solve(tf.cast(K, dtype=tf.float32) + eps*tf.eye(self.D), tf.cast(t, dtype=tf.float32)), shape=(1, 1, 1, 1, -1)) # solve ridge regression and get 'a' coeffs
               a = a * tf.ones(shape=(1, 1, 1, input_shape[-1], self.D))
@@ -310,6 +304,7 @@ def dictionaryGen(D):
     """
     d_pos = np.linspace(-2, 2, num= D, retstep=True, dtype=np.float32)
     return (d_pos[1], d_pos[0])
+
 
 
 def kafActivation(x, a, d, k_bwidth):
@@ -394,7 +389,3 @@ class plot_kafs_epoch_wise(callbacks.Callback):
           plt.plot(d_tmp, kaf, 'r')
         
         plt.show()
-
-       
-
-            

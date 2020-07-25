@@ -6,3 +6,20 @@ __pycache__/
 
 # Ignore Saved Models
 light_custom_models/
+
+# Ignore ART
+adversarial-robustness-toolbox/
+
+# Cyclical lr routines
+CLR/
+LRFinder/
+
+# Ignore computed Adversarial Examples
+attacks/
+
+# Ignore utility files
+_log.txt
+tmp.py 
+tmp.ipynb
+
+
