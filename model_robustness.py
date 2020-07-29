@@ -51,11 +51,9 @@ pgd = ProjectedGradientDescent(estimator= model_art, eps= 8/255, eps_step=2/255,
 
 # %%
 # Create n adversarial PGD Examples
-print('Crafting 2000 pgd adversarial examples, this might take a while...')
+print('Crafting pgd adversarial examples for the whole test set, this might take a while...')
 
-test_sample_ids = np.random.randint(10000, size=2000)
-x_test_sample = x_test[test_sample_ids, :, :, :]
-adv_examples = pgd.generate(x_test_sample)
+adv_examples = pgd.generate(x_test)
 
 print('Done, storing them...')
 
@@ -155,6 +153,6 @@ for perturbed_img in adv_examples:
     nacc += attack_succeed(x_test[original_idx], original_idx, x_test[original_idx], model_art, plot=False) 
     nfool += attack_succeed(x_test[original_idx], original_idx, perturbed_img, model_art, plot=False) 
 
-print("Accuracy on clean examples {}%\nAccuracy on adv. examples{}%".format(nacc/2000, nfool/2000))
+print("Accuracy on clean examples {}%\nAccuracy on adv. examples{}%".format(nacc/10000, nfool/10000))
 
 
