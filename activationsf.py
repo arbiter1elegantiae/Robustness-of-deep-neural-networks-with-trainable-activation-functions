@@ -269,6 +269,7 @@ class Kaf(layers.Layer):
             self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, 1, 1, self.D)), name='dictionary', trainable=False)
 
  
+    
     def call(self, inputs):
         
         inputs = tf.expand_dims(inputs, -1)
@@ -306,7 +307,7 @@ def dictionaryGen(D):
     return (d_pos[1], d_pos[0])
 
 
-
+@tf.function
 def kafActivation(x, a, d, k_bwidth):
     """
     For each element in x, compute the weighted sum of the 1D-Gaussian kernel
