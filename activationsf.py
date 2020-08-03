@@ -275,6 +275,7 @@ class Kaf(layers.Layer):
         
 
  
+    
     def call(self, inputs):
         
         inputs = tf.expand_dims(inputs, -1)
