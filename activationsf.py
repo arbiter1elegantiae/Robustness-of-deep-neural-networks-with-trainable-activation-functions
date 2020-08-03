@@ -209,8 +209,7 @@ class Kaf(layers.Layer):
         step, dict = dictionaryGen(D)
         self.d = tf.cast( tf.stack(dict), dtype=tf.float16 )
         self.k_bandw = tf.cast( 1/(6*(tf.math.pow(step,2))), dtype=tf.float16)
-        
-
+    
     def build(self, input_shape):
 
         # Raise an exception if the input rank is not white listed
@@ -223,18 +222,18 @@ class Kaf(layers.Layer):
                 raise ValueError("The input shape for Kaf must be either a dense batch (b, x) \n or a gridlike batch (b, x, y, f)")
 
         # Init mix coefficients
-        regularizer_l2 = tf.keras.regularizers.l2(0.001)
+        #regularizer_l2 = tf.keras.regularizers.l2(0.001)
         if self.conv:
           self.a = self.add_weight(shape=(1, 1, 1, input_shape[-1], self.D),
                                 name = 'mix_coeffs',   
                                 initializer= 'random_normal',
-                                regularizer= regularizer_l2,
+                                #regularizer= regularizer_l2,
                                 trainable=True) 
         else:
           self.a = self.add_weight(shape=(1, input_shape[-1], self.D),
                                  name = 'mix_coeffs',   
                                  initializer= 'random_normal',
-                                 regularizer= regularizer_l2,
+                                 #regularizer= regularizer_l2,
                                  trainable=True) 
 
         if self.ridge is not None:
@@ -261,12 +260,19 @@ class Kaf(layers.Layer):
             # Weights are stored in a list, thus we need to add a first dimension as the list index
             self.set_weights(tf.expand_dims(a, 0))
 
-        # Adjust dictionary dimension
-        if not self.conv:
-            self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, self.D)), name='dictionary', trainable=False)
+        else:# If not Ridge approx, use a free dictionary, not mandatory!
+            
+            # Adjust dictionary dimension
+            self.d = tf.tile(self.d, multiples=tf.constant([input_shape[-1]]))
+            if not self.conv:
+                self.d = tf.Variable(tf.reshape(self.d, shape=(1, input_shape[-1], self.D)), name='dictionary', trainable=True)
+            
+            else:
+                self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, 1, input_shape[-1], self.D)), name='dictionary', trainable=True)
+            
+            self.k_bandw = tf.Variable(self.k_bandw)
         
-        else:
-            self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, 1, 1, self.D)), name='dictionary', trainable=False)
+        
 
  
     def call(self, inputs):
@@ -281,11 +287,10 @@ class Kaf(layers.Layer):
         config.update({
             'D': self.D,
             'conv': self.conv,
-            'ridge': self.ridge
+            'ridge': self.ridge,
+            'k_bandw': self.k_bandw
             })
         return config
-
-
 
 def dictionaryGen(D):
     """ 
@@ -302,11 +307,11 @@ def dictionaryGen(D):
     (the step size \gamma, np array of D integers evenly distributed around 0)
          
     """
-    d_pos = np.linspace(-2, 2, num= D, retstep=True, dtype=np.float32)
+    d_pos = np.linspace(-3, 3, num= D, retstep=True, dtype=np.float32)
     return (d_pos[1], d_pos[0])
 
 
-
+@tf.function
 def kafActivation(x, a, d, k_bwidth):
     """
     For each element in x, compute the weighted sum of the 1D-Gaussian kernel
@@ -358,15 +363,6 @@ class plot_kafs_epoch_wise(callbacks.Callback):
     
     def on_epoch_begin(self, epoch, logs=None):
         
-        # Get Kaf's invariants: kernel bandwidth and dictionary
-        kaf1 = self.model.get_layer(name = 'kaf_1')
-        kb = kaf1.k_bandw
-        d_tmp = tf.squeeze(kaf1.d)
-        d = tf.expand_dims(d_tmp, 0)
-        
-        # We want to evaluate Kafs on the same input: use dictionary itself as activation
-        x = tf.expand_dims(d_tmp, -1)
-
         # Prepare plot settings
         fig=plt.figure(figsize=(15, 8))
         plt.subplots_adjust(wspace = 0.5, hspace = 0.3)
@@ -378,6 +374,20 @@ class plot_kafs_epoch_wise(callbacks.Callback):
           
           name = 'kaf_'+str(i)
           layer = self.model.get_layer(name = name)
+          kb = layer.k_bandw
+
+          if not layer.ridge:
+            d_tmp = tf.sort(tf.squeeze(layer.d)[0])
+          else:
+            d_tmp = tf.squeeze(layer.d)
+          d = tf.expand_dims(d_tmp, 0)
+          # TODO: remove next prints, just for debug
+          print(d)
+          print(kb)
+
+          # We want to evaluate Kafs on the same input: use dictionary itself as activation
+          x = tf.expand_dims(d_tmp, -1)
+
           
           # Get mixing coefficients and compute Kaf
           a = tf.cast( tf.expand_dims(tf.squeeze(layer.a)[0], 0), dtype = tf.float16 )
