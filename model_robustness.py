@@ -1,3 +1,7 @@
+# Usage: python[3] model_robustness.py /path/to/model
+# Can handle archives (.zip) 
+# Author: Federico Peconi, peconi dot federico at gmail dot c
+
 import tensorflow as tf
 from tensorflow_addons.optimizers import TriangularCyclicalLearningRate
 import numpy as np
