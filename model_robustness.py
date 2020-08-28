@@ -1,71 +1,52 @@
-# To add a new cell, type '# %%'
-# To add a new markdown cell, type '# %% [markdown]'
-# %%
-from IPython import get_ipython
-
-
-# %%
-# Main imports
-import tensorflow as tf 
+import tensorflow as tf
+from tensorflow_addons.optimizers import TriangularCyclicalLearningRate
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import os
+import zipfile
 
-import activationsf
+# Attack
+from art.classifiers import TensorFlowV2Classifier
+from art.attacks.evasion import ProjectedGradientDescent
 
+# Suppress warnings
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
-# %%
-# Server config
+# Configure GPU
+# Hardware specific, comment out or tweak as your own preferences
 gpus = tf.config.list_physical_devices('GPU')
 print(gpus)
 tf.config.experimental.set_visible_devices(gpus[5],'GPU')
 
-
-# %%
-# Load CIFAR10
-print('Loading CIFAR10...')
+print('\n Loading CIFAR10...\n')
 from tensorflow.keras.datasets import cifar10
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
 x_train, x_test = x_train/ 255.0, x_test/ 255.0
 
-
-# %%
-# Load robust model trained as https://arxiv.org/abs/2001.03994 which you want to test robustness
 model_path = str(sys.argv[1])
+
+# If model given as a zip file
+if zipfile.is_zipfile(model_path):
+  f = zipfile.ZipFile(model_path)
+  f.extractall() # Extract the archive inside the working directory
+  model_path = os.getcwd()+'/'+f.namelist()[0]
+
+print('\nLoading model...\n')
 model = tf.keras.models.load_model(model_path)
-
-
-# %%
-from art.classifiers import TensorFlowV2Classifier
-from art.attacks.evasion import ProjectedGradientDescent
+print('\n..Done\n')
 
 # Wrap the model in a TensorFlowV2Classifier object
 model_art = TensorFlowV2Classifier(model=model, nb_classes=10, input_shape=(32, 32, 3), loss_object=tf.keras.losses.SparseCategoricalCrossentropy(), clip_values=(0, 1))
 
-
-# %%
 # Set up a PGD attack w/ parameters as described in FBF ref paper
 pgd = ProjectedGradientDescent(estimator= model_art, eps= 8/255, eps_step=2/255, max_iter=50, num_random_init=10, norm=np.inf)
 
-
-
-# %%
-# Create n adversarial PGD Examples
-print('Crafting pgd adversarial examples for the whole test set, this might take a while...')
-
+# Create PGD Examples
+print('\nCrafting pgd adversarial examples for the whole test set, this might take a while...\n')
 adv_examples = pgd.generate(x_test)
+print('\n..Done\n')
 
-print('Done, storing them...')
-
-
-# %%
-# If needed store them
-model_name = model_path.rsplit('/', 1)[-1]
-np.save('./'+model_name+'_adv_examples.npy', adv_examples)
-
-
-
-# %%
 def find_original_img(perturbed_img, set='test'):
     """Retrieve original image id given an adversarial example""" 
     min_diff = np.math.inf
@@ -89,8 +70,6 @@ def find_original_img(perturbed_img, set='test'):
 
     return index
 
-
-# %%
 # CIFAR10 Classes
 classes = ['airplane', 
            'automobile', 
@@ -103,8 +82,6 @@ classes = ['airplane',
             'ship', 
             'truck']
 
-
-# %%
 def attack_succeed(original_img, idx, perturbed_img, model, plot = False, set='test'):
     """
         Return 0 if the model has been fooled 1 otherwise. Plot True if you want more info on the error margin
@@ -141,10 +118,7 @@ def attack_succeed(original_img, idx, perturbed_img, model, plot = False, set='t
     return (original == perturbed)
 
 
-# %%
-# Robustness Accuracy, set plot=True if you want image-wise stats
-# last line, /|adv_examples|
-print('Evaluating the Robustness of the network...')
+print('\nEvaluating the Robustness of the network...\n')
 nfool = 0
 nacc = 0
 for perturbed_img in adv_examples:
@@ -153,6 +127,5 @@ for perturbed_img in adv_examples:
     nacc += attack_succeed(x_test[original_idx], original_idx, x_test[original_idx], model_art, plot=False) 
     nfool += attack_succeed(x_test[original_idx], original_idx, perturbed_img, model_art, plot=False) 
 
-print("Accuracy on clean examples {}%\nAccuracy on adv. examples{}%".format(nacc/10000, nfool/10000))
-
+print("\nAccuracy on clean examples {}%\nAccuracy on adv. examples{}%".format(nacc/10000, nfool/10000))
 

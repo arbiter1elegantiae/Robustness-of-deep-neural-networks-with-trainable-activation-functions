@@ -191,13 +191,17 @@ class Kaf(layers.Layer):
         specifies how the mixing coefficients need to be initialized in order to approximate the given ridge function.
         If None then mixing coefficients are initialized randomly
 
+    moving: bool
+        indicates if we want the dictionary and the kernel bandwidth to be fixed
+        (when False) or layer's weights (True case)
+
     References
     ----------
     [1] Scardapane, S., Van Vaerenbergh, S., Totaro, S. and Uncini, A., 2019. 
         Kafnets: kernel-based non-parametric activation functions for neural networks. 
         Neural Networks, 110, pp. 19-32.
    """
-    def __init__(self, D, conv=False, ridge=None, **kwargs):
+    def __init__(self, D, conv=False, ridge=None, moving= False, **kwargs):
 
         super(Kaf, self).__init__(**kwargs)
         
@@ -205,10 +209,12 @@ class Kaf(layers.Layer):
         self.D = D
         self.conv = conv
         self.ridge = ridge
+        self.moving = moving
         
         step, dict = dictionaryGen(D)
-        self.d = tf.cast( tf.stack(dict), dtype=tf.float16 )
-        self.k_bandw = tf.cast( 1/(6*(tf.math.pow(step,2))), dtype=tf.float16)
+        self.d = tf.stack(dict)
+        self.k_bandw = tf.cast( 1/(6*(tf.math.pow(step,2))), dtype=tf.float32)
+    
     
     def build(self, input_shape):
 
@@ -259,23 +265,34 @@ class Kaf(layers.Layer):
             # Set mix coeff
             # Weights are stored in a list, thus we need to add a first dimension as the list index
             self.set_weights(tf.expand_dims(a, 0))
-
-        else:# If not Ridge approx, use a free dictionary, not mandatory!
-            
-            # Adjust dictionary dimension
-            self.d = tf.tile(self.d, multiples=tf.constant([input_shape[-1]]))
+            # Adjust Dictionary Dimension
             if not self.conv:
-                self.d = tf.Variable(tf.reshape(self.d, shape=(1, input_shape[-1], self.D)), name='dictionary', trainable=True)
-            
+                self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, self.D)), name='dictionary', trainable = False)
             else:
-                self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, 1, input_shape[-1], self.D)), name='dictionary', trainable=True)
-            
-            self.k_bandw = tf.Variable(self.k_bandw)
-        
-        
+                self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, 1, 1, self.D)), name='dictionary', trainable = False)
 
- 
-    
+        else:
+            
+            if self.moving: # Dictionary and Kernel Bandwidth are par. of the model
+                # Expand for each Kaf of the layer
+                self.d = tf.tile(self.d, multiples=tf.constant([input_shape[-1]]))
+                self.k_bandw = self.k_bandw * tf.ones(shape=(input_shape[-1],))
+            
+                if not self.conv:
+                    self.d = tf.Variable(tf.reshape(self.d, shape=(1, input_shape[-1], self.D)), name='dictionary', trainable=True)
+                    self.k_bandw = tf.Variable(tf.reshape(self.k_bandw, shape=(1, input_shape[-1], 1)), name='kernel_bw', trainable=True)
+                else:
+                    self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, 1, input_shape[-1], self.D)), name='dictionary', trainable=True)
+                    self.k_bandw = tf.Variable(tf.reshape(self.k_bandw, shape=(1, 1, 1, input_shape[-1], 1)), name='kernel_bw', trainable=True)
+            
+            else: # Fixed Dictionary and Kernel Bandwidth
+                # Adjust Dictionary Dimension
+                if not self.conv:
+                    self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, self.D)), name='dictionary', trainable = False)
+                else:
+                    self.d = tf.Variable(tf.reshape(self.d, shape=(1, 1, 1, 1, self.D)), name='dictionary', trainable = False)
+        
+        
     def call(self, inputs):
         
         inputs = tf.expand_dims(inputs, -1)
@@ -288,10 +305,13 @@ class Kaf(layers.Layer):
         config.update({
             'D': self.D,
             'conv': self.conv,
-            'ridge': self.ridge,
-            'k_bandw': self.k_bandw
+            'ridge': self.ridge
             })
         return config
+
+
+
+        
 
 def dictionaryGen(D):
     """ 
@@ -331,7 +351,11 @@ def kafActivation(x, a, d, k_bwidth):
     k_bwidth: tf.float32
             kernel bandwidth
     """
+    d = tf.cast(d, tf.float16)
+    k_bwidth = tf.cast(k_bwidth, tf.float16)
+    
     x = math.multiply(a, math.exp(math.multiply(-k_bwidth, math.square(x - d))))
+    
     return tf.reduce_sum(x, -1)
 
 
@@ -375,21 +399,22 @@ class plot_kafs_epoch_wise(callbacks.Callback):
           
           name = 'kaf_'+str(i)
           layer = self.model.get_layer(name = name)
-          kb = layer.k_bandw
 
-          if not layer.ridge:
+          if layer.moving:
             d_tmp = tf.sort(tf.squeeze(layer.d)[0])
+            kb = tf.squeeze(layer.k_bandw)[0]
           else:
             d_tmp = tf.squeeze(layer.d)
+            kb = layer.k_bandw
+          
           d = tf.expand_dims(d_tmp, 0)
-          # TODO: remove next prints, just for debug
-          print(d)
-          print(kb)
+          if layer.moving: # Print dictionary + k_bandw values
+            tf.print(d)
+            tf.print(kb)
 
           # We want to evaluate Kafs on the same input: use dictionary itself as activation
-          x = tf.expand_dims(d_tmp, -1)
+          x = tf.cast(tf.expand_dims(d_tmp, -1), dtype=tf.float16)
 
-          
           # Get mixing coefficients and compute Kaf
           a = tf.cast( tf.expand_dims(tf.squeeze(layer.a)[0], 0), dtype = tf.float16 )
           kaf = kafActivation(x, a, d, kb)
