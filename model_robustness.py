@@ -36,8 +36,8 @@ if zipfile.is_zipfile(model_path):
   f.extractall() # Extract the archive inside the working directory
   model_path = os.getcwd()+'/'+f.namelist()[0]
 
-print('\nLoading model...\n')
-model = tf.keras.models.load_model(model_path)
+print('\nLoading '+str(sys.argv[1])+' model...\n')
+model = tf.keras.models.load_model(model_path, custom_objects={'TriangularCyclicalLearningRate':TriangularCyclicalLearningRate})
 print('\n..Done\n')
 
 # Wrap the model in a TensorFlowV2Classifier object
