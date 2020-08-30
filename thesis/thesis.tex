@@ -1,0 +1,179 @@
+% !TeX encoding = UTF-8
+% !TeX program = pdflatex
+% !TeX spellcheck = en_US
+
+\documentclass[LaM,binding=0.6cm]{./packages/sapthesis/sapthesis}
+
+\usepackage{microtype}
+
+\usepackage{hyperref}
+\hypersetup{pdftitle={Robustness of Deep Neural Networks Using Trainable Activation Functions},pdfauthor={Federico Peconi}}
+
+% Remove in a normal thesis
+\usepackage{lipsum}
+\usepackage{curve2e}
+\definecolor{gray}{gray}{0.4}
+\newcommand{\bs}{\textbackslash}
+
+% Commands for the titlepage
+\title{Robustness Of Deep Neural Networks \\Using Trainable Activation Functions}
+\author{Federico Peconi}
+\IDnumber{1823570}
+\course{Computer Science}
+\courseorganizer{Computer Science - Informatica LM-18}
+\AcademicYear{2019/2020}
+\copyyear{2020}
+\advisor{Prof. Simone Scardapane}
+%\advisor{Dr. Nome Cognome}
+%\coadvisor{Dr. Nome Cognome}
+\authoremail{peconi.1823570@studenti.uniroma1.it}
+
+\examdate{Something October 2020}
+\examiner{Prof. Nome Cognome}
+\examiner{Prof. Nome Cognome}
+\examiner{Dr. Nome Cognome}
+\versiondate{\today}
+
+
+
+\begin{document}
+
+\frontmatter
+
+\maketitle
+\dedication{Dedicated to\\ Donald Knuth}
+
+\begin{abstract}
+This document is an example which shows the main features of
+the \LaTeXe\ class \texttt{sapthesis.cls} developed by 
+with the help of GuIT (Gruppo Utilizzatori Italiani di \TeX).
+\end{abstract}
+
+\begin{acknowledgments}
+Ho deciso di scrivere i ringraziamenti in italiano
+per dimostrare la mia gratitudine verso i membri
+del GuIT, il Gruppo Utilizzatori Italiani di \TeX, e, in particolare,
+verso il prof. Enrico Gregorio.
+\end{acknowledgments}
+
+\tableofcontents
+
+% Do not use the starred version of the chapter command!
+%\chapter{Capitolo non numerato}
+
+
+
+
+
+\mainmatter
+
+\chapter{Introduction}
+
+    \section{Intriguing Properties of Neural Networks}
+
+        Here we informally state the problem of adversarial attacks in ML models 
+        especially wrt to Neural Networks.
+        Why is it of fundamental importance for the progress of the field from
+        both practical (nns cant yet be deployable in critical scenarios for such reasons ) 
+        and theoretical (Madry arguments around interpertability and robustness)
+        perspectives
+
+    \section{Smooth Activation Functions and Robustness}
+
+        Recently a link has been proposed between activation functions and the robustness of
+        Neural Networks (Smooth Adversarial Training). In particular, authors showed how they managed
+        to improve the robustness by replacing the traditional Rectified Linear Units activation functions
+        with smoother alternatives such as ELUs, SWISH, PReLUs
+        
+        Building up from this result we thought we could find benefits by laveraging recently proposed smooth
+        trainable activation functions called Kernel Based Activation Functions (Scardapane et al.), 
+        which already showed great results in standard tasks, in the context of adversarial attacks.
+        
+    \section{Structure of the Thesis}
+
+        Description of the remaining chapters 
+
+
+\chapter{Fundamentals}
+
+    \section{Deep Neural Networks}
+        
+        Broadly speaking, the field of Machine Learning is the summa of any algorithmic methodology whose aim is to automatically find meaningful patterns inside data without
+        being explicitly programmed on how to do it. Well known examples are: Search Trees (ref.), Support Vector Machines (ref. ), Clustering (ref.) and, more recently, 
+        Neural Networks (ref. ). During the last two decades Neural Networks gained a lot of attention for their outstanding performances in different tasks like
+        image classification (ref. ImageNet, over human level), speech and audio processing(ref ).
+
+        \subsection{Definition}
+            Neural Networks are often used in the context of Supervised Learning where the objective is to model a function $ \hat{f}:X \mapsto Y$
+
+        \subsection{Training}
+
+        \subsection{CNNs: Convolutional Neural Networks}
+
+        \subsection{From Neural Networks to Deep Neural Networks}
+        
+
+    \section{Adversarial Examples Theory}
+
+        Formal definition of what is an adversarial attacks plus currently well known attacks
+
+    \section{Defenses}
+
+        Review of the literature on defenses to improve robustness: provable robustness, adversarial training
+
+    \section{Kernel Based Activation Functions}
+
+
+\chapter{Related Works}
+
+    \section{K-Winners Take All}
+    \section{Smooth Adversarial Training}
+
+
+\chapter{Solution Approach}
+ 
+    Comparing the activations's distributions for different activation functions (ReLU, KWTA, Kafs) 
+    seem to suggest Kafs might be good candidates to improve model robustness 
+
+    \section{Lipschitz Constant Approach}
+
+        On the limitations of current Lipischitz-Constant based approaches especially when involving Kafs
+
+    \section{Fast is Better than Free Adversarial Training}
+
+        Adversarial training (Madry et al.) and current methods to improve the efficiency (Fast is better than free)
+
+
+\chapter{Evaluation}
+
+    \section{VGG Inspired Architectures Results}
+
+    \section{Explofing Gradients with KafNets}
+
+        The exploding gradients problem with KafResNet, why is it happening? (still to clarify)
+
+    \section{ResNet20 Inspired Architectures Results}
+
+
+\chapter{Future Works}
+
+    Different Kernels, resolve the exploding gradient problem and scale to ImageNet
+    Perform more adaptive attacks to assess the robustness of kafresnets as is the current standard (Carlini et al.)
+
+
+\chapter{Conclusions}
+
+    This thesis tries to add to the bag of evidences in literature that smoother architectures might benefit improvements in adversarial resiliency
+    
+    
+\appendix
+
+
+\backmatter
+% bibliography
+%\cleardoublepage
+%\phantomsection
+%\bibliographystyle{sapthesis} % BibTeX style
+%\bibliography{bibliography} % BibTeX database without .bib extension
+
+\end{document}

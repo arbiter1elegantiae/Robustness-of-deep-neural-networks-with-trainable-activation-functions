@@ -1,0 +1,25 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Intriguing Properties of Neural Networks}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{Smooth Activation Functions and Robustness}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.3}{Structure of the Thesis}{chapter.1}% 4
+\BOOKMARK [0][-]{chapter.2}{Fundamentals}{}% 5
+\BOOKMARK [1][-]{section.2.1}{Deep Neural Networks}{chapter.2}% 6
+\BOOKMARK [2][-]{subsection.2.1.1}{Definition}{section.2.1}% 7
+\BOOKMARK [2][-]{subsection.2.1.2}{Training}{section.2.1}% 8
+\BOOKMARK [2][-]{subsection.2.1.3}{CNNs: Convolutional Neural Networks}{section.2.1}% 9
+\BOOKMARK [2][-]{subsection.2.1.4}{From Neural Networks to Deep Neural Networks}{section.2.1}% 10
+\BOOKMARK [1][-]{section.2.2}{Adversarial Examples Theory}{chapter.2}% 11
+\BOOKMARK [1][-]{section.2.3}{Defenses}{chapter.2}% 12
+\BOOKMARK [1][-]{section.2.4}{Kernel Based Activation Functions}{chapter.2}% 13
+\BOOKMARK [0][-]{chapter.3}{Related Works}{}% 14
+\BOOKMARK [1][-]{section.3.1}{K-Winners Take All}{chapter.3}% 15
+\BOOKMARK [1][-]{section.3.2}{Smooth Adversarial Training}{chapter.3}% 16
+\BOOKMARK [0][-]{chapter.4}{Solution Approach}{}% 17
+\BOOKMARK [1][-]{section.4.1}{Lipschitz Constant Approach}{chapter.4}% 18
+\BOOKMARK [1][-]{section.4.2}{Fast is Better than Free Adversarial Training}{chapter.4}% 19
+\BOOKMARK [0][-]{chapter.5}{Evaluation}{}% 20
+\BOOKMARK [1][-]{section.5.1}{VGG Inspired Architectures Results}{chapter.5}% 21
+\BOOKMARK [1][-]{section.5.2}{Explofing Gradients with KafNets}{chapter.5}% 22
+\BOOKMARK [1][-]{section.5.3}{ResNet20 Inspired Architectures Results}{chapter.5}% 23
+\BOOKMARK [0][-]{chapter.6}{Future Works}{}% 24
+\BOOKMARK [0][-]{chapter.7}{Conclusions}{}% 25

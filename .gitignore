@@ -17,9 +17,7 @@ LRFinder/
 # Ignore computed Adversarial Examples
 attacks/
 
+
 # Ignore utility files
-_log.txt
-tmp.py 
-tmp.ipynb
-
-
+*.log
+tmp.* 
