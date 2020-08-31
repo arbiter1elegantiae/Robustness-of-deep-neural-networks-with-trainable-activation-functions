@@ -119,11 +119,43 @@ verso il prof. Enrico Gregorio.
             For the sake of explanation, assume the input, which in practice can be very complex and unstructured e.g. made of: graphs, text, sounds, ecc, to be embedded in an input space  $\mathcal{X} = \mathbb{R}{^d}$.
             The simplest form of a neural network is then given by
             \[
-                f_{W}\left(x\right) = \sigma(Wx + b)
+                f_{W, b}\left(x\right) = \sigma(Wx + b)
             \]
-            where the parameters of the network are the elements of a $u \times d$ matrix $ W $ and a $u$-dimensional vector called bias. The last element in this picture is the $ \sigma $ function
-            applied at the end which consists of a non-linear function and is the key component to introduce non linearity in NNs allowing them to model highly non-linear functions. We call it \textit{activation function}
+            where the parameters of the network are the elements of a $u \times d$ matrix $ W $ and a $u$-dimensional vector called bias. The last element applied at the end is the $ \sigma $ 
+            function which consists of a non-linear function acting element-wise and is the key component to introduce non linearity in NNs allowing them to model 
+            highly non-linear functions. We call it \textit{activation function}.
+            \[
+                f_{W, b}\left(x\right) = \left[\sigma(W_1^{\intercal} x + b_1), \sigma(W_2^{\intercal} x + b_2), \ldots, \sigma(W_u^{\intercal} x + b_u)\right]
+            \]
+            Where $W_i$ and $b_i$ are respectively the i-th row of $W$ and the i-th element of the bias.
+            
+            Historically, the whole picture was somehow biologically inspired and had an intuitive explanation. Indeed, if we think at $ W $ as weights i.e. $ w_{ij} $ as the importance
+            the model gives to the input $x_i$ for how much it contributes to the $ f_{W}\left(x\right)_j $-th component and define $ \sigma $ to be
+            \[
+                \sigma(W_j^{\intercal} x + b_j) = \begin{cases} 
+                    1 & W_j^{\intercal}x \geq b_j \\
+                    0 & W_j^{\intercal}x < b_j 
+                 \end{cases}  
+            \]
+            then it is easy to see that here the bias is acting like a threshold which discrminates between \textit{activating} or not the $j$-th component depending on how much importance was given. 
+            Due to this analogy with the behaviour of neurons in the brain we call each component \textit{neuron}, non-linearities activation functions and the whole model neural network.
+            \begin{figure}[h]
+                \centering
+                \includegraphics[width=0.5\textwidth]{slide1}
+                \caption{Graphic representation of a one layer NN also know as MLP(ref. )}
+            \end{figure}
+            \paragraph{}
+            In general, the idea of a layer of neurons can be recursively extended by stacking more layers together, all of which are described by a matrix of weights, a bias and an activation function
+            and letting the output of one becoming the input of the subsequent.
+            The resulting model is the mathematical composition of the layers, thus if we let $ L $ be the number of layers, $ z_0 = \mathbf{x} $ and $ z_l = \sigma_l\left(z_{l-1}\right) = \sigma_l\left(W_{l}x + b_l\right) $
+            we write a $L$-layered $f_{\mathbf{W}, \mathbf{b}}$:
+            \[
+                f_{\mathbf{W}, \mathbf{b}} = \sigma_{L}\left(\sigma_{L-1}\left(\ldots\left(\sigma_{1}\left(W_{1}z_{0} +b_1\right)\right)\right)\right)
+            \]
+            . This general but still basic form of Neural Network is known as \textit{Feed Forward Neural Network} 
         \subsection{Training}
+
+            There are still a couple of important pieces left to define to have a proper working Neural Network. How are parameters learned?
 
         \subsection{CNNs: Convolutional Neural Networks}
 
