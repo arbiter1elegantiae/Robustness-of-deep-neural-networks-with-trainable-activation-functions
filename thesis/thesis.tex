@@ -5,6 +5,8 @@
 \documentclass[LaM,binding=0.6cm]{./packages/sapthesis/sapthesis}
 
 \usepackage{microtype}
+\usepackage{amssymb}
+\usepackage{amsmath}
 
 \usepackage{hyperref}
 \hypersetup{pdftitle={Robustness of Deep Neural Networks Using Trainable Activation Functions},pdfauthor={Federico Peconi}}
@@ -104,8 +106,23 @@ verso il prof. Enrico Gregorio.
         image classification (ref. ImageNet, over human level), speech and audio processing(ref ).
 
         \subsection{Definition}
-            Neural Networks are often used in the context of Supervised Learning where the objective is to model a function $ \hat{f}:X \mapsto Y$
+            
+            Neural Networks (NNs) are often used in the context of Supervised Learning where the objective is to model a parametric function 
+            $ f_{\theta} \colon \mathcal{X} \to \mathcal{Y}$ given $n$ input-output pairs $S = \{(\mathbf{x_i}, y_i)_{i=1}^n\} $ with $\mathbf{x_i} \in \mathcal{X}$ and $ y_i \in \mathcal{Y}$
+            such that
+            \[
+                f_{\theta} \sim f  
+            \]
+            where $f$ is assumed to be the real input-output distribution that we want to learn. In plain words, this means that we want to find the best set of parameters $\theta^{*}$ for the model
+            such that, for any unseen input $x_{new}$ we have that $f_{\theta^*}\left(x_{new}\right)$ is as close as possible to $f\left(x_{new}\right)$
 
+            For the sake of explanation, assume the input, which in practice can be very complex and unstructured e.g. made of: graphs, text, sounds, ecc, to be embedded in an input space  $\mathcal{X} = \mathbb{R}{^d}$.
+            The simplest form of a neural network is then given by
+            \[
+                f_{W}\left(x\right) = \sigma(Wx + b)
+            \]
+            where the parameters of the network are the elements of a $u \times d$ matrix $ W $ and a $u$-dimensional vector called bias. The last element in this picture is the $ \sigma $ function
+            applied at the end which consists of a non-linear function and is the key component to introduce non linearity in NNs allowing them to model highly non-linear functions. We call it \textit{activation function}
         \subsection{Training}
 
         \subsection{CNNs: Convolutional Neural Networks}
