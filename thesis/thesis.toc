@@ -6,12 +6,15 @@
 \contentsline {section}{\numberline {2.1}Deep Neural Networks}{3}{section.2.1}% 
 \contentsline {subsection}{\numberline {2.1.1}Definition}{3}{subsection.2.1.1}% 
 \contentsline {paragraph}{}{4}{section*.3}% 
-\contentsline {subsection}{\numberline {2.1.2}Training}{4}{subsection.2.1.2}% 
-\contentsline {subsection}{\numberline {2.1.3}CNNs: Convolutional Neural Networks}{5}{subsection.2.1.3}% 
-\contentsline {subsection}{\numberline {2.1.4}From Neural Networks to Deep Neural Networks}{5}{subsection.2.1.4}% 
-\contentsline {section}{\numberline {2.2}Adversarial Examples Theory}{5}{section.2.2}% 
-\contentsline {section}{\numberline {2.3}Defenses}{5}{section.2.3}% 
-\contentsline {section}{\numberline {2.4}Kernel Based Activation Functions}{5}{section.2.4}% 
+\contentsline {subsection}{\numberline {2.1.2}Training}{5}{subsection.2.1.2}% 
+\contentsline {subsubsection}{Loss Function}{5}{section*.5}% 
+\contentsline {subsubsection}{Gradient Descent}{5}{section*.6}% 
+\contentsline {subsection}{\numberline {2.1.3}Activation Functions}{6}{subsection.2.1.3}% 
+\contentsline {subsection}{\numberline {2.1.4}CNNs: Convolutional Neural Networks}{6}{subsection.2.1.4}% 
+\contentsline {subsection}{\numberline {2.1.5}From Neural Networks to Deep Neural Networks}{6}{subsection.2.1.5}% 
+\contentsline {section}{\numberline {2.2}Adversarial Examples Theory}{6}{section.2.2}% 
+\contentsline {section}{\numberline {2.3}Defenses}{6}{section.2.3}% 
+\contentsline {section}{\numberline {2.4}Kernel Based Activation Functions}{6}{section.2.4}% 
 \contentsline {chapter}{\numberline {3}Related Works}{7}{chapter.3}% 
 \contentsline {section}{\numberline {3.1}K-Winners Take All}{7}{section.3.1}% 
 \contentsline {section}{\numberline {3.2}Smooth Adversarial Training}{7}{section.3.2}% 

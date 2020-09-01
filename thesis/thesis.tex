@@ -7,6 +7,8 @@
 \usepackage{microtype}
 \usepackage{amssymb}
 \usepackage{amsmath}
+% Norm Command
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 
 \usepackage{hyperref}
 \hypersetup{pdftitle={Robustness of Deep Neural Networks Using Trainable Activation Functions},pdfauthor={Federico Peconi}}
@@ -98,6 +100,8 @@ verso il prof. Enrico Gregorio.
 
 \chapter{Fundamentals}
 
+    In this chapter, the basic concepts needed to understand the main arguments for the thesis are introduced. Pointers to more appropriate and detailed resources on the topics are given throughout
+
     \section{Deep Neural Networks}
         
         Broadly speaking, the field of Machine Learning is the summa of any algorithmic methodology whose aim is to automatically find meaningful patterns inside data without
@@ -133,8 +137,8 @@ verso il prof. Enrico Gregorio.
             the model gives to the input $x_i$ for how much it contributes to the $ f_{W}\left(x\right)_j $-th component and define $ \sigma $ to be
             \[
                 \sigma(W_j^{\intercal} x + b_j) = \begin{cases} 
-                    1 & W_j^{\intercal}x \geq b_j \\
-                    0 & W_j^{\intercal}x < b_j 
+                    1 & W_j^{\intercal}x \geq - b_j \\
+                    0 & W_j^{\intercal}x < - b_j 
                  \end{cases}  
             \]
             then it is easy to see that here the bias is acting like a threshold which discrminates between \textit{activating} or not the $j$-th component depending on how much importance was given. 
@@ -147,16 +151,45 @@ verso il prof. Enrico Gregorio.
             \paragraph{}
             In general, the idea of a layer of neurons can be recursively extended by stacking more layers together, all of which are described by a matrix of weights, a bias and an activation function
             and letting the output of one becoming the input of the subsequent.
-            The resulting model is the mathematical composition of the layers, thus if we let $ L $ be the number of layers, $ z_0 = \mathbf{x} $ and $ z_l = \sigma_l\left(z_{l-1}\right) = \sigma_l\left(W_{l}x + b_l\right) $
+            The resulting model is the mathematical composition of the layers, thus if we let $ L $ be the number of layers, $ z_0 = \mathbf{x} $ and $ z_l = \sigma_l\left(W_{l}z_{l-1} + b_l\right)$
             we write a $L$-layered $f_{\mathbf{W}, \mathbf{b}}$:
             \[
-                f_{\mathbf{W}, \mathbf{b}} = \sigma_{L}\left(\sigma_{L-1}\left(\ldots\left(\sigma_{1}\left(W_{1}z_{0} +b_1\right)\right)\right)\right)
+                f_{\mathbf{W}, \mathbf{b}} = z_L = \sigma_{L}\left(W_{L}\sigma_{L-1}\left(\ldots\left(W_2\sigma_{1}\left(W_{1}z_{0} +b_1\right)+ b_2\right)\ldots\right)+ b_{L}\right)
             \]
-            . This general but still basic form of Neural Network is known as \textit{Feed Forward Neural Network} 
+            With $ \mathbf{W} = \{W_1, \ldots, W_{L}\} $ and $ \mathbf{b}= \{b_1, \ldots, b_{L}\} $. We will call the first layer \textit{input layer}, the middle layers \textit{hidden layers}
+            and the last layer \textit{output layer}.
+            \begin{figure}[h]
+                \centering
+                \includegraphics[scale=0.5]{fnn}
+                \caption{A Feedforward Neural Network with 3 hidden layers(ref. Michael A. Nielsen, Neural Networks and Deep Learning, Determination Press', 2015)}
+                \label{fig:fnn}
+            \end{figure}
+            This general but still basic form of Neural Network is known as \textit{Feed Forward Neural Network} Fig. \ref{fig:fnn}. 
         \subsection{Training}
 
-            There are still a couple of important pieces left to define to have a proper working Neural Network. How are parameters learned?
+            There are still a couple of important pieces left to define to develop a properly working Neural Network. For instance, how are parameters computed? And in particular, with respect to what we compute them? 
+            \subsubsection{Loss Function}
+                Before we realized that our goal is to maximize the approximation of the 'real' input-output relation that lies under the data, therefore there is a need to
+                introduce some metric to quantify this approximization. Call \textit{loss function} $ L(f_{\theta}\left(x\right), y) \colon \mathcal{Y} \times \mathcal{Y} \to \mathbb{R_+}$ 
+                such metric. Common choices are (ref.):
+                \begin{itemize}
+                    \item Least Square: $\norm{f_{\theta}\left(x\right) - y}^2$ for regression tasks 
+                    \item Binary Cross-Entropy: $y \log (f_{\theta}(x))+(1-y) \log (1-f_{\theta}(x))$ for binary classification  
+                    \item Categorical Loss Function: $-\sum_{c=1}^{C} y_{c} \log \left(f_{\theta}(x)_c\right)$ for mulicategory classification with $C$ classes.
+                \end{itemize}
+                Intuitively, a good loss function will map bad approximations to high values and good approximations to smaller ones.
+                Nevertheless, those are only point-wise estimates of the error, hence the best empirical solution learnable from the training set $ S $ would be 
+                \begin{equation}
+                    \label{erm}
+                    \displaystyle{  \min_{\theta}  \frac{1}{n} \sum_{i=1}^{n} L\left(f_{\theta}\left(x_{i}\right), y_{i}\right) }
+                \end{equation}
+                which is called \textit{empirical risk minimization}.
+            \subsubsection{Gradient Descent}
+               So far we have described, given an input $ \mathbf{x} $, how we can compute the output of a feedforward neural network by means of compositions of dot products 
+               and non-linear transformations between matrices, starting from the first to the last of the layers in what is called a \textit{forward pass}. As it turns out, to attempt to solve \ref{erm} we need to follow the exact
+               opposite path. Assume infact 
 
+        \subsection{Activation Functions}
         \subsection{CNNs: Convolutional Neural Networks}
 
         \subsection{From Neural Networks to Deep Neural Networks}
