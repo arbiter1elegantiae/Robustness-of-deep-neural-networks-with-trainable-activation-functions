@@ -186,8 +186,12 @@ verso il prof. Enrico Gregorio.
                 which is called \textit{empirical risk minimization}.
             \subsubsection{Gradient Descent}
                So far we have described, given an input $ \mathbf{x} $, how we can compute the output of a feedforward neural network by means of compositions of dot products 
-               and non-linear transformations between matrices, starting from the first to the last of the layers in what is called a \textit{forward pass}. As it turns out, to attempt to solve \ref{erm} we need to follow the exact
-               opposite path. Assume infact 
+               and non-linear transformations between matrices, starting from the first to the very last of the layers in what is called a \textit{forward pass}. As it turns out, to attempt to solve \ref{erm} we need to follow the exact
+               opposite path. Indeed, every optimization algorithm used in practice makes use of the same subroutine called Backpropagation (ref.  ) introduced in the 19   70s, which allows to compute, starting from the output layer
+               and going backwards, the partial derivative of the loss function with respect to each weight in the network. Moreover it does so efficiently requiring only one \textit{backward pass}.
+
+               Let $i_l = W_l z_{l-1} + b_l$ be the weighted input to the $l$-th layer, then the key observation is that the only way $ W_l $ can affect the loss function is by affecting linearly
+               the next layer which in turn affects its next layer and so on.  
 
         \subsection{Activation Functions}
         \subsection{CNNs: Convolutional Neural Networks}
