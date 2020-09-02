@@ -169,7 +169,7 @@ verso il prof. Enrico Gregorio.
 
             There are still a couple of important pieces left to define to develop a properly working Neural Network. For instance, how are parameters computed? And in particular, with respect to what we compute them? 
             \subsubsection{Loss Function}
-                Before we realized that our goal is to maximize the approximation of the 'real' input-output relation that lies under the data, therefore there is a need to
+                Before we realized that our goal is to maximize the approximation of the ground-truth input-output relation that lies under the data, therefore there is a need to
                 introduce some metric to quantify this approximization. Call \textit{loss function} $ L(f_{\theta}\left(x\right), y) \colon \mathcal{Y} \times \mathcal{Y} \to \mathbb{R_+}$ 
                 such metric. Common choices are (ref.):
                 \begin{itemize}
@@ -201,20 +201,67 @@ verso il prof. Enrico Gregorio.
                \end{equation}
                and equally, taking into account the whole output layer
                \begin{equation}
+                    \label{bp1}
                     \delta^{L}=\nabla_{z^L} LS \odot \sigma^{\prime}(i^{L})
                \end{equation}
                where $ \odot $ is the element-wise product and $ \nabla_{x} $ the vector of the partial derivatives $ \partial LS / \partial x $. 
                That is, the gradient with respect to the weighted input to the last layer is given, using the chain rule, by the gradient with respect to the activation of the last layer times the derivative
                of the last activation function. Similarly, for any hidden layer $ l $ we note that:
                \begin{equation}
-                \delta^{L}_{j} = \frac{\partial LS}{\partial i^{L}_{j}} = \frac{\partial LS}{\partial z^{L}_{j}}\frac{\partial z^{L}_{j}}{\partial i^{L}_{j}} \\
-                              =\frac{\partial LS}{\partial z^{L}_{j}} \sigma_{L}^{\prime}(i^{L}_{j})
+                \label{bp2}
+                    \delta^{l}=\left((W^{l+1})^{T} \delta^{l+1}\right) \odot \sigma^{\prime}(i^{l})
                 \end{equation}
+                When we apply the transpose weight matrix, $(W^{l+1})^{T}$, think intuitively of this as moving the previous layer's gradient backward, giving a measure of the gradient at the output of the $l$-th layer. 
+                We then take the product $\sigma^{\prime}(i^{l})$ which again moves the gradient backward through the activation function in layer $l$, giving the gradient of the weighted input to layer $l$.
 
+                By combining \ref{bp1} with \ref{bp2} we can compute the gradient $\delta^{l}$ for any layer in the network. We start by using \ref{bp1} to compute on the last layer, 
+                then apply equation \ref{bp2} to compute $\delta^{L-1}$, then the same equation again to compute $\delta^{L-2}$, and so forth, 
+                all the way back until the input layer. Since our intent is to retrieve the gradients for every weights of the network, we are left to 
+                show how $ \delta^l $ relates to them, here we provide such relation without giving an explicit proof which instead can be found in many
+                texts like (ref Nielsen chapter 2).
+                \begin{equation}
+                    \frac{\partial LS}{\partial b^{l}_{j}} = \delta^{l}_{j}
+                \end{equation}
+                \begin{equation}
+                    \frac{\partial LS}{\partial w^{l}_{i,j}} = z^{l-1}_i \delta^{l}_{j}.
+                \end{equation}
+                Remark how we already know how to compute each element on the right sides of these equations, moreover, given that the activation function
+                and its derivative is efficiently computable, we will be able to efficiently get the seeked gradients in just one pass.
+                It is worth mention that Backpropagation is actually a special case of a more generic set of programming techniques that go under
+                the name of \textit{Automatic Differentiation} (Ref. ) to numerically evaluate the derivative of a function specified by a computer program.
+                Such techniques are usually implemented in modern numerical libraries building variations of a data structure called \textit{computational graph}.
+                Well known examples are \textit{Autograd} in \textit{Pytorch} (Ref. ) or \textit{GradientTape} in \textit{TensorFlow} (Ref. ).
 
-               what does it mean to be able to compute partial derivatives of the loss ? it means be able to understand where and how 
-               the loss decreases and thus we can exploit such information to find optimal weights values, this is 
-               the idea behind the gradient descent algorithm.
+               What does it mean to be able to compute partial derivatives of the loss? It means being able to understand where and how 
+               the loss decreases and thus we can exploit such information to find better and better weights solutions. 
+               This is the idea behind the Gradient Descent algorithm (Ref. ). In particular, the gradient of a weight is nothing but the
+               direction inside the weight-space where the loss function is increasing, therefore what we want to do is to follow the opposite
+               direction. Formally, this translates in the following weight update rules:
+               \begin{equation}
+                    w^{t}_{l} \rightarrow w_{l}^{t+1}=w^{t}_{l}-\frac{\eta}{n} \sum_{j} \frac{\partial LS_{\mathbf{x}_{j}}}{\partial w^{t}_{l}}
+               \end{equation}
+               \begin{equation}
+                b^{t}_{l} \rightarrow b^{t+1}_{l}=b^{t}_{l}-\frac{\eta}{n} \sum_{j} \frac{\partial LS_{\mathbf{x}_{j}}}{\partial b^{t}_{l}}
+               \end{equation}
+
+            where $w_{l}^{t}$ are the values of the weights for layer $l$-th during the $t$-th pass, $\eta$ is a small positive constant called \textit{learning rate}
+            chosen by the user accordingly and the gradients are averaged among all samples in the training set. 
+            \begin{figure}[h!]
+                \centering
+                \includegraphics[scale=0.5]{gd}
+                \caption{A 1-D representation of 4 gradient descent steps}
+                \label{fig:gd}
+            \end{figure}
+            Most importantly, note how we take the negative of the gradients, meaning that we are following the direction in which the loss decreases \ref{fig:gd}. The distance
+            between two consecutives weights $\Delta_{w^t}$ well be directly proportional to both the learning rate picked and the averaged gradient.
+
+            In practice, however, when very often we are deling with thousands or milions of data points, becomes unfeasable to compute every pass over
+            the entire training set, thus what is done is to split the data into so called \textit{mini-batches} and then apply the
+            update rules on each mini-batch until we scanned the whole data. The entire scan is called \textit{epoch} and the 
+            resulting algorithm Stochastic Gradient Descent (Ref. ). Lastly, the size of a mini-batch is another hyperparameter 
+            that should be tuned by the developer, keeping in mind that the bigger the size the more stable will be our training
+            the smaller the size the faster the training.
+
 
         \subsection{Activation Functions}
         \subsection{CNNs: Convolutional Neural Networks}
