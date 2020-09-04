@@ -135,12 +135,13 @@ verso il prof. Enrico Gregorio.
             
             Historically, the whole picture was somehow biologically inspired and had an intuitive explanation. Indeed, if we think at $ W $ as weights i.e. $ w_{ij} $ as the importance
             the model gives to the input $x_i$ for how much it contributes to the $ f_{W}\left(x\right)_j $-th component and define $ \sigma $ to be
-            \[
+            \begin{equation}
+                \label{step}
                 \sigma(W_j^{\intercal} x + b_j) = \begin{cases} 
                     1 & W_j^{\intercal}x \geq - b_j \\
                     0 & W_j^{\intercal}x < - b_j 
-                 \end{cases}  
-            \]
+                \end{cases}  
+            \end{equation}
             then it is easy to see that here the bias is acting like a threshold which discrminates between \textit{activating} or not the $j$-th component depending on how much importance was given. 
             Due to this analogy with the behaviour of neurons in the brain we call each component \textit{neuron}, non-linearities activation functions and the whole model neural network.
             \begin{figure}[h]
@@ -252,7 +253,7 @@ verso il prof. Enrico Gregorio.
                 \caption{A 1-D representation of 4 gradient descent steps}
                 \label{fig:gd}
             \end{figure}
-            Most importantly, note how we take the negative of the gradients, meaning that we are following the direction in which the loss decreases \ref{fig:gd}. The distance
+            Most importantly, note how we take the negative of the gradients, meaning that we are following the direction in which the loss decreases Fig. \ref{fig:gd}. The distance
             between two consecutives weights $\Delta_{w^t}$ well be directly proportional to both the learning rate picked and the averaged gradient.
 
             In practice, however, when very often we are deling with thousands or milions of data points, becomes unfeasable to compute every pass over
@@ -262,8 +263,95 @@ verso il prof. Enrico Gregorio.
             that should be tuned by the developer, keeping in mind that the bigger the size the more stable will be our training
             the smaller the size the faster the training.
 
+            \begin{figure}[h]
+                \centering
+                \includegraphics[scale=0.25]{conv_nonconv}
+                \caption{Convex and Non-convex optimization landscapes}
+                \label{fig:convnonconv}
+            \end{figure}
+            As stated earlier, neural networks can model extremely non-convex input-output functions therefore in principle there
+            is no guarantee that Gradient Descent will find the optimal solution to \ref{erm} Fig. \ref{fig:convnonconv}.
+            Indeed, the optimal solution would be the global minimum of our weighted loss function but there is no apparent
+            way for the algorithm to distinguish between global, local minimum or saddle points Fig. \ref{fig:globlocsad}.
+            However, it turns out that in practice Gradient Descent works fairly well once we correctly tune
+            hyperparameters and run the algorithm from different initial values. (Ref .)
+            Moreoever, lately authors have been proposed different methods to improve the convergence and the efficiency by 
+            smart changes of the learning rate during the training process (ref . cyclical learning rates) 
+            \begin{figure}[h]
+                \centering
+                \includegraphics[scale=0.35]{globlocsad}
+                \caption{Visualization of global, local and saddle points. How can A reach the global minimum?}
+                \label{fig:globlocsad}
+            \end{figure}
 
         \subsection{Activation Functions}
+            
+            We have seen how the learning process works optimizing the empirical risk by means of gradients computation.
+            Therefore to be able to optimize anything, a neural network needs to have only differentiable components.
+            However, before in \ref{step} we discussed the so called \textit{step function}, an activation function that, 
+            even if biologically inspired and easier to justify, is not differentiable at the origin and the derivative is 0 elsewhere.
+            Thus if we think again about how Backpropagation works, we see that employing such activation function would make the weight updates impossible
+            since already $ \delta^{L} $ would be either undefined or 0.
+
+            To deal with this issue, one of the first proposed activation functions was an approximation of the step function known as \textit{sigmoid} (Ref. ) 
+            \begin{equation}
+                \textnormal{sigmoid}(x) = \frac{1}{1 + e^{-x}}
+            \end{equation}
+            which is differentiable everywhere with continuous derivatives (property that we will refer as \textit{smoothness} through the chapters) and
+            maps to $ [0, 1] $ values.
+            \begin{figure}[h]
+                \centering
+                \includegraphics[width=1\textwidth]{sig_der}
+                \caption{Plot of the Sigmoid function and its first derivative.}
+                \label{fig:sigmoid}
+            \end{figure}
+            Nevertheless, as the number of layers increases and the network becomes sufficiently deep, the sigmoid suffers from the \textit{vanishing gradient} problem (Ref. ) Fig. \ref{fig:sigmoid}
+            due to its derivative being $[0, 0.25]$ bounded. Mainly for this reason it is not widely adopted in practice.
+
+            More in general, the sigmoid lies inside a class of activation functions known as \textit{squashing} i.e. monotonically non-decreasing functions $\varSigma$
+            that satisfy
+            \begin{equation}
+                \lim_{x \to - \infty} \sigma(x) = c, \quad 
+                \lim_{x \to \infty} \sigma(x) = 1.
+            \end{equation}
+            For example, another kind of activation function of this type is the \textit{hyperbolic tangent}, defined as
+            \begin{equation}
+                \tanh (x)=\frac{\exp \{x\}-\exp \{-x\}}{\exp \{x\}+\exp \{-x\}},
+            \end{equation}
+            which was find to allow for universal expressivness of nets (Ref. ). However, as for the sigmoid, squashing functions tend to be prone to vanishing 
+            and exploding gradients (Ref. ).
+
+            Nowadays, the most used activation function in neural networks for different applications is the \textit{rectifier linear unit} (ReLU),
+            first introduced in (Ref. Hahnloser et al. in 2000) and defined as the positive part of its argument
+            \begin{equation}
+                \textnormal{ReLU}(x) = \max(0, x),
+            \end{equation}
+            allows for efficient training and alleviates the exploding gradient problem (having derivative either 0 or 1), introducing only one point of
+            non-differentiability. Moreover, it promotes \textit{sparsness} in the network, which is usually beneficial (Ref. ). One problem with ReLUs though 
+            is that the neuron's value, that get pushed to a big negative number, might stay stucked in 0 for essentially all inputs, in a so called \textit{dead state}.
+            If many neurons in the network die this can afflict the model capacity and can be seen as a form of vanishing gradient problem. To overcome this problem,
+            a slighlty different activation functions can be used, called \textit{leaky ReLU} (Ref. ):
+            \begin{equation}
+                \operatorname{Leaky ReLU}(x)=\left\{\begin{array}{ll}
+                    x & \text { if } x \geq 0 \\
+                    \alpha x & \text { otherwise },
+                    \end{array}\right.
+            \end{equation}
+            where $\alpha > 0$ is a user-defined constant usually set to small values such as 0.01. Even if this solutions solves the dying neurons problem, it does
+            affect the sparseness property of ReLUs.
+            
+            By definition, the mean of ouput values from a ReLU is always positive. \textit{Exponential linear unit} (ELU) try to normalize their inputs:
+            \begin{equation}
+                \operatorname{ELU}(x)\left\{\begin{array}{ll}
+                    x & \text { if } x \geq 0 \\
+                    \alpha(\exp \{x\}-1) & \text { otherwise },
+                    \end{array}\right.
+            \end{equation}
+            saturating negative values at a user-defined value $- \alpha$ which is usually set to 1. Conversly to ReLU and LeakyReLUs, the derivative is continuous
+            therefore the function is smooth and for the negative values is defined as $ELU(x) + \alpha$.
+
+            One more recent activation function
+
         \subsection{CNNs: Convolutional Neural Networks}
 
         \subsection{From Neural Networks to Deep Neural Networks}
