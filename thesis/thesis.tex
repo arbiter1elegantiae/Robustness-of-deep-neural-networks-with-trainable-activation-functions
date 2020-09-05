@@ -350,9 +350,71 @@ verso il prof. Enrico Gregorio.
             saturating negative values at a user-defined value $- \alpha$ which is usually set to 1. Conversly to ReLU and LeakyReLUs, the derivative is continuous
             therefore the function is smooth and for the negative values is defined as $ELU(x) + \alpha$.
 
-            One more recent activation function
+            Finally, one more recent activation function which gained a lot of attention is the \textit{Swish} function (Ref. ):
+            \begin{equation}
+                \operatorname{swish}(x)= \operatorname{sigmoid}(x) * x,
+            \end{equation}
+            
+            \begin{figure}[hb!]
+                \centering
+                \includegraphics[scale=0.50]{afunctions}
+                \caption{ELU, LeakyReLU($\alpha=0.1$) and Swish functions plotted together. It can be seen that they mostly differ for negative values whereas behaving very similar to ReLU for positive arguments.}
+                \label{fig:afuncs}
+            \end{figure}
+            which again does look like another approximation of a ReLU Fig. \ref{fig:afuncs}, but in this case it manages in not loosing any useful property. Indeed, since
+            it also saturates at 0 for negative values, it allows for sparsity and being smooth around 0 it helps reducing dying neurons. Lastly, around 0 negative 
+            values are kind of preserved which may still be relevant to patterns in the underlying data.
+            Swish function proved to consistently match if not outperform ReLU networks in different domains (Ref. ), and more recent studies showed how this function
+            can also help in training more \textit{robust} networks (Ref. Smooth Adversarial training).
+
+            Along with this list of more 'traditional' activation functions, which we will call \textit{fixed} activation functions, there is a whole branch of
+            more sophisticated solutions, where the idea is to \textit{learn} the function's optimal shape employing suitable parametric functions. 
+            Such functions can then be trained together with other weights of the net using backpropagation and gradient descent. Moreover, following the terminology
+            introduced in (Ref Scardapane t al KafNets) we can again distinguish between two classes of this learnable activation functions: the so called
+            \textit{parametric activation functions} and \textit{Non-parametric activation functions}. The former being usually a parametrization of a fixed 
+            activation function involving few constant parameters, whereas the latter is called non-parametric due to the number of parameters that can in principle
+            grow without a bound and involves more complex shapes. At the end of this chapter we introduce a recently proposed class of non-parameteric activation functions,
+            called \textit{Kernel-Based Activation Functions} which will then be the main tool used in the following chapters to try to build more robust neural networks.    
+
 
         \subsection{CNNs: Convolutional Neural Networks}
+
+            In computer vision, in particular for image processing tasks, we can make the assumption that the input to the model will be an image. 
+            How well do feedforward neural networks adapt to such inputs? It turns out that we need to introduce several changes in the architecture to expect 
+            them to work properly. Take for example the famous dataset \textit{ImageNet} which consists of more than $ 14 $ milions of images,
+            all of which made of $ 256 \times 256 \times 3 $ pixels. Every fully connected neuron would have $ 256 * 256 * 3 =  196608 $ weights, thus for a neural network
+            with $ 1000 $ of such neurons, which is a very small number of units in practice, we would already need to train almost $ 200 $ milions of parameters,
+            which requires a lot of resources. Therefore feedforward neural networks do not scale well to bigger images. More importantly, assume our task is to 
+            classify an image, from the point of view of such models, if we take an image $x$ and translate it to the lets say right for few pixels, with high 
+            probability it will look like a completly different image from the point of view of the net and will probably be classified differently, even if 
+            from our point of view is clearly the same image. In some sense, there is no apparent way in which fully connected neural networks can take advantage of 
+            concepts such as \textit{locality} or \textit{translation invariance} that are intrinsic to images.
+            
+            To circumvent these limitations, reasearchers have developed a specific architecture targeted for computer vision tasks called \textit{Convolutional Neural Network} (CNN) (Ref. ).
+            In a standard CNN, every layer is $3$-dimensional $(Width \times Height \times Dept) $ to reflect the fact that we are always dealing with images 
+            and each neuron is connected only to a constant number of nearby neurons in the previous layer, shrinking down the number of total weights required.
+            Layers can be either \textit{convolutive layers} or \textit{pooling layers} or \textit{fully-connected layers}, the latter being a normal hidden layer.
+
+            A convolutive layer takes in input $W \times H \times C_{in}$ neurons from the previous layer and outputs $W \times H \times C_{out}$ neurons, where $ C_{out}$
+            is the number of filters used by the layer. A filter $F$ is a $K \times K \times C_{in}$ matrix of trainable weights, with $K>0$ typically a small integer, which is used to
+            compute a 2-dimensional activation map by sliding (convolving) across the width and height of the input. At each slice of input 
+            $ \mathbf{x_{ij}} = (x^{1}_{ij}, x^{2}_{ij}, \ldots, x^{C_{in}}_{ij})$ that it touches, it computes the dot product $ F^{T}X_{ij}$
+            where $X_{ij}$ is the $K \times K \times C_{in}$ window centered at $\mathbf{x_{ij}}$. Visually:
+            \begin{figure}[hb!]
+                \centering
+                \includegraphics[scale=0.30]{convolution}
+                \caption{A convolution that produces the first element of the activation map for the given filter.}
+                \label{fig:conv}
+            \end{figure}
+            Intuitively, through backpropagation we learn filters tha are capable of recognizing specific shapes in the image, which we can see as features,
+            starting from very concise ones in the early layers to more global ones towards the end layers as the receptive field gets larger(Ref. ). 
+            Typically, as for normal neural networks, we apply a non-linear transformation after each convolutive layer and by stacking many of these Convolutional
+            layers we get a convolutional network.
+            
+            Going deeper in the network as we learn global features, it might be convenient to reduce the width and the heigh dimensions, for this reason CNNs employ pooling layers
+            that filters the inputs by some metric, such as average or max values.  
+
+
 
         \subsection{From Neural Networks to Deep Neural Networks}
         
