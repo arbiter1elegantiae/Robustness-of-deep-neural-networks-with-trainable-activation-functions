@@ -380,12 +380,12 @@ verso il prof. Enrico Gregorio.
         \subsection{CNNs: Convolutional Neural Networks}
 
             In computer vision, in particular for image processing tasks, we can make the assumption that the input to the model will be an image. 
-            How well do feedforward neural networks adapt to such inputs? It turns out that we need to introduce several changes in the architecture to expect 
+            How well do feedforward neural networks adapt to such inputs? It turns out that we need to introduce several changes in the architecture in order to expect 
             them to work properly. Take for example the famous dataset \textit{ImageNet} which consists of more than $ 14 $ milions of images,
-            all of which made of $ 256 \times 256 \times 3 $ pixels. Every fully connected neuron would have $ 256 * 256 * 3 =  196608 $ weights, thus for a neural network
-            with $ 1000 $ of such neurons, which is a very small number of units in practice, we would already need to train almost $ 200 $ milions of parameters,
+            all of which made of $ 256 \times 256 \times 3 $ pixels. Every fully connected neuron in the first layer would have $ 256 * 256 * 3 =  196608 $ weights,
+            thus for a neural network with $ 1000 $ of such neurons, which is a very small number of units in practice, we would already need to train almost $ 200 $ milions of parameters,
             which requires a lot of resources. Therefore feedforward neural networks do not scale well to bigger images. More importantly, assume our task is to 
-            classify an image, from the point of view of such models, if we take an image $x$ and translate it to the lets say right for few pixels, with high 
+            classify an image, from the point of view of such models, if we take an image $x$ and perform a translation to, lets say, the right for few pixels, with high 
             probability it will look like a completly different image from the point of view of the net and will probably be classified differently, even if 
             from our point of view is clearly the same image. In some sense, there is no apparent way in which fully connected neural networks can take advantage of 
             concepts such as \textit{locality} or \textit{translation invariance} that are intrinsic to images.
@@ -399,7 +399,7 @@ verso il prof. Enrico Gregorio.
             is the number of filters used by the layer. A filter $F$ is a $K \times K \times C_{in}$ matrix of trainable weights, with $K>0$ typically a small integer, which is used to
             compute a 2-dimensional activation map by sliding (convolving) across the width and height of the input. At each slice of input 
             $ \mathbf{x_{ij}} = (x^{1}_{ij}, x^{2}_{ij}, \ldots, x^{C_{in}}_{ij})$ that it touches, it computes the dot product $ F^{T}X_{ij}$
-            where $X_{ij}$ is the $K \times K \times C_{in}$ window centered at $\mathbf{x_{ij}}$. Visually:
+            where $X_{ij}$ is the $K \times K \times C_{in}$ window centered at $\mathbf{x_{ij}}$.
             \begin{figure}[hb!]
                 \centering
                 \includegraphics[scale=0.30]{convolution}
@@ -411,12 +411,61 @@ verso il prof. Enrico Gregorio.
             Typically, as for normal neural networks, we apply a non-linear transformation after each convolutive layer and by stacking many of these Convolutional
             layers we get a convolutional network.
             
-            Going deeper in the network as we learn global features, it might be convenient to reduce the width and the heigh dimensions, for this reason CNNs employ pooling layers
-            that filters the inputs by some metric, such as average or max values.  
+            \begin{figure}[b!]
+                \centering
+                \includegraphics[scale=0.30]{pooling}
+                \caption{Max (left) and Average (right) pooling layer with 2x2 window size.}
+                \label{fig:pooling}
+            \end{figure}
+            Going deeper in the network, as we learn global features, it might be convenient to reduce the width and the height dimensions. For this reason CNNs employ pooling layers
+            that filters the inputs by some aggregation metric, such as average or max values. Similarly to a convolution, we specify a 
+            $ K \times K $ window on which we apply the chosen metric. For example, let $z^{l-1}$ be a $(64,64,12)$ dimensional
+            input to a max pooling layer with window size $2\times2$, then, sliding again across width and height of $z^{l-1}$, we take the max value for each
+            $ 2 \times 2 $ input patch that we touch. The output will then be a $ (32, 32, 12) $ dimensional vector of max valued neurons Fig. \ref{fig:pooling}. 
 
 
+            The complete architecture of a textbook CNN is a composition of 2 subarchitectures:
+            \begin{itemize}
+                \item A sequence of interleaved convolutive and max-pooling layers
+                \item A \textit{flatten} layer to reduce the last convolution to a 1-dimensional vector, followed by a sequence of fully connected layers to obtain the final score vector.
+            \end{itemize} 
+            put together resulting in a  \textit{two-staged architecture}: 
+            \begin{figure}[h!!]
+                \centering
+                \includegraphics[scale=0.11]{cnnarch}
+                \caption{General Architecture of CNN for ImageNet (Ref. ).}
+                \label{fig:cnnarch}
+            \end{figure}
+            
+            Even if we can already reach good accuracies with such a basic architecture, modern CNNs employ many smart variations to improve even more the performance,
+            as we shall see in the next section. 
 
         \subsection{From Neural Networks to Deep Neural Networks}
+        Assume to develop a CNN as we have just seen to perform an image classification task. If the built network is sufficiently large, and the chosen dataset limited
+        in number of samples, it might happen that our network will \textit{memorize} the entire trainset instead of learning anything useful from it (Ref. 
+        UNderstanding DL requieres rethinking generalization). The described scenario is an infamous problem in learning theory and goes under the name of \textit{overfitting},
+        i.e., instead of trying to learn the ground-truth distribution underlying the data, our model somehow tries to interpolate the training set. 
+        Early techniques to takle overfitting involve detection methods such as \textit{early stopping} (Ref. On Early Stopping in Gradient Descent Learning) 
+        or basic prevention methods such as \textit{regularization} (Ref. Regularization Theory and Neural Networks Architectures),
+        where we try to penalize learning big-valued weights, which are syntoms of overfitting, by carefully adding penalization terms inside the optimization function.
+
+        Despite the fact that the presented techniques are very effective in practice and can help mitigating the problem, they are usally not enough for high perfomances.
+        Another form of regularization can be induced performing \textit{data augmentation} (Ref. AlexNet paper) which consists in virtually increasing the size of the train set applying
+        , for each example in a mini-batch, one or more image randomly sampled transformations such as flipping, cropping, ecc. and then train on the resulting augmented
+        trainset. Another idea to make the robust against slighlty perturbations hence more likely to generalize well is \textit{Dropout} (Ref. Alexnet paper).
+        Droput extends the idea of data augmentation to the network itself perturbing the hidden layers instead of the inputs by randomly dropping some of the
+        neurons. More formally, assume $z^l$ be the output of a generic layer $l$, then applying Dropout to the ouput means replacing $z^l$ during
+        training with:
+        \begin{equation}
+            \hat{z^l} = z^l \odot m,
+        \end{equation}
+        where $m$ is a binary vector with entries taken from a Bernoulli distribution with probability $p$. It is important that Dropout gets applied only
+        during training whereas at inference time the output of the layer is replaced with its \textit{expected} value during training:
+        \begin{equation}
+            \mathbb{E}[\hat{z^l}] = p \cdot z^l. 
+        \end{equation}
+        Both data augmentation and Dropout were key components of \textit{AlexNet}, the first CNN to win a image classification
+        contest with a big margin (Ref. AlexNet p).
         
 
     \section{Adversarial Examples Theory}
