@@ -444,14 +444,15 @@ verso il prof. Enrico Gregorio.
         Assume to develop a CNN as we have just seen to perform an image classification task. If the built network is sufficiently large, and the chosen dataset limited
         in number of samples, it might happen that our network will \textit{memorize} the entire trainset instead of learning anything useful from it (Ref. 
         UNderstanding DL requieres rethinking generalization). The described scenario is an infamous problem in learning theory and goes under the name of \textit{overfitting},
-        i.e., instead of trying to learn the ground-truth distribution underlying the data, our model somehow tries to interpolate the training set. 
+        i.e., instead of trying to learn the ground-truth distribution underlying the data, our model somehow tries to interpolate the training set, 
+        resulting in poor generalization capabilities. 
         Early techniques to takle overfitting involve detection methods such as \textit{early stopping} (Ref. On Early Stopping in Gradient Descent Learning) 
         or basic prevention methods such as \textit{regularization} (Ref. Regularization Theory and Neural Networks Architectures),
         where we try to penalize learning big-valued weights, which are syntoms of overfitting, by carefully adding penalization terms inside the optimization function.
 
         Despite the fact that the presented techniques are very effective in practice and can help mitigating the problem, they are usally not enough for high perfomances.
         Another form of regularization can be induced performing \textit{data augmentation} (Ref. AlexNet paper) which consists in virtually increasing the size of the train set applying
-        , for each example in a mini-batch, one or more image randomly sampled transformations such as flipping, cropping, ecc. and then train on the resulting augmented
+        , for each example in a mini-batch, one or more randomly sampled image transformation such as flipping, cropping, ecc. and then train on the resulting augmented
         trainset. Another idea to make the robust against slighlty perturbations hence more likely to generalize well is \textit{Dropout} (Ref. Alexnet paper).
         Droput extends the idea of data augmentation to the network itself perturbing the hidden layers instead of the inputs by randomly dropping some of the
         neurons. More formally, assume $z^l$ be the output of a generic layer $l$, then applying Dropout to the ouput means replacing $z^l$ during
@@ -460,13 +461,86 @@ verso il prof. Enrico Gregorio.
             \hat{z^l} = z^l \odot m,
         \end{equation}
         where $m$ is a binary vector with entries taken from a Bernoulli distribution with probability $p$. It is important that Dropout gets applied only
-        during training whereas at inference time the output of the layer is replaced with its \textit{expected} value during training:
+        during training whereas at inference time the output of the layer is replaced with its \textit{expected} training value:
         \begin{equation}
             \mathbb{E}[\hat{z^l}] = p \cdot z^l. 
         \end{equation}
-        Both data augmentation and Dropout were key components of \textit{AlexNet}, the first CNN to win a image classification
-        contest with a big margin (Ref. AlexNet p).
+        Both data augmentation and Dropout were key components of \textit{AlexNet}, the first CNN to win an image classification
+        contest by a big margin (Ref. AlexNet p).
+
+        In 2014, the Oxford's Visual Group realized that they were able to reach better performances than AlexNet by stacking \textit{blocks} of layers instead of many 
+        single layers one after the other. In particular, they proposed a block made of multiple convolution layers with $ 3 \times 3 $ kernel size and same 
+        number of filters, followed by a $ 2 \times 2 $ max-pooling, periodically doubling the number of filters for deeper blocks (Ref. VGG). The resulting 
+        architecture, known as in literature as \textit{VGG}, was however considerably demanding in terms of resources and this drove researchers to look 
+        for solutions that matched the performances whereas decreasing the number of weights. Such goal was achived soon after with \textit{GoogleNet}
+        which made use of two novel modules inside the network: the \textit{inception block} and the \textit{global average pooling} (Ref. GoogleNet). The former 
+        being the first attempt at process in parallel the same input with different levels of granularity, somehow allowing to embed multiple layers within a single
+        one Fig. \ref{fig:inception}
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[scale=0.25]{inception}
+            \caption{Inception Block overview, $1\times 1$ convolutions are used to reduce the number of filters lowering complexity. Source: Dive into Deep Learning, chapt. 7.4}
+            \label{fig:inception}
+        \end{figure}
+        , and the latter used as a substitute for the flatten layer by taking the average value in each channel and then vectorizing them into a 1-dimensional vector. 
+        This last step drastically reduces the number of weights needed in the second stage of the CNN. 
         
+        Less than one year later, another breakthrough technique was developed: the \textit{Batch Normalization} (BN), a simple heuristic that 
+        allowed to train deep neural nets significantly better  (Ref. ). BN works by normalizing and learning to scale the mean and the variance of a layer's output
+        in the following way: consider $i_1, i_2, \ldots, i_B$ to be the values of a generic given neuron during a mini-batch. Then with Batch Normalization,
+        we first normalize them by:
+        \begin{equation}
+            i_j = \frac{i_j - \mu}{\sqrt{\sigma^2 + \epsilon}},
+        \end{equation}
+        with $\mu$ and $\sigma$ being respectively the mean and the variance of the mini-batch values. Then,
+        we rescale them by:
+        \begin{equation}
+            i_j = \alpha i_j + \beta,
+        \end{equation}
+        where $\alpha$ and $\beta$ are trainable parameters computed with respect to every neuron in the layer.
+        Nowadays, it is believed that the reason behind the effectiveness of BN is likely due to its effect on the 
+        optimization landscape (Ref. ), which gets smoothed, hence the speed-up in convergence and better
+        generalization properties.
+
+        Having developed tools that bypass exploding and vanishing gradients, that allow for faster convergence
+        and better generalization, one may be tempted in see what happens when we keep stacking more and more layers.
+        After all, the intuition we gained from the general trend in CNNs is that the deeper the network, the better
+        the learning. However, this belief was not matched by experiments. Indeed, for very deep 
+        straightforward neural networks, we are likely to experiment a \textit{degradation}(Ref. ref made by resnetpaper) of accuracy perfomances
+        which is not caused by overfitting i.e. it leads both to higher test and training error Fig. \ref{fig:degradation}.
+        \begin{figure}[h]
+            \centering
+            \includegraphics[scale=0.35]{degradation}
+            \caption{Source: Deep Residual Learning for Image Recognition}
+            \label{fig:degradation}
+        \end{figure}
+        To approach the problem we can start with the following consideration: if we assume a shallow
+        network for a given task reaches an accuracy $x$, then by adding identity layers on such network i.e. layers implementing the identity function,
+         will result in a deeper network with again accuracy $x$, it can't get much worse.
+        Building upon this argument, authors in (Ref. ResNet paper) conjectured that a deep network will rather
+        learn a better mapping starting from $ \mathcal{F} (x) + x $ than from $ \mathcal{F} (x) $, where $ \mathcal{F} (x) $ 
+        is the output of the last layer in the shallow network.
+        For this reason, they introduce the idea of \textit{skipping connections} or \textit{residual connections} where, 
+        as the name suggests, we link the input of an earlier layer to the output of a deeper layer, skipping
+        over the layers in between Fig. \ref{fig:residual}.
+        \begin{figure}[h]
+            \centering
+            \includegraphics[scale=0.35]{residual}
+            \caption{Source: Deep Residual Learning for Image Recognition}
+            \label{fig:residual}
+        \end{figure} 
+        If $x$ has different dimensionality, we can rescale it using a $ 1 \times 1 $ convolution. A neural network 
+        that makes use of many residual connections is called \textit{ResNet} Fig. \ref{fig:resnet}. 
+        \begin{figure}[h]
+            \centering
+            \includegraphics[scale=0.30]{resnet}
+            \caption{Source: Dive Deep into Deep Learning}
+            \label{fig:resnet}
+        \end{figure}
+
+        Thanks to the methodologies introduced so far, we are capable of building non-degenerative CNNs that scale up to hundreds of layers
+        and are currently state-of-the-art in many domains.
+
 
     \section{Adversarial Examples Theory}
 
