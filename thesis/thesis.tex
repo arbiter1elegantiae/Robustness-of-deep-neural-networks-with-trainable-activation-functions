@@ -65,10 +65,6 @@ verso il prof. Enrico Gregorio.
 % Do not use the starred version of the chapter command!
 %\chapter{Capitolo non numerato}
 
-
-
-
-
 \mainmatter
 
 \chapter{Introduction}
@@ -105,33 +101,34 @@ verso il prof. Enrico Gregorio.
     \section{Deep Neural Networks}
         
         Broadly speaking, the field of Machine Learning is the summa of any algorithmic methodology whose aim is to automatically find meaningful patterns inside data without
-        being explicitly programmed on how to do it. Well known examples are: Search Trees (ref.), Support Vector Machines (ref. ), Clustering (ref.) and, more recently, 
-        Neural Networks (ref. ). During the last two decades Neural Networks gained a lot of attention for their outstanding performances in different tasks like
+        being explicitly programmed on how to do it. Well known examples are: Decision Trees (ref.), Support Vector Machines (ref. ), Clustering (ref.) and, more recently, 
+        Deep Neural Networks (ref. ). During the last two decades Deep Neural Networks gained a lot of attention for their outstanding performances in different tasks like
         image classification (ref. ImageNet, over human level), speech and audio processing(ref ).
 
         \subsection{Definition}
             
             Neural Networks (NNs) are often used in the context of Supervised Learning where the objective is to model a parametric function 
-            $ f_{\theta} \colon \mathcal{X} \to \mathcal{Y}$ given $n$ input-output pairs $S = \{(\mathbf{x_i}, y_i)_{i=1}^n\} $ with $\mathbf{x_i} \in \mathcal{X}$ and $ y_i \in \mathcal{Y}$
+            $ f_{\theta} \colon \mathcal{X} \to \mathcal{Y}$ given $n$ input-output pairs $S = \{(x_i, y_i)_{i=1}^n\} $ with $x_i \in \mathcal{X}$ and $ y_i \in \mathcal{Y}$
             such that
-            \[
+            \begin{equation}
                 f_{\theta} \sim f  
-            \]
+            \end{equation}
             where $f$ is assumed to be the real input-output distribution that we want to learn. In plain words, this means that we want to find the best set of parameters $\theta^{*}$ for the model
             such that, for any unseen input $x_{new}$ we have that $f_{\theta^*}\left(x_{new}\right)$ is as close as possible to $f\left(x_{new}\right)$
 
             For the sake of explanation, assume the input, which in practice can be very complex and unstructured e.g. made of: graphs, text, sounds, ecc, to be embedded in an input space  $\mathcal{X} = \mathbb{R}{^d}$.
             The simplest form of a neural network is then given by
-            \[
+            \begin{equation}
+                \label{layer}
                 f_{W, b}\left(x\right) = \sigma(Wx + b)
-            \]
-            where the parameters of the network are the elements of a $u \times d$ matrix $ W $ and a $u$-dimensional vector called bias. The last element applied at the end is the $ \sigma $ 
+            \end{equation}
+            where the parameters of the network are the elements of a $u \times d$ matrix $ W $ and a $u$-dimensional vector called bias. The last element $ \sigma $ applied at the end is a
             function which consists of a non-linear function acting element-wise and is the key component to introduce non linearity in NNs allowing them to model 
-            highly non-linear functions. We call it \textit{activation function}.
-            \[
-                f_{W, b}\left(x\right) = \left[\sigma(W_1^{\intercal} x + b_1), \sigma(W_2^{\intercal} x + b_2), \ldots, \sigma(W_u^{\intercal} x + b_u)\right]
-            \]
-            Where $W_i$ and $b_i$ are respectively the i-th row of $W$ and the i-th element of the bias.
+            highly non-linear functions. We call it \textit{activation function}. \ref{layer} can then be rewritten:
+            \begin{equation}
+                f_{W, b}\left(x\right) = \left[\sigma(W_1^{\intercal} x + b_1), \sigma(W_2^{\intercal} x + b_2), \ldots, \sigma(W_u^{\intercal} x + b_u)\right],
+            \end{equation}
+            where $W_i$ and $b_i$ are respectively the i-th row of $W$ and the i-th element of the bias.
             
             Historically, the whole picture was somehow biologically inspired and had an intuitive explanation. Indeed, if we think at $ W $ as weights i.e. $ w_{ij} $ as the importance
             the model gives to the input $x_i$ for how much it contributes to the $ f_{W}\left(x\right)_j $-th component and define $ \sigma $ to be
@@ -152,7 +149,7 @@ verso il prof. Enrico Gregorio.
             \paragraph{}
             In general, the idea of a layer of neurons can be recursively extended by stacking more layers together, all of which are described by a matrix of weights, a bias and an activation function
             and letting the output of one becoming the input of the subsequent.
-            The resulting model is the mathematical composition of the layers, thus if we let $ L $ be the number of layers, $ z_0 = \mathbf{x} $ and $ z_l = \sigma_l\left(W_{l}z_{l-1} + b_l\right)$
+            The resulting model is the mathematical composition of the layers, thus if we let $ L $ be the number of layers, $ z_0 = x $ and $ z_l = \sigma_l\left(W_{l}z_{l-1} + b_l\right)$
             we write a $L$-layered $f_{\mathbf{W}, \mathbf{b}}$:
             \[
                 f_{\mathbf{W}, \mathbf{b}} = z_L = \sigma_{L}\left(W_{L}\sigma_{L-1}\left(\ldots\left(W_2\sigma_{1}\left(W_{1}z_{0} +b_1\right)+ b_2\right)\ldots\right)+ b_{L}\right)
@@ -176,7 +173,7 @@ verso il prof. Enrico Gregorio.
                 \begin{itemize}
                     \item Least Square: $\norm{f_{\theta}\left(x\right) - y}^2$ for regression tasks 
                     \item Binary Cross-Entropy: $y \log (f_{\theta}(x))+(1-y) \log (1-f_{\theta}(x))$ for binary classification  
-                    \item Categorical Loss Function: $-\sum_{c=1}^{C} y_{c} \log \left(f_{\theta}(x)_c\right)$ for mulicategory classification with $C$ classes.
+                    \item Categorical Loss Function: $-\sum_{c=1}^{C} y_{c} \log \left(f_{\theta}(x)_c\right)$ for multicategory classification with $C$ classes.
                 \end{itemize}
                 Intuitively, a good loss function will map bad approximations to high values and good approximations to smaller ones.
                 Nevertheless, those are only point-wise estimates of the error, hence the best empirical solution learnable from the training set $ S $ would be 
@@ -186,7 +183,7 @@ verso il prof. Enrico Gregorio.
                 \end{equation}
                 which is called \textit{empirical risk minimization}.
             \subsubsection{Gradient Descent}
-               So far we have described, given an input $ \mathbf{x} $, how we can compute the output of a feedforward neural network by means of compositions of dot products 
+               So far we have described, given an input $ x $, how we can compute the output of a feedforward neural network by means of compositions of dot products 
                and non-linear transformations between matrices, starting from the first to the very last of the layers in what is called a \textit{forward pass}. As it turns out, to attempt to solve \ref{erm} we need to follow the exact
                opposite path. Indeed, every optimization algorithm used in practice makes use of the same subroutine called Backpropagation (ref.  ) introduced in the 1970s, which allows to compute, starting from the output layer
                and going backwards, the partial derivative of the loss function with respect to each weight in the network. Moreover it does so efficiently requiring only one \textit{backward pass}.
@@ -239,10 +236,10 @@ verso il prof. Enrico Gregorio.
                direction inside the weight-space where the loss function is increasing, therefore what we want to do is to follow the opposite
                direction. Formally, this translates in the following weight update rules:
                \begin{equation}
-                    w^{t}_{l} \rightarrow w_{l}^{t+1}=w^{t}_{l}-\frac{\eta}{n} \sum_{j} \frac{\partial LS_{\mathbf{x}_{j}}}{\partial w^{t}_{l}}
+                    w^{t}_{l} \rightarrow w_{l}^{t+1}=w^{t}_{l}-\frac{\eta}{n} \sum_{j} \frac{\partial LS_{x_{j}}}{\partial w^{t}_{l}}
                \end{equation}
                \begin{equation}
-                b^{t}_{l} \rightarrow b^{t+1}_{l}=b^{t}_{l}-\frac{\eta}{n} \sum_{j} \frac{\partial LS_{\mathbf{x}_{j}}}{\partial b^{t}_{l}}
+                b^{t}_{l} \rightarrow b^{t+1}_{l}=b^{t}_{l}-\frac{\eta}{n} \sum_{j} \frac{\partial LS_{x_{j}}}{\partial b^{t}_{l}}
                \end{equation}
 
             where $w_{l}^{t}$ are the values of the weights for layer $l$-th during the $t$-th pass, $\eta$ is a small positive constant called \textit{learning rate}
@@ -256,7 +253,7 @@ verso il prof. Enrico Gregorio.
             Most importantly, note how we take the negative of the gradients, meaning that we are following the direction in which the loss decreases Fig. \ref{fig:gd}. The distance
             between two consecutives weights $\Delta_{w^t}$ well be directly proportional to both the learning rate picked and the averaged gradient.
 
-            In practice, however, when very often we are deling with thousands or milions of data points, becomes unfeasable to compute every pass over
+            In practice, however, very often we are deling with thousands or milions of data points, becomes unfeasable to compute every pass over
             the entire training set, thus what is done is to split the data into so called \textit{mini-batches} and then apply the
             update rules on each mini-batch until we scanned the whole data. The entire scan is called \textit{epoch} and the 
             resulting algorithm Stochastic Gradient Descent (Ref. ). Lastly, the size of a mini-batch is another hyperparameter 
@@ -514,12 +511,11 @@ verso il prof. Enrico Gregorio.
             \caption{Source: Deep Residual Learning for Image Recognition}
             \label{fig:degradation}
         \end{figure}
-        To approach the problem we can start with the following consideration: if we assume a shallow
-        network for a given task reaches an accuracy $x$, then by adding identity layers on such network i.e. layers implementing the identity function,
-         will result in a deeper network with again accuracy $x$, it can't get much worse.
-        Building upon this argument, authors in (Ref. ResNet paper) conjectured that a deep network will rather
-        learn a better mapping starting from $ \mathcal{F} (x) + x $ than from $ \mathcal{F} (x) $, where $ \mathcal{F} (x) $ 
-        is the output of the last layer in the shallow network.
+        To approach the problem we can start with the following remark: if we assume a shallow
+        network $ \mathcal{F} (x) $ for a given task reaches an accuracy $a$, then by adding identity layers on such network i.e. layers implementing the identity function,
+        will result in a deeper network with again accuracy $a$, it can't get much worse.
+        Building upon this argument, authors in (Ref. ResNet paper) showed that a deep network will rather
+        learn a better mapping starting from $ \mathcal{F} (x) + x $ than from $ \mathcal{F} (x) $. 
         For this reason, they introduce the idea of \textit{skipping connections} or \textit{residual connections} where, 
         as the name suggests, we link the input of an earlier layer to the output of a deeper layer, skipping
         over the layers in between Fig. \ref{fig:residual}.
@@ -544,7 +540,93 @@ verso il prof. Enrico Gregorio.
 
     \section{Adversarial Examples Theory}
 
-        Formal definition of what is an adversarial attacks plus currently well known attacks
+    In recent years, AI-based systems are finding an ever growing number of applications in the industry, ranging from medical, multimedia, telecomunications, to even military, political and legal sectors. 
+    As a consequence of the importance of such systems to the modern world, it is currently reasonable to think that they might become potential threats to the eyes of
+    malicious agents such as hackers, business rivals as well as governments, which may seek to circumvent them. For simplicity, we name any of these malicious entity: \textit{adversary}. 
+    Inside academia, there is a vast literature on the topic and many attacks and defenses have been devised by researchers towards different types of intelligient systems for both supervised (Ref. Intriguing Properties)
+    and unsupervised models (Ref. s data clustering in adversarial settings secure?) with no exception for Neural Networks. Even better, since, as we have seen, DNNs reach best performances among ML systems 
+    in many applications, recent research efforts are especially directed in assessing the \textit{robustness} of DNNs. In this thesis we will stick to the same trend.
+
+    In the context of classification, one of the many distintions that we can make about types of attacks is wether the objective of the attack is to just fool the classifier making it mislabel 
+    a given sample $ x $, or targetting the classification towards a specific class $ \hat{y} $ where, given a sample-label pair $ (x, y) $ with $ \hat{y} \neq  y $, our classifier will be tricked in
+    believing that the correct classification is indeed $ \hat{y} $. We name this two different scenarios \textit{indiscriminate} and \textit{targeted} attacks. Moreover, despite the fact that the attack is targeted 
+    or not, we define three inherently different attacks types against a classifier:
+    \begin{itemize}
+        \item \textit{Data Poisoning:}
+        here the adversarial introduces \textit{poisoned examples} into the data. Poisoned examples can either be mislabeled examples, with the examples correctly belonging to the domain space described
+        by the data, or they can be anomalies for the domain. For instance, if data describes birds, a ship should be considered very odd and thus poisoned (Ref. ).
+        \item \textit{Reverse Engineering:}
+        usually crafted against rule-based classifiers, such attack consists in querying the model to retrieve sensible information about its decision rule or the data on which it was trained (Ref. ).
+        \item \textit{Test Time Evasion:}
+        as the name suggests, here the attack is performed at test time by a careful \textit{perturbation} of the the sample in a way that the transformation is neither human percetible nor
+        easily detected by the system, but as powerfull that the classifier's decision now disagrees with a human consensus (Ref. Explaining and harnessing adversarial examples).
+    \end{itemize}
+    As shown for the first time in (Ref. Intriguing Properties of..), DNNs are drastically prone to Test Time Evasion attacks and, more importantly, unaware networks can easily be fooled in a matter of
+    few lines of code by anyone who knows the basics of any modern deep learning framework. For this reason, we will dedicate this section to a formal introduction of the problem, and the rest of 
+    the thesis in the development of a new approach that aims to improve the resiliency - in jargon, \textit{Robustness} - of Neural Networks against today's Test Time Evasion attacks. 
+
+    \subsection{Another Optimization problem}
+        
+        To get a Test Time Evasion attack working, any adversary needs to know the true class of the input he is manipulating. Indeed, the perturbation needs to be done in such a way that 
+        the resulting perturbed input will cross the true class decision region, in the output space of the model, to move to another decision region (which is specific to the targeted category in case of a targeted attack).
+        However, due to an high number of weights and non-linearities involved in a forward pass, we usually don't know how DNNs actually make their predictions, instead we delegate the job of learning 
+        how to make decisions to Gradient Descent during training. Therefore, how does an adversary learn how to craft such untangible yet precise perturbations? Well, he relies again on Gradient Descent, more precisely,
+        on back propagation. Recall that, in the previous section, we learned how to compute the gradient $\frac{\partial LS}{\partial w^{l}_{i,j}}$ with respect to any weight $ w^{l}_{i,j} $ of the 
+        network, nevertheless, nothing prevents us to push even further automatic differentiation and compute the gradient of the loss with respect to the input $x$ with just as much effort. 
+        This quantity will tell us how small changes to the image itself affect the loss function.
+        
+        Since the goal of the adversary is to make the classifier mislabelling the input, and since we can optimize a function with respect to the input, we can devise an indiscriminate attack by just
+        solving the following optimization problem:
+        \begin{equation}
+            \displaystyle{\max_{\hat{x}} \operatorname{LS}\left(f_{\theta}\left( \hat{x} \right), y\right)},
+        \end{equation}
+        where $\hat{x}$ is called \textit{adversarial example} and is nothing else that an approximation of the original input $x$. However we also need to characterize the fact that $\hat{x}$ must be very
+        close to $x$. In fact, with this settings we could simply transform completly the input to make it equal to another input $x^{\prime}$ which belongs to a different class and would still be
+        a valid solution. But this is clearly in contrast with the principle of being an human imperceptible perturbation! Thus denote $\delta \in \mathcal{X}$ to be the perturbation applied
+        to the input $\hat{x} = x + \delta $, then the adversary will actually want to solve:
+        \begin{equation}
+            \displaystyle{\max_{\delta \in \Delta} \operatorname{LS}\left(f_{\theta}\left( x + \delta \right), y\right)},
+        \end{equation} 
+        where $\Delta$ denotes the set of any admissible small perturbation. Again, this is something we cannot implement straightaway since it is not clear from a mathematical perspective how to
+        explicitly construct the set of all valid small perturbations, even if this is what the adversary is ideally trying to achieve. In practice, what is done is to stick to some mathematical metric such as 
+        a specific norm for real vector spaces. For example, an effective metric which allows to fool many NNs, even with super small perturbations is the $L_{\infty}$ norm. The $L_{\infty}$ norm
+        for a generic vector $z \in \mathbb{R^d}$ is defined to be:
+        \begin{equation}
+            \label{linfnorm}
+            \|z\|_{\infty}=\max _{i}\left|z_{i}\right|.
+        \end{equation}    
+        Thus the space of allowed perturbations becomes:
+        \begin{equation}
+            \Delta = \{ \delta: \|\delta\|_{\infty} \leq \epsilon\},
+        \end{equation}
+        where $\epsilon$ is the size of the biggest perturbation allowed, i.e. if for example we are dealing with images, any pixel will be $[- \epsilon, \epsilon] $ perturbed. 
+
+        Other norms such as $L_2$ are also very common.  
+        
+        ENDI
+        Such attacks, creating adversarial examples [4], may,
+        e.g., cause an autonomous vehicle to fail to recognize a
+        road sign, cause an automated system to falsely target a
+        civilian vehicle, or grant image or audio authentication
+        access to a building, machine, or to restricted information.
+        Great interest in AL was inspired by Szegedy et al. [4], who
+        showed DNNs are quite susceptible to TTEs. A TTE attack
+        may be on physical objects in the   world (e.g., altering
+        a road sign, camouflaging a vehicle, or darkening a room
+        to make it more difficult to identify objects of interest).
+        Alternatively, there may be alterations of data objects that
+        have either already been digitally captured (digital images,
+        voice files) or those which are natively digital, e.g., emails,
+        documents, or computer programs. If a TTE attack is
+        enabled by an RE attack, which learns a surrogate classifier
+        (rather than assuming the TTE attacker possesses perfect
+        knowledge of the actual classifier), an important property
+        is transferability of the TTE attack [30]: does a perturba-
+        tion of a pattern that induces a targeted or indiscriminate
+        change in the surrogate classifier’s decision also induce
+        such a change in the actual classifier’s decision?
+
+
 
     \section{Defenses}
 

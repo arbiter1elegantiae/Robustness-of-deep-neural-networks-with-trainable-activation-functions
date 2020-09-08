@@ -10,17 +10,18 @@
 \BOOKMARK [2][-]{subsection.2.1.4}{CNNs: Convolutional Neural Networks}{section.2.1}% 10
 \BOOKMARK [2][-]{subsection.2.1.5}{From Neural Networks to Deep Neural Networks}{section.2.1}% 11
 \BOOKMARK [1][-]{section.2.2}{Adversarial Examples Theory}{chapter.2}% 12
-\BOOKMARK [1][-]{section.2.3}{Defenses}{chapter.2}% 13
-\BOOKMARK [1][-]{section.2.4}{Kernel Based Activation Functions}{chapter.2}% 14
-\BOOKMARK [0][-]{chapter.3}{Related Works}{}% 15
-\BOOKMARK [1][-]{section.3.1}{K-Winners Take All}{chapter.3}% 16
-\BOOKMARK [1][-]{section.3.2}{Smooth Adversarial Training}{chapter.3}% 17
-\BOOKMARK [0][-]{chapter.4}{Solution Approach}{}% 18
-\BOOKMARK [1][-]{section.4.1}{Lipschitz Constant Approach}{chapter.4}% 19
-\BOOKMARK [1][-]{section.4.2}{Fast is Better than Free Adversarial Training}{chapter.4}% 20
-\BOOKMARK [0][-]{chapter.5}{Evaluation}{}% 21
-\BOOKMARK [1][-]{section.5.1}{VGG Inspired Architectures Results}{chapter.5}% 22
-\BOOKMARK [1][-]{section.5.2}{Explofing Gradients with KafNets}{chapter.5}% 23
-\BOOKMARK [1][-]{section.5.3}{ResNet20 Inspired Architectures Results}{chapter.5}% 24
-\BOOKMARK [0][-]{chapter.6}{Future Works}{}% 25
-\BOOKMARK [0][-]{chapter.7}{Conclusions}{}% 26
+\BOOKMARK [2][-]{subsection.2.2.1}{Another Optimization problem}{section.2.2}% 13
+\BOOKMARK [1][-]{section.2.3}{Defenses}{chapter.2}% 14
+\BOOKMARK [1][-]{section.2.4}{Kernel Based Activation Functions}{chapter.2}% 15
+\BOOKMARK [0][-]{chapter.3}{Related Works}{}% 16
+\BOOKMARK [1][-]{section.3.1}{K-Winners Take All}{chapter.3}% 17
+\BOOKMARK [1][-]{section.3.2}{Smooth Adversarial Training}{chapter.3}% 18
+\BOOKMARK [0][-]{chapter.4}{Solution Approach}{}% 19
+\BOOKMARK [1][-]{section.4.1}{Lipschitz Constant Approach}{chapter.4}% 20
+\BOOKMARK [1][-]{section.4.2}{Fast is Better than Free Adversarial Training}{chapter.4}% 21
+\BOOKMARK [0][-]{chapter.5}{Evaluation}{}% 22
+\BOOKMARK [1][-]{section.5.1}{VGG Inspired Architectures Results}{chapter.5}% 23
+\BOOKMARK [1][-]{section.5.2}{Explofing Gradients with KafNets}{chapter.5}% 24
+\BOOKMARK [1][-]{section.5.3}{ResNet20 Inspired Architectures Results}{chapter.5}% 25
+\BOOKMARK [0][-]{chapter.6}{Future Works}{}% 26
+\BOOKMARK [0][-]{chapter.7}{Conclusions}{}% 27
