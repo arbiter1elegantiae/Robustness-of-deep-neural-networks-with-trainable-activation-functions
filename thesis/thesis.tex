@@ -16,6 +16,7 @@
 % Remove in a normal thesis
 \usepackage{lipsum}
 \usepackage{curve2e}
+\usepackage{algpseudocode}
 \definecolor{gray}{gray}{0.4}
 \newcommand{\bs}{\textbackslash}
 
@@ -77,6 +78,33 @@ verso il prof. Enrico Gregorio.
         both practical (nns cant yet be deployable in critical scenarios for such reasons ) 
         and theoretical (Madry arguments around interpertability and robustness)
         perspectives
+
+        Why might we prefer to use the adversarial risk instead of the traditional risk? If we are truly operating in an adversarial environment, where an adversary is capable of 
+        manipulating the input with full knowledge of the classifier, then this would provide a more accurate estimate of the expected performance of a classifier. 
+        This may seem unlikely in practice, but several classification tasks (especially those relating to computer security) such as spam classification, malware detection, 
+        network intrusion detection, etc, are genuinely adversarial, where attackers have an direct incentive to fool a classifier. 
+        Or even if we don’t expect the evironment to always be adversarial, some applications of machine learning seem to be high-stakes enough that we would like 
+        to understand the “worst case” performance of the classifier, even if this is an unlikely event; this sort of logic underlies the interest in adversarial examples in domains 
+        like autonomous driving, where for instance there has been work looking at ways that stop signs could be manipulated to intentionally fool a classifier.
+
+        However, there is also a reasonable case to be made that we might prefer empirical adversarial risk over traditional empirical risk, even if we ultimately want to minimize the 
+        traditional risk. The reason for this is that it is very difficult to actually draw samples i.i.d. from the true underlying distribution. 
+        Instead, any procedure we use to collect data is an empirical attempt at accessing the true underlying distribution, and may ignore certain dimensions, especially if these appear “obvious” 
+        to humans. This is hopefully somewhat obvious even on the previous image classification example. 
+        There has been a lot of recent claims that algorithms have “surpassed human performance” on image classification, using classifiers like the one we saw as an example. 
+        But, as the above example illustrates, algorithms are nowhere near human performance, if they cannot even recognize that an image that looks exactly the same, 
+        by any visual definition, as the original image, in fact belongs to the same class. Some may argue that these cases “shouldn’t count” because they were specifically designed to fool 
+        the algorithm in question, and may not correspond to an image that will ever be viewed in pratice, but much simpler pertrubations such as translations and rotations also can serve as 
+        adversarial examples.
+
+        The fundamental problem is that when claims are made of “human level” performance by ML systems, they really mean “human level on data generated exactly by the sampling mechanism used 
+        in this experiment.” But humans don’t do well just on one sampling distribution; humans are amazingly resilient to changes in the environment. So when people are told that machine learning 
+        algorithms “surpass human performance” (especially when conjoined, as they often are, by claims that the associated deep learning algorithms “work like the human brain”), 
+        it often leads to the implicit assumption that the algorithms will also be similarly resilient. But they are not; deep learning algorithms are incredibly brittle, 
+        and adversarial examples lay this fact bare, in a very obvious and intuitive manner. Put another way, can’t we at least agree to cool it on the “human level”, and “works 
+        like the human brain” talk for systems that are as confidence that the first image is a pig as as they are that the second image is an airplane?
+
+
 
     \section{Smooth Activation Functions and Robustness}
 
@@ -549,7 +577,7 @@ verso il prof. Enrico Gregorio.
 
     In the context of classification, one of the many distintions that we can make about types of attacks is wether the objective of the attack is to just fool the classifier making it mislabel 
     a given sample $ x $, or targetting the classification towards a specific class $ \hat{y} $ where, given a sample-label pair $ (x, y) $ with $ \hat{y} \neq  y $, our classifier will be tricked in
-    believing that the correct classification is indeed $ \hat{y} $. We name this two different scenarios \textit{indiscriminate} and \textit{targeted} attacks. Moreover, despite the fact that the attack is targeted 
+    believing that the correct classification is indeed $ \hat{y} $. We name this two different scenarios \textit{indiscriminate} and \textit{targeted} attacks respectively. Moreover, despite the fact that the attack is targeted 
     or not, we define three inherently different attacks types against a classifier:
     \begin{itemize}
         \item \textit{Data Poisoning:}
@@ -585,6 +613,7 @@ verso il prof. Enrico Gregorio.
         a valid solution. But this is clearly in contrast with the principle of being an human imperceptible perturbation! Thus denote $\delta \in \mathcal{X}$ to be the perturbation applied
         to the input $\hat{x} = x + \delta $, then the adversary will actually want to solve:
         \begin{equation}
+            \label{attackobj}
             \displaystyle{\max_{\delta \in \Delta} \operatorname{LS}\left(f_{\theta}\left( x + \delta \right), y\right)},
         \end{equation} 
         where $\Delta$ denotes the set of any admissible small perturbation. Again, this is something we cannot implement straightaway since it is not clear from a mathematical perspective how to
@@ -599,38 +628,148 @@ verso il prof. Enrico Gregorio.
         \begin{equation}
             \Delta = \{ \delta: \|\delta\|_{\infty} \leq \epsilon\},
         \end{equation}
-        where $\epsilon$ is the size of the biggest perturbation allowed, i.e. if for example we are dealing with images, any pixel will be $[- \epsilon, \epsilon] $ perturbed. 
+        where $\epsilon$ is the size of the biggest perturbation allowed, i.e. if for example we are dealing with images, any pixel will be $[- \epsilon, \epsilon] $ perturbed and if $\epsilon$
+        is chosen sufficiently small, the resulting image will be visually indistinguishable to the original one. However, other norms such as $L_2$ are also very common.
 
-        Other norms such as $L_2$ are also very common.  
+        How do we perform targeted attacks within this framework? Intuitively, the adversary will want to minimize the loss with respect to the targeted class but at the same time, he also wants 
+        to be sure that the network will give the smallest confidence to the correct class. This translates into:
+        \begin{equation}
+            \label{targetedattack}
+            \displaystyle{\max_{\delta, \|\delta\|_{\infty} \leq \epsilon }  (\operatorname{LS}(f_{\theta}(x + \delta), y) - \operatorname{LS}(f_{\theta}(x + \delta), y_{target}) )  }.
+        \end{equation} 
+
+    \subsection{Fast Gradient Sign Method}
+
+        For the sake of discussion, we will now see how to actually solve the proposed maximization problems, restricting ourself to indiscriminate attacks, since the same solutions will also
+        work painlessy for the case of targeted attacks. 
+
+        In general, the basic idea behind every adversarial attack is to use Gradient Descent to maximize our objective until we converge towards a satisfying solution $\delta^{*}$,
+        just as we did when we were training the network. Furthermore, in this case, we also have to take into account the bounds on the perturbation, which can be implemented by a projection  
+        to the $[-\epsilon, \epsilon]$ norm-bounded space. In order to maximize loss, we want to adjust delta in the direction of this gradient, i.e., take a step:
+        \begin{equation}
+            \label{pgd}
+            \delta^{t+1} = \delta^t + \alpha \cdot \nabla_{\delta^t} \operatorname{LS}\left(f_{\theta}(x+\delta^t), y\right),
+        \end{equation}
+        for some step size $\alpha$. Then, we clip $\delta^{t+1}$ to ensure the norm constraints, so in the case of $L_{\infty}$-norm:
+        \begin{equation}
+            \delta^{t+1} = \operatorname{clip} (L_{\infty}, \delta^{t+1}, [-\epsilon, \epsilon]),
+        \end{equation}
+        where clipping acts by projecting $\delta^{t+1}$ back to the $\epsilon$-bounded $L_{\infty}$ ball it moved outside.
+
+        Now, if we want to climb the slope of the loss as much as possible we will want to take a very large step size. However, by doing so, we are probably going to stick out the $L_{\infty}$ ball
+        and thus our delta will be either be projected to $\epsilon$ or $- \epsilon$ with high probability. Based on this principle, one of the first proposed attack simply considered the following update rule 
+        for delta:
+        \begin{equation}
+            \delta = \epsilon \cdot sign(\nabla_{x} \operatorname{LS}\left(f_{\theta}(x), y\right)),
+        \end{equation}
+        and is known as the \textit{Fast Gradient Sign Method}(FGSM) (Ref. ). FGSM is a single step attack and works on the assumption that, in a very close neighbourhood of $x$, a DNN can be approximated with the 
+        behaviour of a linear model. Consider a simple linear model $ g(x)  = W^Tx $, then $g(x + \delta) = W^Tx + W^T\delta $ and thus, if we want to maximize the effect of the perturbation 
+        $ |g(x) - g(x + \delta) | $ under $\|\delta\|_{\infty} \leq \epsilon$ we better define $\delta = \epsilon \cdot sign (W^T)$. Even if the per-component shift is small, the overall shift 
+        can increase way more if $x$ is high dimensional.
         
-        ENDI
-        Such attacks, creating adversarial examples [4], may,
-        e.g., cause an autonomous vehicle to fail to recognize a
-        road sign, cause an automated system to falsely target a
-        civilian vehicle, or grant image or audio authentication
-        access to a building, machine, or to restricted information.
-        Great interest in AL was inspired by Szegedy et al. [4], who
-        showed DNNs are quite susceptible to TTEs. A TTE attack
-        may be on physical objects in the   world (e.g., altering
-        a road sign, camouflaging a vehicle, or darkening a room
-        to make it more difficult to identify objects of interest).
-        Alternatively, there may be alterations of data objects that
-        have either already been digitally captured (digital images,
-        voice files) or those which are natively digital, e.g., emails,
-        documents, or computer programs. If a TTE attack is
-        enabled by an RE attack, which learns a surrogate classifier
-        (rather than assuming the TTE attacker possesses perfect
-        knowledge of the actual classifier), an important property
-        is transferability of the TTE attack [30]: does a perturba-
-        tion of a pattern that induces a targeted or indiscriminate
-        change in the surrogate classifier’s decision also induce
-        such a change in the actual classifier’s decision?
+    \subsection{Projected Gradient Descent}
+    
+        The idea that the effect of any perturbation inside the $\|\delta\|\infty \leq \epsilon$ ball can be approximated, if not upperbounded, by taking the perturbation at the boundary which
+        is given by the direction where the loss is most increasing might be a little too strong as an assumption. Indeed, as previously seen, the optimization landscape is often extremely
+        non-linear, even for very small neighbourhoods, thus, if we want a stronger attacks, we likely want to consider better methods at maximizing the loss function than a single projected gradient step.
+
+        A more effective and natural approach comes from iterating \ref{pgd} many times with small step sizes and projecting back whenever needed. The general algorithm is called \textit{Projected Gradient
+        Descent} (PGD)(Ref. ):
 
 
+            \begin{algorithmic}[0]
+            \Procedure{PGD}{$\alpha, \epsilon$}
+            \State $\delta \gets 0$
+            \For{$i\gets 1, n$}
+            \State $\delta \gets \delta + \alpha \cdot \nabla_{\delta} \operatorname{LS}\left(f_{\theta}(x+\delta), y\right)$
+            \State $\delta \gets \mathcal{P}(\delta) $
+            \EndFor
+            \State \textbf{return} $\delta$
+            \EndProcedure
+            \end{algorithmic}
+        Where $\mathcal{P}$ denotes the projection for the specific metric used. Nowadays, PGD, or slighlty variations of it are standard methods when 
+        it comes to evaluate the robustness of a network.
 
+        As for Gradient Descent, PGD is still limited by the possibility of getting stuck inside local maximum of our objective \ref{attackobj}.
+        Mitigations of the problem might arise adding random restarts, i.e., running PGD multiple times from randomly picked starting deltas (within our norm restricted ball).
+        It is infact important to note that it is likely that there are local optima which will be found if we start with $\delta = 0$ and that could be avoided with randomization. 
+        Conversly, running multiple PGDs increases the runtime by a factor proportional to the number of restarts and it might not be practical in real world scenarios, especially when it is used
+        as a subroutine to train robust models (Ref. Free Adversarial Training).
+
+    \subsection{White, Grey and Black Box Attacks}
+
+        In the aforementioned attacks, various implicit assumptions are made about the knowledge of the adversary. Biggio et al. in (Ref. Security evaluation of pattern classifiers under attack)
+        , in alignment with the wider field of modern Crypthography, have advised making such assumptions explicit also for publications concerning the security of ML models. In particular,
+        in any of the previously introduced attacks such as FSGM or PGD, we let the adversary the possibility to exploit the gradients and thus the entire model (peraphs with some hyperparametes excluded) 
+        to perform the attack. Such described scenario, where there is full knowledge about the resources and the model of the defender, is known as a \textit{White Box} attack. 
+        Moreover, note as this scenario should be the preferred one since it allows us to devise more effective defenses and is actually compliant with the basic principle
+        of "not doing security by obscurity".    
+        On the contrary, no knowledge of the classifier results in \textit{Black Box} attacks. Several attacks were nevertheless devised even in such conditions (Ref. ). A more realistic 
+        scenario though involves the so called \textit{Grey Box} attacks (Ref. Adversarial examples are not easily detected: Bypassing ten detection methods)
+        where the adversary might have knowledge of the model but it has no direct access to the trainig set that
+        was used to train the classifier and another surrogate classifier is trained using surrogate data (Ref. Survey on current defenses).
+
+        
     \section{Defenses}
+        
+    Although one may be tempted in the quest for a better understanding of the problem of 
+    Adversarial Examples to shed some light on profound questions like: 
+    why such brittleness of DNNs exists in the first place, what is that it takes to develop environment 
+    resilient intelligent systems, how are adversarial examples and the interpretability problem related to each other (Ref. Madry)
+    and so on, it is undeniable that the security concerns are, from a practical perspective, the most immminent 
+    ones, since, as the integration of ML applications becomes more and more present in 
+    the modern world, these issues are starting to threaten several sectors. 
+    Such attacks, may, for example, fool an autonomous veichle which is trying to recognize a road sign (Ref. ), 
+    cause a drone to falsely target a civilian (Ref. ?), or grant authentication to illegitimate people for
+    entering buildings, systems (Ref. ), ecc. . Therefore, is no surprise that, as soon as
+    Adversarial Examples were first discovered, researchers started to come up with many different
+    ideas on how to defend ML models against adversaries. In the following, we
+    are going to briefly describe some of the most promising attempts that were recently made to develop 
+    more robust as well as performant DNNs. 
 
-        Review of the literature on defenses to improve robustness: provable robustness, adversarial training
+    \subsection{Detection Methods}
+
+            Detection methods usually involve attaching a 'patch' (or detector) to the original network that we
+            want to make robust. The overall network then gets trained, on both original and perturbed samples if the detection
+            is supervised, and, with some strategy implementation, the detector learns how to spot adversarial examples 
+            from normal ones. 
+
+            \begin{figure}[b]
+                \centering
+                \includegraphics[scale=0.30]{detection}
+                \caption{Metzen \textit{et al.} (Ref. ) used a ResNet as original classifier, plus dections is made thanks to many interleaving detectors
+                between each residual block. Each detector is implemented as a DNN that learns how to spot the presence
+                of an attack by looking at the activations layer's distributions during training.}
+                \label{fig:detection}
+            \end{figure}
+
+            In case of a supervised detection mechanism, we want to augment our data with labelled samples crafted with known
+            attacks and build a binary classifier which is able to distinguish between vanilla and altered inputs. The key 
+            point here is then to test such classifier on new, previously unseen attacks and check how well it adapts.  
+            Papernot er al. in (Ref. On the (statistical) and Feinman et al. in (Ref. Detecting adversarial samples from artifacts)
+            developed two sophisticated early versions of such detection type, but both failed to detect ad-hoc CW (Ref. ) attacks on CIFAR-10.
+            Better results against CW were achieved  by Metzen \textit{et al.} (Ref. On Detecting Adversarial Perturbations), whose method
+            works by feeding DNN layer's activations as features to a detector Fig. \ref{fig:detection}. In particular, in detecting CW on CIFAR-10
+            were 81\% TPR and 28\% of FPR. However they reported that they were not able to generalize well 
+            to other attacks, which shows a limitation of their method (or even to any supervised detection?), 
+            that is, to likely overfit on the attacks used for training (Ref. BYpassing 10 Detection Methods).
+
+            In literature, as well as supervised detection mechanisms, there have been also many 
+            detection classifier which were not trained on adversarial examples, thus performing sort of unsupervised detection.
+            They instead rely on explicit null hypothesis and statistical models to work, such as based on PCA (Ref. Early methods for
+            detecting adversarial images), which again however showed uneffective against CW for CIFAR-10, (Ref. Towards open set
+            deep networks), or analyzing the joint density of a DNN's layer feature vector (Ref. Detecting adversarial samples from artifacts).
+            In particular, based on the latter, recently Miller \textit{er al.} in (Ref. Anomaly
+            detection of attacks (ADA) on DNN classifiers at TEST TIME,) managed to develop the current state-of-the-art for detection
+            methods as stated in (Ref. 2020 Survey on Defenses.). The description of such method is however quite involving and esulate from
+            the objective of this thesis.
+            
+    \subsection{Provable Robustness}
+
+    \subsection{Adversarial Training}
+      
+
+
 
     \section{Kernel Based Activation Functions}
 
