@@ -79,6 +79,10 @@ verso il prof. Enrico Gregorio.
         and theoretical (Madry arguments around interpertability and robustness)
         perspectives
 
+        Recent work has shown that state-of-the-art classifiers are quite brittle, in the sense that a small adversarial change of an originally with high confidence correctly classified input 
+        leads to a wrong classification again with high confidence. 
+        This raises concerns that such classifiers are vulnerable to attacks and calls into question their usage in safety-critical systems.
+
         Why might we prefer to use the adversarial risk instead of the traditional risk? If we are truly operating in an adversarial environment, where an adversary is capable of 
         manipulating the input with full knowledge of the classifier, then this would provide a more accurate estimate of the expected performance of a classifier. 
         This may seem unlikely in practice, but several classification tasks (especially those relating to computer security) such as spam classification, malware detection, 
@@ -719,8 +723,9 @@ verso il prof. Enrico Gregorio.
     and so on, it is undeniable that the security concerns are, from a practical perspective, the most immminent 
     ones, since, as the integration of ML applications becomes more and more present in 
     the modern world, these issues are starting to threaten several sectors. 
-    Such attacks, may, for example, fool an autonomous veichle which is trying to recognize a road sign (Ref. ), 
-    cause a drone to falsely target a civilian (Ref. ?), or grant authentication to illegitimate people for
+    An attack may, for example, fool an autonomous veichle which is trying to recognize a road sign (Ref. ), 
+    cause a drone to falsely target a civilian (Ref. “Cooperative unmanned aerial vehicles with privacy preserving
+    deep vision for real-time object identification and tracking,), or grant authentication to illegitimate people for
     entering buildings, systems (Ref. ), ecc. . Therefore, is no surprise that, as soon as
     Adversarial Examples were first discovered, researchers started to come up with many different
     ideas on how to defend ML models against adversaries. In the following, we
@@ -764,10 +769,90 @@ verso il prof. Enrico Gregorio.
             methods as stated in (Ref. 2020 Survey on Defenses.). The description of such method is however quite involving and esulate from
             the objective of this thesis.
             
-    \subsection{Provable Robustness}
+            
+            \subsection{Robust Optimization}
 
-    \subsection{Adversarial Training}
-      
+                What if we train a DNN such that, together with minimizing the loss we also
+                train to minimize the effects of adversarial examples? That is, how do we go and train
+                a DNN which performs well on both clean and perturbed inputs? As it turns out, to perform
+                such training, we need to solve the following, intuitive, min-max problem:
+                \begin{equation}
+                    \label{robopt}
+                    \underset{\theta}{\operatorname{min}} \frac{1}{|S|} \sum_{x, y \in S} \max _{\delta \in \Delta} \operatorname{LS}\left(f_{\theta}(x+\delta), y\right),
+                \end{equation}
+                that goes under the name of \textit{Robust Optimization}.
+                
+                The order of the optimizations is important here. The maximization is inside the minimization, this
+                intuitively means that we are training in a way that: even if the adversary knows the 
+                parameters of the model $\theta$ and performs his best attack over it, we contrast
+                its effects by minimizing the empirical risk on such attack, as with standard training.
+                Moreover, notice that we just learned how to compute strong attacks e.g. with randomized PGD, thus we
+                can already go and implement Robust Optimization, which, to be precise, it is mostly reffered as \textit{Adversarial
+                Learning} (AL) when we approximate the solution instead of computing it exactly (Ref. https://arxiv.org/pdf/2007.00753.pdf ).
+
+                In practice, even if the training is performed employing random PGD to compute the inner maximization,
+                i.e., a very specific form of attack, it does generalize well to other attacks (Ref. Madry article in Robust Optimization), 
+                provided that we consider attacks under the same metric. Indeed, there is no real guarantee that AL
+                done under, say, $\|\cdot\|_2$ will result in a model also robust against $\|\cdot\|_{\infty}$ based 
+                attacks. To achive defenses against multiple metrics, we need to incorporate multiple attacks under the inner maximization,
+                however, as previously discussed, characterizing a priori every possible metric of perturbation seem to be 
+                a difficult task, hence the complexity of devising an universal defense mechanism.
+
+                The main drawback with AL, which is so far regarderd as the most effective method developed agains adversarial
+                Examples (Ref. ), is its computational demand. Indeed, due to the double optimization that needs to be
+                computed for each weight update on each sample, it requires a lot of resources, especially when it comes
+                to large networks and large datasets. For this reason, lately, different works tried to takle the
+                problem of speeding-up AL, proposing approximations and variations of it (Ref. Free AL)(Ref. Fast is better than free).
+
+                
+            
+            \subsection{Provable Robustness}
+
+            Provable defenses try to theoretically find certificates in distances or probabilities to certify the robustness of DNNs.
+            Can \ref{robopt} be exactly solved? Namely, can we find the optimal set of weights such to minimize 
+            the error on Adversarial Examples? This is in principle a legitimate question to ask, and several 
+            strategies have been proposed, all of which somehow works providing an upperbound for the inner maximization.
+            In this way, defined the threat model, we can make stronfer statements about the guarantees for the defense.
+            If we rewrite the innner maximization as the following adversarial loss:
+            \begin{equation}
+                \mathcal{L}_{a d v}=\max _{\sigma \in \Delta}\left\{\max _{i \neq y} f_{\theta}(x)\left(x + \delta\right)_{i}-f_{\theta}(x)\left(x + \delta\right)_{y}\right\},
+            \end{equation}
+            then, if we are capable to define an always larger certificate $ C(x, f_{\theta}) > \mathcal{L}_{a d v}$ and prove
+            \begin{equation}
+                C(x, f_{\theta}) < 0
+            \end{equation}
+            under certain constraints, the we are sure that, under the same constraints, e.g., on the bound of 
+            the perturbation, our model will always predict the correct class. Employing this argument,
+            [112] transforms the problem into a linear programming problem and [111] derives the certificate using
+            semidefinite programming.
+            
+            Differently, !!Pippo!! \textit{et al.} (Ref. Intriguing) pointed out the relation that exists 
+            between the so called \textit{Lipischitz Constant} and the sensitivity of the network 
+            with respect to input perturbations. Specifically, denote $f_{\theta}(x) = f_{\theta_L}(f_{\theta_{L-1}}(\cdots (f_{\theta_{1}}(x))\cdots)) $
+            then the Lipschitz Constant of  $f_{\theta_i}(x)$ with respect to the norm $ \|\cdot\|_p $ is defined to be
+            the smallest $L_i$ such that, for any $x, r \in \mathcal{X}$:
+            \begin{equation}
+                \label{LC}
+                \left\|f_{\theta_i}\left(x \right)-f_{\theta_i}\left(x+r\right)\right\|_p \leq L_{i}\|r\|_p .
+            \end{equation}
+            Notice how $L_i$ by definition is an upperbound for the sensitivity of layer $i$ with respect
+            to any perturbation $r$. Following the composition property of the
+            Lipschitz Constant, the overall network Lipschitz Constant will be, the smallest $L$ such that:
+            \begin{equation}
+                \left\|f_{\theta}\left(x \right)-f_{\theta}\left(x+r\right)\right\|_p \leq L\|r\|_p,
+            \end{equation}
+            where $L=\prod_{i=1}^{L} L_{i}$. It is important to note how this is only an upperbound, thus a conservative
+            measure of the possible unstability of the network. For this reason, no conclusion about the existence of 
+            Adversarial Examples can be derived even from large Lipischitz Constants. We are however guaranteed 
+            that for very small Lipischitz Constants no Adversarial Example will exist. This is the idea behind 
+            many regularization techniques that seek to penalize Lipschitz bounds on networks's components as 
+            in (Ref. ) (Ref. )
+
+            Many other approaches try to provide certificates such as \textit{Randomized Smoothing}, \textit{estimation of the lower bound} (Ref. https://arxiv.org/pdf/2007.00753.pdf)
+            . However, provable Robustness struggles to scale up to real-world applications
+            due to the complexity of computing such bounds that are usally based on generally intractable methods or ad-hoc methods.
+
+
 
 
 
