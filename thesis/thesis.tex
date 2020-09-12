@@ -703,14 +703,14 @@ verso il prof. Enrico Gregorio.
     \subsection{White, Grey and Black Box Attacks}
 
         In the aforementioned attacks, various implicit assumptions are made about the knowledge of the adversary. Biggio et al. in (Ref. Security evaluation of pattern classifiers under attack)
-        , in alignment with the wider field of modern Crypthography, have advised making such assumptions explicit also for publications concerning the security of ML models. In particular,
+        , in alignment with the wider field of modern Cryptography, have advised making such assumptions explicit also for publications concerning the security of ML models. In particular,
         in any of the previously introduced attacks such as FSGM or PGD, we let the adversary the possibility to exploit the gradients and thus the entire model (peraphs with some hyperparametes excluded) 
         to perform the attack. Such described scenario, where there is full knowledge about the resources and the model of the defender, is known as a \textit{White Box} attack. 
         Moreover, note as this scenario should be the preferred one since it allows us to devise more effective defenses and is actually compliant with the basic principle
         of "not doing security by obscurity".    
         On the contrary, no knowledge of the classifier results in \textit{Black Box} attacks. Several attacks were nevertheless devised even in such conditions (Ref. ). A more realistic 
         scenario though involves the so called \textit{Grey Box} attacks (Ref. Adversarial examples are not easily detected: Bypassing ten detection methods)
-        where the adversary might have knowledge of the model but it has no direct access to the trainig set that
+        where the adversary might have knowledge of the model but it has no direct access to the training set that
         was used to train the classifier and another surrogate classifier is trained using surrogate data (Ref. Survey on current defenses).
 
         
@@ -850,19 +850,19 @@ verso il prof. Enrico Gregorio.
 
             Many other approaches try to provide certificates such as \textit{Randomized Smoothing}, \textit{estimation of the lower bound} (Ref. https://arxiv.org/pdf/2007.00753.pdf)
             . However, provable Robustness struggles to scale up to real-world applications
-            due to the complexity of computing such bounds that are usally based on generally intractable methods or ad-hoc methods.
+            due to the complexity of computing such bounds that are usually based on generally intractable methods or ad-hoc methods.
 
 
 
 
 
-    \section{Kernel Based Activation Functions}
+    \section{Non-Parametric Activation Functions}
 
     As anticipated shortly in the section concerning Activation Functions, it is possible to increase the flexibility of a Neural Network replacing a fixed activation function with a parametrized, differentible, non-linear function.
-    These transformations can be trained along with the others weights of the network allowing wach neuron to model its own optimal shape.
+    These transformations can in fact be trained along with the remaining weights of the network allowing each neuron to model its own optimal shape.
 
     Scardapane \textit{et al.} in (Ref. KafNets) grouped together different works on such activation functions distinguishing, on the high level, between the number of parameters they involve in their formualtions.
-    In particular, whenever we add a constant number of weights to a fixed activation function, we deal with 'parametric activation functions'. Some examples of this class of functions are: the \textit{Generalized Hyperbolic Tangent} (Ref. )
+    In particular, whenever we add a constant number of weights to a fixed activation function, authors say we are dealing with 'parametric activation functions'. Some examples of this class of functions are: the \textit{Generalized Hyperbolic Tangent} (Ref. )
     , a parametric Leaky ReLU introuced by He \textit{et al.} (Ref. ) or the more flexible S-shaped Relu (SReLU) (Ref.  Jin et al.):
     \begin{equation}
         \label{srelu}
@@ -875,11 +875,11 @@ verso il prof. Enrico Gregorio.
     \end{equation}
     parametrized by $\{t^l,a^l,t^r,a^r\}$. Depending on the values assumed by the left ($l$) and right ($r$) parameters, SReLU can assume both convex and non convex shapes.
 
-    What happens if we give to activation functions grater modelling capabilities, what if we allow them to model any continuous segment? This question is addressed by the class of non-parametric activation functions. These methods,
+    What happens if we give to activation functions greater modeling capabilities, what if we allow them to model any continuous segment? This question is instead addressed by the class of 'non-parametric activation functions'. These methods,
     usually introduce a further global hyper-parameter, allowing to balance the number of parameters that can in principle grow without a bound, hence the name.
 
     In this section, we give an overview of three early proposals, describing the general idea and some of the drawbacks, if any. After that, we focus on a more recent kind of non-trainable activations called kernel-based activation Functions
-    (KAFs), highlighting their properies and experimental results.
+    (KAFs), highlighting their properties and experimental results.
 
     \subsection{Adaptive Piece-Wise Linear Activation Functions}
     
@@ -888,34 +888,102 @@ verso il prof. Enrico Gregorio.
             \begin{equation}
                 \operatorname{APL}(x) = max \{0, x\} + \sum_{i=1}^{S} a_{i} \max \left\{0,-x+b_{i}\right\},
             \end{equation}
-            where $S$ is a user-defined value and $a_i$ are the parameter to learn. APL add $2S$ new parameters per neuron i.e. introducing a linear number of parameters to the overall network, which is often feasable.
-            APL cannot, however, model or approximate all piece-wise functions, but only saturating ones. Moreover, APLs introduce $S$ non-differentiable points which may harm backpropagation.
+            where $S$ is a user-defined value and $a_i$s the parameters to learn. APL adds $2S$ new parameters per neuron i.e. introducing a linear number of parameters to the overall network, which is often feasable.
+            APL cannot, however, model or approximate all piece-wise linear functions, but only saturating ones. Moreover, APLs introduce $S$ non-differentiable points which may harm backpropagation.
     \subsection{Spline Activation Functions}
     If we want an activation function capable of interpolating $S$ given points, we can devise the following polynomial interpolation:
     \begin{equation}
         \sigma(x) = \sum_{i=0}^{S} a_{i} x^{i},
     \end{equation}
     where we actually going to learn $S+1$ coefficients to pass through the desired $S$ points. Thus, in theory, we can at least approximate, by means of
-    a sufficiently very large $S$, any smooth function albeit in practice, due to the global effect that any parameter has on the global shape, such approximation
+    a sufficiently large $S$, any smooth function albeit in practice, due to the global effect that any parameter has on the global shape, such approximation
     is hard. Moreover, $x^i$ can easily grow too much and encounter numerical problems.
     
     Instead of using polynomial interpolation, (Ref. ) proposed the use of \textit{spline interpolation} that results in the so called spline activation functions (SAFs).
-    Let $\{ x_1, x_2, \cdots, x_S \}$ be an equally spaced sampling of real values symmetric to the origin and step size $\Delta x$ and call \textit{knots}
-    the corresponding y-valules $\{\operatorname{SAF}(x_i)\}^S_0$ . Denote $u=\frac{t}{\Delta x}-\left\lfloor\frac{t}{\Delta x}\right\rfloor$ to be the normalized ascissa 
-    value between to consecutive knots when the activation is $t$. Finally we can define a SAF at $t$:
+    Let $\{ x_1, x_2, \cdots, x_S \}$ be an equally spaced sampling of real values, symmetric to the origin and with step size $\Delta x$ and call \textit{knots}
+    the corresponding y-valules $\{\operatorname{SAF}(x_i)\}^S_{i=0}$ . Denote $u=\frac{t}{\Delta x}-\left\lfloor\frac{t}{\Delta x}\right\rfloor$ to be the normalized ascissa 
+    value between to consecutive knots when the activation is $t$. Finally, we can define SAF at $t$:
     \begin{equation}
         \label{saf}
         \operatorname{SAF}(t)=\mathbf{u}^{T} \mathbf{B} \mathbf{q}_{k},
     \end{equation}
-    where $\mathbf{u}=\left[u^{P}, u^{P-1}, \ldots, u^{1}, 1\right]^{T}$, $P$ user-defined value usually chosen to be 3, $\mathbf{q}_{k}$ the vector composed by
+    where $\mathbf{u}=\left[u^{P}, u^{P-1}, \ldots, u^{1}, 1\right]^{T}$, $P$ is a user-defined value (usually chosen to be 3), $\mathbf{q}_{k}$ the vector composed by
     the closest knot to $t$ and the $P$ rightmost neighbors knots and $\mathbf{B} \in \mathbb{R}^{(P+1) \times(P+1)}$ the \textit{spline basis}. Different basis give 
     rise to different interpolation schemes (Ref. ).
-    Good news iwith SAFs is that each knot has only local effect on the overall shape. Therefore, their training allows for faster and better convergence
-    to the optimal with respect to the initialized knots. As for polynomial interpolation, SAFs can in principle approximate any smooth function. A drawback, however, 
-    comparing to ALF, is that regularization cannot be explicitly implemented for knots.
-    \subsection{Maxout Functions}
-    ASNSANS
     
+    Good news with SAFs is that each knot has only a local effect on the overall shape. Therefore, with respect to the initialized knots, their training allows for faster and better convergence
+    to the optimal. Moreover, as with polynomial interpolation, SAFs can in principle approximate any smooth function. A drawback, however, 
+    comparing to ALF, is that regularization techniques cannot be explicitly implemented.
+    \subsection{Maxout Functions}
+    One slightly different non-parametric activation function, is given by the introduction of a whole new layer called \textit{maxout function}. With maxout, we compute $K$ different dot products
+    on each neuron and then take the maximum:
+    \begin{equation}
+        \operatorname{maxout}(x) = \max \{  W_i^Tx + b_i \}_{i=1}^K .
+    \end{equation}
+    A DNN wich employs maxout functions as non-linearities is called \textit{Maxout Network} (Ref. ). As for APL, maxout introduces several points of non-differentiability and usually requires 
+    \begin{figure}[!h]
+        \centering
+        \includegraphics[width=0.6\textwidth]{maxout}
+        \caption{A maxout function with a one-dimensional input and K = 3. The
+        three linear dot products are shown with light gray, while the max and thus resulting activation is shown
+        in shaded red. Source: (Ref. )}
+        \label{fig:maxout}
+    \end{figure}
+    more parameters than previous approaches, as we scale by a factor of $K$ the number of weights inside the net. Furthermore, maxout can only generate convex shapes and 
+    we lose the ability of plotting the activation function, except for input up to three-dimensional Fig. \ref{fig:maxout}.
+    Different variations aim to solve the smoothness problem for Maxout Networks (Ref. ) (Ref. ). 
+
+    \subsection{Kernel-Based Activation Functions}
+    Introduced in (Ref. Kafnets), kernel-based activation functions (KAFs) is a class of non-parametric activation functions that leverage kernel expansions to adapt the shape on a per-neuron basis.
+    Let $D$ be a user-defined positive integer, then a KAF acting on activation $x \in \mathbb{R} $ has the following form:
+    \begin{equation}
+        \operatorname{KAF} (x) = \sum_{i=1}^{D} \alpha_{i} \kappa\left(x, d_{i}\right),
+    \end{equation}
+    where $\{ \alpha_i\}_{i=1}^D $ are the usual parameters to adapt, called \textit{mixing coefficients}, $\kappa \colon \mathbb{R} \times \mathbb{R} \to \mathbb{R}$ is a 1D kernel method (Ref. )   
+    and $\{ d_i\}_{i=1}^D $ the kernel's dictionary elements. Dictionary elements are usually sampled from training data, but in case of activation functions 
+    this would tie the size of the expansion $D$ to the specific dataset used. Since generality is preferred, KAFs use fixed dictionary elements by selecting
+    $D$ equally spaced points on the x-axis centered at 0 with step size $\Delta$, similary to SAFs. In particular, there is a vast literature on kernel methods with fixed dictionary elements (Ref. Snelson and Ghahramani, 2006).
+
+    To allow for better optimization with Gradient Descent we want the kernel $\kappa(\cdot, \cdot)$ to be positive semi-definite and thus convex, i.e., for any choice of 
+    $\{ \alpha_i\}_{i=1}^D $ and $\{ d_i\}_{i=1}^D $ we have:
+    \begin{equation}
+        \sum_{i=1}^{D} \sum_{j=1}^{D} \alpha_{i} \alpha_{j} \kappa\left(d_{i}, d_{j}\right) \geq 0 .
+    \end{equation}
+    As for which kernel method one should use, to perform our experiments in the following chapters, we will stick to the original paper and use the 1-dimenstional \textit{Gaussian kernel}:
+    \begin{equation}
+        \kappa\left(x, d_{i}\right)=\exp \left\{-\gamma\left(x-d_{i}\right)^{2}\right\},
+    \end{equation}
+    where the normalization term $\gamma$ is called \textit{kernel bandwidth} and is empirically chosen to be $ \gamma = \frac{1}{6 \cdot \Delta^2} $.
+    The Gaussian kernel is easy to implement using vectorization libraries and quite cheap to compute provided that the dimensions don't grow too large. Moreover, 
+    concerning the backward pass, KAFs have pretty straightforward derivatives as well:
+    \begin{equation}
+        \frac{\partial g(x)}{\partial \alpha_{i}}=\kappa\left(x, d_{i}\right),
+    \end{equation}
+    \begin{equation}
+        \frac{\partial g(x)}{\partial x}=\sum_{i=1}^{D} \alpha_{i} \frac{\partial \kappa\left(x, d_{i}\right)}{\partial x}.
+    \end{equation}
+    Additionally, employing the Gaussian kernel has two more benefits: first, it allows for locality effects of parameters and second, the resulting (Gaussian) KAF
+    is an universal approximator for continuous segments (Ref. Micchelli et al., 2006).
+
+    The mixing coefficients can either be initialized randomly from a normal distribution, giving no direction yet complete freedom in the trend that the modeled shape
+    should follow, or, on the contrary, we can initialize mixing coefficients such that the KAF will start with an interpolation of any given function $f$
+    Fig. \ref{}. Let $\mathbf{t} = (t_1, t_2, \cdots, t_D) $ be the set of values assumed by $f$ when acting on dictionary elements i.e. $\mathbf{t} = (f(d_1), f(d_2), \cdots, f(d_D)) $.
+    We can then initialize the mixing coefficients in the following way:
+    \begin{equation}
+        \mathbf{\alpha} = \left(K  + \epsilon I \right)^{-1} \mathbf{t}
+    \end{equation}
+    where $K \in \mathbb{R}^{D,D}$ is the kernel matrix with $K_{i,j} = \kappa(d_i, d_j)$ entries, and we add a diagonal term $\epsilon > 0$ to avoid degenerate 
+    solutions. To constrain and regularize the learned parameters, contrary to SAFs, KAFs also allow the use common regularization techniques.
+    \begin{figure}[!h]
+        \centering
+        \includegraphics[width=0.6\textwidth]{ridgekaf}
+        \caption{A maxout function with a one-dimensional input and K = 3. The
+        three linear dot products are shown with light gray, while the max and thus resulting activation is shown
+        in shaded red. Source: (Ref. )}
+        \label{fig:plotkafs}
+    \end{figure}
+    It is also worth mention that we can improve the flexibility of KAFs by letting the network adapt, along with mixing coefficients, both the dictionary elements
+    and the bandwidth. This further level of flexibility can indeed help reach better performances as will be shown in the Evaluation chapter.
     \chapter{Related Works}
 
     \section{K-Winners Take All}

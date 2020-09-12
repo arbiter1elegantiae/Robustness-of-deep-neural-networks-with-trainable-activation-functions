@@ -18,19 +18,20 @@
 \BOOKMARK [2][-]{subsection.2.3.1}{Detection Methods}{section.2.3}% 18
 \BOOKMARK [2][-]{subsection.2.3.2}{Robust Optimization}{section.2.3}% 19
 \BOOKMARK [2][-]{subsection.2.3.3}{Provable Robustness}{section.2.3}% 20
-\BOOKMARK [1][-]{section.2.4}{Kernel Based Activation Functions}{chapter.2}% 21
+\BOOKMARK [1][-]{section.2.4}{Non-Parametric Activation Functions}{chapter.2}% 21
 \BOOKMARK [2][-]{subsection.2.4.1}{Adaptive Piece-Wise Linear Activation Functions}{section.2.4}% 22
 \BOOKMARK [2][-]{subsection.2.4.2}{Spline Activation Functions}{section.2.4}% 23
 \BOOKMARK [2][-]{subsection.2.4.3}{Maxout Functions}{section.2.4}% 24
-\BOOKMARK [0][-]{chapter.3}{Related Works}{}% 25
-\BOOKMARK [1][-]{section.3.1}{K-Winners Take All}{chapter.3}% 26
-\BOOKMARK [1][-]{section.3.2}{Smooth Adversarial Training}{chapter.3}% 27
-\BOOKMARK [0][-]{chapter.4}{Solution Approach}{}% 28
-\BOOKMARK [1][-]{section.4.1}{Lipschitz Constant Approach}{chapter.4}% 29
-\BOOKMARK [1][-]{section.4.2}{Fast is Better than Free Adversarial Training}{chapter.4}% 30
-\BOOKMARK [0][-]{chapter.5}{Evaluation}{}% 31
-\BOOKMARK [1][-]{section.5.1}{VGG Inspired Architectures Results}{chapter.5}% 32
-\BOOKMARK [1][-]{section.5.2}{Explofing Gradients with KafNets}{chapter.5}% 33
-\BOOKMARK [1][-]{section.5.3}{ResNet20 Inspired Architectures Results}{chapter.5}% 34
-\BOOKMARK [0][-]{chapter.6}{Future Works}{}% 35
-\BOOKMARK [0][-]{chapter.7}{Conclusions}{}% 36
+\BOOKMARK [2][-]{subsection.2.4.4}{Kernel-Based Activation Functions}{section.2.4}% 25
+\BOOKMARK [0][-]{chapter.3}{Related Works}{}% 26
+\BOOKMARK [1][-]{section.3.1}{K-Winners Take All}{chapter.3}% 27
+\BOOKMARK [1][-]{section.3.2}{Smooth Adversarial Training}{chapter.3}% 28
+\BOOKMARK [0][-]{chapter.4}{Solution Approach}{}% 29
+\BOOKMARK [1][-]{section.4.1}{Lipschitz Constant Approach}{chapter.4}% 30
+\BOOKMARK [1][-]{section.4.2}{Fast is Better than Free Adversarial Training}{chapter.4}% 31
+\BOOKMARK [0][-]{chapter.5}{Evaluation}{}% 32
+\BOOKMARK [1][-]{section.5.1}{VGG Inspired Architectures Results}{chapter.5}% 33
+\BOOKMARK [1][-]{section.5.2}{Explofing Gradients with KafNets}{chapter.5}% 34
+\BOOKMARK [1][-]{section.5.3}{ResNet20 Inspired Architectures Results}{chapter.5}% 35
+\BOOKMARK [0][-]{chapter.6}{Future Works}{}% 36
+\BOOKMARK [0][-]{chapter.7}{Conclusions}{}% 37
