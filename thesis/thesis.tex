@@ -123,6 +123,8 @@ verso il prof. Enrico Gregorio.
         
     \section{Structure of the Thesis}
 
+    This paper studies the robustness of defenses to adversarial examples. Readers familiar with the
+    relevant literature and notation (Szegedy et al., 2014; Carlini  Wagner, 2017b; Madry et al. Athalye et al., 2018a) can continue with Section 3 where we describe our methodology.
     In this first part, the building blocks needed in order to understand the main arguments of the thesis are introduced. Even if, at first sight, 
     the concepts that are going to follow may appear apart, the scope of this work is to make an attempt at discovering connections that might instead lie between them.     
     For this reason, we will extensively introduce what Neural Networksis important that we cover the basicsDue to the deep and wide nature depth and the wide  
@@ -947,7 +949,7 @@ verso il prof. Enrico Gregorio.
     this would tie the size of the expansion $D$ to the specific dataset used. Since generality is preferred, KAFs use fixed dictionary elements by selecting
     $D$ equally spaced points on the x-axis centered at 0 with step size $\Delta$, similary to SAFs. In particular, there is a vast literature on kernel methods with fixed dictionary elements (Ref. Snelson and Ghahramani, 2006).
     A Neural Network that makes use of KAFs is called \textit{Kafnet}.
-     
+
     To allow for better optimization with Gradient Descent we want the kernel $\kappa(\cdot, \cdot)$ to be positive semi-definite and thus convex, i.e., for any choice of 
     $\{ \alpha_i\}_{i=1}^D $ and $\{ d_i\}_{i=1}^D $ we have:
     \begin{equation}
@@ -1041,6 +1043,53 @@ verso il prof. Enrico Gregorio.
     Among t
        
     \section{K-Winners Take All}
+    In (Ref. ENHANCING ADVERSARIAL DEFENSE BY k-W INNERS-TAKE-ALL), Xiao \textit{et al.} advocate the use of a $C^0$-discontinuous activation function, called
+    \textit{k-Winners-Take-All} (k-WTA) activation, to improve, with no substantial overhead, the robustness of a neural network against gradient-based attacks such as PGD.
+    k-WTAs work by acting on the whole layer $\mathbf{y}$, similarly to maxout, but in this case they filter the input retaining the k-largest values and deactivating to 0 the remaining ones.
+    More formally, a k-WTA acting on an input vector of neurons $\mathbf{y} \in \mathbb{R}^{n}$ is a function $\phi_k(y) : \mathbb{R}^n \to \mathbb{R}^n$ such that:
+    \begin{equation}
+        \phi_k(\mathbf{y})_j = \left\{\begin{array}{ll}
+            y_{j}, & y_{j} \in\{k \text { largest elements of } \boldsymbol{y}\} \\
+            0, & \text { Otherwise. }
+            \end{array}\right. 
+    \end{equation}
+    where $\phi_k(\mathbf{y})_j$ denotes the j-th element of the output. Notice how $\phi_k(\mathbf{y})$ is effectively 
+    parametrized by $k$ but it cannot be regarded as a parametric activation function since $k$ is user defined and not
+    differentiable. Moreover, since it is likely to have layers with different shapes inside a net, we use the \textit{ratio $\lambda$}
+    of the number of neurons of each layer to compute the correct $k$, simply as $k = \lambda \cdot |layer|$.
+
+    K-WTAs foster robustness by making the computation of the gradient $\nabla_x f_{\theta}(x)$ \textit{undefined}.
+    Loosely speaking, this is achieved thanks to densely distributed discontinuities in the space of $x$. Indeed, this implies that,
+    with very high probability, any perturbation moving $x$ to it's neighbourhood will move over a non-differentiable spot Fig. \ref{fig:kwta}.
+    in the adversary objective, making gradient-based search unfeasable. The meticolous reader may at this point start to wonder
+    how is thus even possible to perform training with such discontinuous functions. However, it turns out that the gradient 
+    with respect to the weights $\nabla_w f_{\theta}(x)$ is discontiuous but in a sparser way, presumably beacuse the parameter 
+    space where $w$ leaves is much larger than the input space, allowing the training to succeed. To gain a better understanding
+    of what is going on, the paper provides also a theoretical framework in which both the dense discontinuities and the trainability 
+    can be explained. Since k-WTAs are only marginally used in the following parts of this thesis, we will not go in the details
+    of such proofs.
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.6\textwidth]{kwta}
+        \caption{A plot of a 1-dimensional k-WTA interpolating a curve. As stressed by the figure, k-WTAs are piece-wise linar functions where points of non-differentiability are 
+        very much densely distributed. Any small change in the input results in an abrupt change in the function's value. Source: (Ref. )}
+        \label{fig:kwta}
+    \end{figure}
+    
+    Authors claim substantial improvements in the robustness of this defense against white-box attacks. Specifically, they were 
+    able to evaluate a ResNet-18 against PGD, C\&W (Ref. ) and DeepFool (Ref. ) attacks, training both classically and with AL \ref{robopt}.
+    Using CIFAR10 for the dataset, ResNet-18 with ReLUs achieved 0\% and 43.6\% accuracy under the most effective attack,
+    respectively with standard and adversarial training. On the other hand, when k-WTAs were used, the same network improved to
+    13.1\% with standard training and 50.7\% with AL.
+
+    In a recent work (Ref. ), Carlini \textit{et al.} highlighted fundamentals flaws in the defense that was just claimed for k-WTAs.
+    Authors were in fact capable of showing how this method falls within a broader category of attacks, known as gradient-masking
+    defense methods, which are already known in literature to be vulnerable.
+    It is nevertheless true that, for unadaptive and straightforward implementations of current gradient-based attacks, k-WTAs
+    still provide a fair protection, especially when the networks is adversarially trained. For this reason, in the following chapters
+    we will make use of k-WTAs (for which we give a novel implementation in \textit{TensorFlow2}), as a benchmark for our evaluations.
+
     \section{Smooth Adversarial Training}
 
 

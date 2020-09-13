@@ -29,7 +29,7 @@
 \contentsline {part}{II\hspace {1em}Robustness of Kafnets}{33}{part.2}% 
 \contentsline {chapter}{\numberline {5}Related Works}{35}{chapter.5}% 
 \contentsline {section}{\numberline {5.1}K-Winners Take All}{35}{section.5.1}% 
-\contentsline {section}{\numberline {5.2}Smooth Adversarial Training}{35}{section.5.2}% 
+\contentsline {section}{\numberline {5.2}Smooth Adversarial Training}{36}{section.5.2}% 
 \contentsline {chapter}{\numberline {6}Solution Approach}{37}{chapter.6}% 
 \contentsline {section}{\numberline {6.1}Lipschitz Constant Approach}{37}{section.6.1}% 
 \contentsline {section}{\numberline {6.2}Fast is Better than Free Adversarial Training}{37}{section.6.2}% 
