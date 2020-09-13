@@ -123,21 +123,25 @@ verso il prof. Enrico Gregorio.
         
     \section{Structure of the Thesis}
 
-        Description of the remaining chapters 
+    In this first part, the building blocks needed in order to understand the main arguments of the thesis are introduced. Even if, at first sight, 
+    the concepts that are going to follow may appear apart, the scope of this work is to make an attempt at discovering connections that might instead lie between them.     
+    For this reason, we will extensively introduce what Neural Networksis important that we cover the basicsDue to the deep and wide nature depth and the wide  
+    Pointers to more appropriate and detailed resources on the topics are given throughout
+    
+    Description of the remaining chapters 
+
+\part{Fundamentals}
 
 
-\chapter{Fundamentals}
+\chapter{Neural Networks}
 
-    In this chapter, the basic concepts needed to understand the main arguments for the thesis are introduced. Pointers to more appropriate and detailed resources on the topics are given throughout
-
-    \section{Deep Neural Networks}
-        
         Broadly speaking, the field of Machine Learning is the summa of any algorithmic methodology whose aim is to automatically find meaningful patterns inside data without
-        being explicitly programmed on how to do it. Well known examples are: Decision Trees (ref.), Support Vector Machines (ref. ), Clustering (ref.) and, more recently, 
-        Deep Neural Networks (ref. ). During the last two decades Deep Neural Networks gained a lot of attention for their outstanding performances in different tasks like
+        being explicitly programmed on how to do it. Well known examples are: Decision Trees (ref.), Support Vector Machines (ref. ), Clustering (ref.),
+        Neural Networks (Ref. ) and, more recently, 
+        Deep Neural Networks (ref. ). During the last two decades Deep Neural Networks have gained a lot of attention for their outstanding performances in different tasks like
         image classification (ref. ImageNet, over human level), speech and audio processing(ref ).
 
-        \subsection{Definition}
+        \section{Definition}
             
             Neural Networks (NNs) are often used in the context of Supervised Learning where the objective is to model a parametric function 
             $ f_{\theta} \colon \mathcal{X} \to \mathcal{Y}$ given $n$ input-output pairs $S = \{(x_i, y_i)_{i=1}^n\} $ with $x_i \in \mathcal{X}$ and $ y_i \in \mathcal{Y}$
@@ -195,10 +199,10 @@ verso il prof. Enrico Gregorio.
                 \label{fig:fnn}
             \end{figure}
             This general but still basic form of Neural Network is known as \textit{Feed Forward Neural Network} Fig. \ref{fig:fnn}. 
-        \subsection{Training}
+        \section{Training}
 
             There are still a couple of important pieces left to define to develop a properly working Neural Network. For instance, how are parameters computed? And in particular, with respect to what we compute them? 
-            \subsubsection{Loss Function}
+            \subsection{Loss Function}
                 Before we realized that our goal is to maximize the approximation of the ground-truth input-output relation that lies under the data, therefore there is a need to
                 introduce some metric to quantify this approximization. Call \textit{loss function} $ L(f_{\theta}\left(x\right), y) \colon \mathcal{Y} \times \mathcal{Y} \to \mathbb{R_+}$ 
                 such metric. Common choices are (ref.):
@@ -214,7 +218,7 @@ verso il prof. Enrico Gregorio.
                     \displaystyle{  \min_{\theta}  \frac{1}{n} \sum_{i=1}^{n} L\left(f_{\theta}\left(x_{i}\right), y_{i}\right) }
                 \end{equation}
                 which is called \textit{empirical risk minimization}.
-            \subsubsection{Gradient Descent}
+            \subsection{Gradient Descent}
                So far we have described, given an input $ x $, how we can compute the output of a feedforward neural network by means of compositions of dot products 
                and non-linear transformations between matrices, starting from the first to the very last of the layers in what is called a \textit{forward pass}. As it turns out, to attempt to solve \ref{erm} we need to follow the exact
                opposite path. Indeed, every optimization algorithm used in practice makes use of the same subroutine called Backpropagation (ref.  ) introduced in the 1970s, which allows to compute, starting from the output layer
@@ -313,7 +317,7 @@ verso il prof. Enrico Gregorio.
                 \label{fig:globlocsad}
             \end{figure}
 
-        \subsection{Activation Functions}
+        \section{Activation Functions}
             
             We have seen how the learning process works optimizing the empirical risk by means of gradients computation.
             Therefore to be able to optimize anything, a neural network needs to have only differentiable components.
@@ -406,7 +410,7 @@ verso il prof. Enrico Gregorio.
             called \textit{Kernel-Based Activation Functions} which will then be the main tool used in the following chapters to try to build more robust neural networks.    
 
 
-        \subsection{CNNs: Convolutional Neural Networks}
+        \section{CNNs: Convolutional Neural Networks}
 
             In computer vision, in particular for image processing tasks, we can make the assumption that the input to the model will be an image. 
             How well do feedforward neural networks adapt to such inputs? It turns out that we need to introduce several changes in the architecture in order to expect 
@@ -469,7 +473,7 @@ verso il prof. Enrico Gregorio.
             Even if we can already reach good accuracies with such a basic architecture, modern CNNs employ many smart variations to improve even more the performance,
             as we shall see in the next section. 
 
-        \subsection{From Neural Networks to Deep Neural Networks}
+        \section{From Neural Networks to Deep Neural Networks}
         Assume to develop a CNN as we have just seen to perform an image classification task. If the built network is sufficiently large, and the chosen dataset limited
         in number of samples, it might happen that our network will \textit{memorize} the entire trainset instead of learning anything useful from it (Ref. 
         UNderstanding DL requieres rethinking generalization). The described scenario is an infamous problem in learning theory and goes under the name of \textit{overfitting},
@@ -570,7 +574,7 @@ verso il prof. Enrico Gregorio.
         and are currently state-of-the-art in many domains.
 
 
-    \section{Adversarial Examples Theory}
+    \chapter{Adversarial Examples Theory}
 
     In recent years, AI-based systems are finding an ever growing number of applications in the industry, ranging from medical, multimedia, telecomunications, to even military, political and legal sectors. 
     As a consequence of the importance of such systems to the modern world, it is currently reasonable to think that they might become potential threats to the eyes of
@@ -597,7 +601,7 @@ verso il prof. Enrico Gregorio.
     few lines of code by anyone who knows the basics of any modern deep learning framework. For this reason, we will dedicate this section to a formal introduction of the problem, and the rest of 
     the thesis in the development of a new approach that aims to improve the resiliency - in jargon, \textit{Robustness} - of Neural Networks against today's Test Time Evasion attacks. 
 
-    \subsection{Another Optimization problem}
+    \section{Another Optimization problem}
         
         To get a Test Time Evasion attack working, any adversary needs to know the true class of the input he is manipulating. Indeed, the perturbation needs to be done in such a way that 
         the resulting perturbed input will cross the true class decision region, in the output space of the model, to move to another decision region (which is specific to the targeted category in case of a targeted attack).
@@ -856,7 +860,7 @@ verso il prof. Enrico Gregorio.
 
 
 
-    \section{Non-Parametric Activation Functions}
+    \chapter{Non-Parametric Activation Functions}
 
     As anticipated shortly in the section concerning Activation Functions, it is possible to increase the flexibility of a Neural Network replacing a fixed activation function with a parametrized, differentible, non-linear function.
     These transformations can in fact be trained along with the remaining weights of the network allowing each neuron to model its own optimal shape.
@@ -881,8 +885,7 @@ verso il prof. Enrico Gregorio.
     In this section, we give an overview of three early proposals, describing the general idea and some of the drawbacks, if any. After that, we focus on a more recent kind of non-trainable activations called kernel-based activation Functions
     (KAFs), highlighting their properties and experimental results.
 
-    \subsection{Adaptive Piece-Wise Linear Activation Functions}
-    
+    \section{Adaptive Piece-Wise Linear Activation Functions}
             Introduced in (Ref. Agostinelli et al 2014), APL generalize the SReLU \ref{srelu} activation function summing up $S$ parametrized linear segments that are
             learned under the constraint that the resulting function is continuous:
             \begin{equation}
@@ -890,7 +893,7 @@ verso il prof. Enrico Gregorio.
             \end{equation}
             where $S$ is a user-defined value and $a_i$s the parameters to learn. APL adds $2S$ new parameters per neuron i.e. introducing a linear number of parameters to the overall network, which is often feasable.
             APL cannot, however, model or approximate all piece-wise linear functions, but only saturating ones. Moreover, APLs introduce $S$ non-differentiable points which may harm backpropagation.
-    \subsection{Spline Activation Functions}
+    \section{Spline Activation Functions}
     If we want an activation function capable of interpolating $S$ given points, we can devise the following polynomial interpolation:
     \begin{equation}
         \sigma(x) = \sum_{i=0}^{S} a_{i} x^{i},
@@ -914,7 +917,7 @@ verso il prof. Enrico Gregorio.
     Good news with SAFs is that each knot has only a local effect on the overall shape. Therefore, with respect to the initialized knots, their training allows for faster and better convergence
     to the optimal. Moreover, as with polynomial interpolation, SAFs can in principle approximate any smooth function. A drawback, however, 
     comparing to ALF, is that regularization techniques cannot be explicitly implemented.
-    \subsection{Maxout Functions}
+    \section{Maxout Functions}
     One slightly different non-parametric activation function, is given by the introduction of a whole new layer called \textit{maxout function}. With maxout, we compute $K$ different dot products
     on each neuron and then take the maximum:
     \begin{equation}
@@ -933,7 +936,7 @@ verso il prof. Enrico Gregorio.
     we lose the ability of plotting the activation function, except for input up to three-dimensional Fig. \ref{fig:maxout}.
     Different variations aim to solve the smoothness problem for Maxout Networks (Ref. ) (Ref. ). 
 
-    \subsection{Kernel-Based Activation Functions}
+    \section{Kernel-Based Activation Functions}
     Introduced in (Ref. Kafnets), kernel-based activation functions (KAFs) is a class of non-parametric activation functions that leverage kernel expansions to adapt the shape on a per-neuron basis.
     Let $D$ be a user-defined positive integer, then a KAF acting on activation $x \in \mathbb{R} $ has the following form:
     \begin{equation}
@@ -943,7 +946,8 @@ verso il prof. Enrico Gregorio.
     and $\{ d_i\}_{i=1}^D $ the kernel's dictionary elements. Dictionary elements are usually sampled from training data, but in case of activation functions 
     this would tie the size of the expansion $D$ to the specific dataset used. Since generality is preferred, KAFs use fixed dictionary elements by selecting
     $D$ equally spaced points on the x-axis centered at 0 with step size $\Delta$, similary to SAFs. In particular, there is a vast literature on kernel methods with fixed dictionary elements (Ref. Snelson and Ghahramani, 2006).
-
+    A Neural Network that makes use of KAFs is called \textit{Kafnet}.
+     
     To allow for better optimization with Gradient Descent we want the kernel $\kappa(\cdot, \cdot)$ to be positive semi-definite and thus convex, i.e., for any choice of 
     $\{ \alpha_i\}_{i=1}^D $ and $\{ d_i\}_{i=1}^D $ we have:
     \begin{equation}
@@ -966,26 +970,76 @@ verso il prof. Enrico Gregorio.
     is an universal approximator for continuous segments (Ref. Micchelli et al., 2006).
 
     The mixing coefficients can either be initialized randomly from a normal distribution, giving no direction yet complete freedom in the trend that the modeled shape
-    should follow, or, on the contrary, we can initialize mixing coefficients such that the KAF will start with an interpolation of any given function $f$
-    Fig. \ref{}. Let $\mathbf{t} = (t_1, t_2, \cdots, t_D) $ be the set of values assumed by $f$ when acting on dictionary elements i.e. $\mathbf{t} = (f(d_1), f(d_2), \cdots, f(d_D)) $.
+    should follow Fig. \ref{fig:rand}, or, on the contrary, we can initialize mixing coefficients such that the KAF will start with an interpolation of any given function $f$
+    Fig. \ref{fig:ridge}. Let $\mathbf{t} = (t_1, t_2, \cdots, t_D) $ be the set of values assumed by $f$ when acting on dictionary elements i.e. $\mathbf{t} = (f(d_1), f(d_2), \cdots, f(d_D)) $.
     We can then initialize the mixing coefficients in the following way:
     \begin{equation}
         \mathbf{\alpha} = \left(K  + \epsilon I \right)^{-1} \mathbf{t}
     \end{equation}
     where $K \in \mathbb{R}^{D,D}$ is the kernel matrix with $K_{i,j} = \kappa(d_i, d_j)$ entries, and we add a diagonal term $\epsilon > 0$ to avoid degenerate 
-    solutions. To constrain and regularize the learned parameters, contrary to SAFs, KAFs also allow the use common regularization techniques.
-    \begin{figure}[!h]
+    solutions. To constrain and regularize the learned parameters, contrary to SAFs, KAFs also allow the use of common regularization techniques.
+    \begin{figure}
         \centering
-        \includegraphics[width=0.6\textwidth]{ridgekaf}
-        \caption{A maxout function with a one-dimensional input and K = 3. The
-        three linear dot products are shown with light gray, while the max and thus resulting activation is shown
-        in shaded red. Source: (Ref. )}
-        \label{fig:plotkafs}
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{randridge.png} % first figure itself
+            \caption{The shape of a KAF with randomly initialized coefficients is shown in light-starred orange. The final learned shape of the same KAF after 
+            training is shown with a continuous orange line. Notice the strong difference between the two functions and how the final one resembles a shifted
+            tanh.}
+            \label{fig:rand}
+        \end{minipage}\hfill
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \includegraphics[width=0.9\textwidth]{eluridge.png} % second figure itself
+            \caption{The shape of a KAF with coefficients initialized through ridge regression to approximate the ELU function is shown in light-starred blue.
+            The final shape after training is shown with a continuous blue line. Notice how the difference between the two is less evident comparing to randomly 
+            initialized KAF (left). Both KAFs (left and right) were trained on the same neuron for the \textit{MNIST} dataset using 5 epochs and same overall settings.  }
+            \label{fig:ridge}
+        \end{minipage}
     \end{figure}
     It is also worth mention that we can improve the flexibility of KAFs by letting the network adapt, along with mixing coefficients, both the dictionary elements
     and the bandwidth. This further level of flexibility can indeed help reach better performances as will be shown in the Evaluation chapter.
+
+    In (Ref. KafNets) authors performed different experiments to assess the performances of the proposed KAFs.
+    It turned out that KAFs managed to improve the results obtained with fixed activation functions over several benchmarks ranging from simple datasets 
+    like the \textit{Sensorless} dataset (Ref. ) to larger ones such as \textit{SUSY} (Ref. SUSY dataset), testing on shallow feedforward Neural Networks
+    as well as deeper CNNs architectures and for both supervised and unsupervised tasks. A summary of the reported results is given in Table \ref{tab:scardapanekafexp}.  
+    
+    \begin{table}
+        \begin{tabular}{ |p{1.5cm}||p{2cm}|p{1.6cm}|p{2.3cm}|p{2.5cm}|p{2.8cm}|  }
+            \hline
+            \multicolumn{6}{|c|}{\textit{Scardapane et al. KAF Experiments}} \\
+            \hline
+            \textbf{Dataset} & \textbf{Design} & \textbf{Metric} & \textbf{Fixed AF}& \textbf{Param. AF} & \textbf{Non-param. AF}\\
+            \hline
+            \hline
+            Sensorless & FNN$^*$  &Accuracy&tanh:99.18\% &PReLU:99.30\% & \underline{ KAF:99.80\% } \\
+            \hline
+            SUSY&   FNN$^{**} $ &AUC&ReLU:0.8739 & PReLU: 0.8748&Maxout:0.8744 APL:0.8757 \underline{KAF:0.8758} \\
+            \hline
+            CIFAR10 & CNN$^{***}$ &Accuracy&ELU:78\% & \textit{n.a.} & \underline{ELUKAF:83\%} \\
+            \hline
+        \end{tabular}
+        \caption{Each row summarize the results obtained using different activation functions on a specific task. 
+        Underlined entries stand for best result achieved.
+        $^*$: feedforward neural networks with 3 hidden layers of 100 neurons are used for fixed or parametric activation functions whilst a single hidden layer is used 
+        for KAF activation function.
+        $^{**}$: feedforward neural networks with 5 hidden layers and 300 neurons each for fixed or parametric activation functions whilst 2 hidden layers with the same
+        number of neurons for non-parametric activation functions \\
+        $^{***}$: CNNs made by stacking 5 convolutional blocks, each composed by (a) a convolutive layer with 150 filters, with a
+        filter size of 5 × 5 and a stride of 1; (b) a max-pooling operation over 3 × 3
+        windows with stride of 2; (c) a dropout layer with probability of 0.25. See the original article for a full description of the architectures, hyperparams and training
+        settings.}
+        \label{tab:scardapanekafexp}
+    \end{table}
+       
+    
+\part{Robustness of Kafnets}
+
     \chapter{Related Works}
 
+    Among t
+       
     \section{K-Winners Take All}
     \section{Smooth Adversarial Training}
 

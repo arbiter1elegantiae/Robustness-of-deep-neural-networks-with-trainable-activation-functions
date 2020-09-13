@@ -2,36 +2,39 @@
 \BOOKMARK [1][-]{section.1.1}{Intriguing Properties of Neural Networks}{chapter.1}% 2
 \BOOKMARK [1][-]{section.1.2}{Smooth Activation Functions and Robustness}{chapter.1}% 3
 \BOOKMARK [1][-]{section.1.3}{Structure of the Thesis}{chapter.1}% 4
-\BOOKMARK [0][-]{chapter.2}{Fundamentals}{}% 5
-\BOOKMARK [1][-]{section.2.1}{Deep Neural Networks}{chapter.2}% 6
-\BOOKMARK [2][-]{subsection.2.1.1}{Definition}{section.2.1}% 7
-\BOOKMARK [2][-]{subsection.2.1.2}{Training}{section.2.1}% 8
-\BOOKMARK [2][-]{subsection.2.1.3}{Activation Functions}{section.2.1}% 9
-\BOOKMARK [2][-]{subsection.2.1.4}{CNNs: Convolutional Neural Networks}{section.2.1}% 10
-\BOOKMARK [2][-]{subsection.2.1.5}{From Neural Networks to Deep Neural Networks}{section.2.1}% 11
-\BOOKMARK [1][-]{section.2.2}{Adversarial Examples Theory}{chapter.2}% 12
-\BOOKMARK [2][-]{subsection.2.2.1}{Another Optimization problem}{section.2.2}% 13
-\BOOKMARK [2][-]{subsection.2.2.2}{Fast Gradient Sign Method}{section.2.2}% 14
-\BOOKMARK [2][-]{subsection.2.2.3}{Projected Gradient Descent}{section.2.2}% 15
-\BOOKMARK [2][-]{subsection.2.2.4}{White, Grey and Black Box Attacks}{section.2.2}% 16
-\BOOKMARK [1][-]{section.2.3}{Defenses}{chapter.2}% 17
-\BOOKMARK [2][-]{subsection.2.3.1}{Detection Methods}{section.2.3}% 18
-\BOOKMARK [2][-]{subsection.2.3.2}{Robust Optimization}{section.2.3}% 19
-\BOOKMARK [2][-]{subsection.2.3.3}{Provable Robustness}{section.2.3}% 20
-\BOOKMARK [1][-]{section.2.4}{Non-Parametric Activation Functions}{chapter.2}% 21
-\BOOKMARK [2][-]{subsection.2.4.1}{Adaptive Piece-Wise Linear Activation Functions}{section.2.4}% 22
-\BOOKMARK [2][-]{subsection.2.4.2}{Spline Activation Functions}{section.2.4}% 23
-\BOOKMARK [2][-]{subsection.2.4.3}{Maxout Functions}{section.2.4}% 24
-\BOOKMARK [2][-]{subsection.2.4.4}{Kernel-Based Activation Functions}{section.2.4}% 25
-\BOOKMARK [0][-]{chapter.3}{Related Works}{}% 26
-\BOOKMARK [1][-]{section.3.1}{K-Winners Take All}{chapter.3}% 27
-\BOOKMARK [1][-]{section.3.2}{Smooth Adversarial Training}{chapter.3}% 28
-\BOOKMARK [0][-]{chapter.4}{Solution Approach}{}% 29
-\BOOKMARK [1][-]{section.4.1}{Lipschitz Constant Approach}{chapter.4}% 30
-\BOOKMARK [1][-]{section.4.2}{Fast is Better than Free Adversarial Training}{chapter.4}% 31
-\BOOKMARK [0][-]{chapter.5}{Evaluation}{}% 32
-\BOOKMARK [1][-]{section.5.1}{VGG Inspired Architectures Results}{chapter.5}% 33
-\BOOKMARK [1][-]{section.5.2}{Explofing Gradients with KafNets}{chapter.5}% 34
-\BOOKMARK [1][-]{section.5.3}{ResNet20 Inspired Architectures Results}{chapter.5}% 35
-\BOOKMARK [0][-]{chapter.6}{Future Works}{}% 36
-\BOOKMARK [0][-]{chapter.7}{Conclusions}{}% 37
+\BOOKMARK [-1][-]{part.1}{I Fundamentals}{}% 5
+\BOOKMARK [0][-]{chapter.2}{Neural Networks}{part.1}% 6
+\BOOKMARK [1][-]{section.2.1}{Definition}{chapter.2}% 7
+\BOOKMARK [1][-]{section.2.2}{Training}{chapter.2}% 8
+\BOOKMARK [2][-]{subsection.2.2.1}{Loss Function}{section.2.2}% 9
+\BOOKMARK [2][-]{subsection.2.2.2}{Gradient Descent}{section.2.2}% 10
+\BOOKMARK [1][-]{section.2.3}{Activation Functions}{chapter.2}% 11
+\BOOKMARK [1][-]{section.2.4}{CNNs: Convolutional Neural Networks}{chapter.2}% 12
+\BOOKMARK [1][-]{section.2.5}{From Neural Networks to Deep Neural Networks}{chapter.2}% 13
+\BOOKMARK [0][-]{chapter.3}{Adversarial Examples Theory}{part.1}% 14
+\BOOKMARK [1][-]{section.3.1}{Another Optimization problem}{chapter.3}% 15
+\BOOKMARK [2][-]{subsection.3.1.1}{Fast Gradient Sign Method}{section.3.1}% 16
+\BOOKMARK [2][-]{subsection.3.1.2}{Projected Gradient Descent}{section.3.1}% 17
+\BOOKMARK [2][-]{subsection.3.1.3}{White, Grey and Black Box Attacks}{section.3.1}% 18
+\BOOKMARK [1][-]{section.3.2}{Defenses}{chapter.3}% 19
+\BOOKMARK [2][-]{subsection.3.2.1}{Detection Methods}{section.3.2}% 20
+\BOOKMARK [2][-]{subsection.3.2.2}{Robust Optimization}{section.3.2}% 21
+\BOOKMARK [2][-]{subsection.3.2.3}{Provable Robustness}{section.3.2}% 22
+\BOOKMARK [0][-]{chapter.4}{Non-Parametric Activation Functions}{part.1}% 23
+\BOOKMARK [1][-]{section.4.1}{Adaptive Piece-Wise Linear Activation Functions}{chapter.4}% 24
+\BOOKMARK [1][-]{section.4.2}{Spline Activation Functions}{chapter.4}% 25
+\BOOKMARK [1][-]{section.4.3}{Maxout Functions}{chapter.4}% 26
+\BOOKMARK [1][-]{section.4.4}{Kernel-Based Activation Functions}{chapter.4}% 27
+\BOOKMARK [-1][-]{part.2}{II Robustness of Kafnets}{}% 28
+\BOOKMARK [0][-]{chapter.5}{Related Works}{part.2}% 29
+\BOOKMARK [1][-]{section.5.1}{K-Winners Take All}{chapter.5}% 30
+\BOOKMARK [1][-]{section.5.2}{Smooth Adversarial Training}{chapter.5}% 31
+\BOOKMARK [0][-]{chapter.6}{Solution Approach}{part.2}% 32
+\BOOKMARK [1][-]{section.6.1}{Lipschitz Constant Approach}{chapter.6}% 33
+\BOOKMARK [1][-]{section.6.2}{Fast is Better than Free Adversarial Training}{chapter.6}% 34
+\BOOKMARK [0][-]{chapter.7}{Evaluation}{part.2}% 35
+\BOOKMARK [1][-]{section.7.1}{VGG Inspired Architectures Results}{chapter.7}% 36
+\BOOKMARK [1][-]{section.7.2}{Explofing Gradients with KafNets}{chapter.7}% 37
+\BOOKMARK [1][-]{section.7.3}{ResNet20 Inspired Architectures Results}{chapter.7}% 38
+\BOOKMARK [0][-]{chapter.8}{Future Works}{part.2}% 39
+\BOOKMARK [0][-]{chapter.9}{Conclusions}{part.2}% 40
