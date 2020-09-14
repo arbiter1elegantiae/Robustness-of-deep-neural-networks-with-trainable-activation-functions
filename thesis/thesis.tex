@@ -377,6 +377,7 @@ verso il prof. Enrico Gregorio.
             
             By definition, the mean of ouput values from a ReLU is always positive. \textit{Exponential linear unit} (ELU) try to normalize their inputs:
             \begin{equation}
+                \label{elu}
                 \operatorname{ELU}(x)\left\{\begin{array}{ll}
                     x & \text { if } x \geq 0 \\
                     \alpha(\exp \{x\}-1) & \text { otherwise },
@@ -1085,12 +1086,86 @@ verso il prof. Enrico Gregorio.
 
     In a recent work (Ref. ), Carlini \textit{et al.} highlighted fundamentals flaws in the defense that was just claimed for k-WTAs.
     Authors were in fact capable of showing how this method falls within a broader category of attacks, known as gradient-masking
-    defense methods, which are already known in literature to be vulnerable.
+    defense methods (Ref. survey 2), which are already known in literature to be vulnerable.
     It is nevertheless true that, for unadaptive and straightforward implementations of current gradient-based attacks, k-WTAs
     still provide a fair protection, especially when the networks is adversarially trained. For this reason, in the following chapters
     we will make use of k-WTAs (for which we give a novel implementation in \textit{TensorFlow2}), as a benchmark for our evaluations.
 
     \section{Smooth Adversarial Training}
+
+    The current wisdom among researchers, suggests that there probably is a fundamental trade-off between accuracy and robustness that we must deal with
+    (Ref. There is no free lunch in adversarial robustness). That is, improving the resiliency of a model against adversarial examples will almost certainly 
+    result in a less accurate model. In particular, whenever an effective technique to improve the robustness is found, it almost always coincides with the method harming
+    the model performances (Ref. On the convergence and robustness of adversarial training) (Ref. Max-margin adversarial training) (Ref. 
+    Theoretically principled trade-off between robustness and accuracy).
+    
+    To prevent from performance decay, one feasable (but expensive) strategy is to increase the size of the network by making it either deeper and/or wider (Ref. Intriguing Properties of NNs at scale.).
+    It seems nevertheless reasonable to believe that there could be other ways that would allows us to build more robust networks without 
+    sacrificing in neither accuracy nor resources. That is exaclty what was recently reported by Xie \textit{et al.} in (Ref. Smooth Adversarial Training), where authors 
+    found a way to consistently improve robustness over different tasks, without giving up any other property of the model. Specifically, they found that,
+    it is sufficient to prefer and adopt smooth activation functions over non-smooth ones, like the everywhere present ReLUs, to achieve 
+    better results in AL straightaway.
+
+    The rationale behind adopting smooth activation functions, i.e., non-linear functions that are continuous in their first derivative, lies in the 
+    observation that, during AL, we are computing many times the gradients of the network that are normally required during standard training. Specifically,
+    in addition to compute gradients to update the network's parameters, adversarial learning also needs gradients computation for generating training 
+    adversarial samples. Moreover, the presence of non differentiable points and abrupt changes in the gradient's values during backpropagation, may 
+    prevent from generating sufficiently strong adversarial samples. This particularly holds true in the case of ReLUs, where the gradient lacks of flexibility 
+    and gets a severe jump in the origin Fig. \ref{fig:smoothaf}. 
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.45\textwidth]{smothaf.png}
+        \caption{Plot of the first derivative for ReLU, ELU and Swish activations. Except for the rectified linear unit, both the ELU and Swish have continuous
+        derivative.}
+        \label{fig:smoothaf}
+    \end{figure}
+
+    To test their hypothesis, Xie et al. evaluated a ResNet50 on ImageNet for different AL runs, by switching activation function after each training. For their experiment,
+    parametrized \textit{Softplus} (Ref. ), Swish, \textit{GELU} (Ref. ) and ELU were used as smooth activations, whereas ReLU for the baseline. Notice that,
+    for the case of ELU, the parameter $\alpha$ \ref{elu} should be set equal to 1 in order to avoid the gradient being undefined at the origin. Compared to the 
+    baseline, all smooth activation functions substantially boosted robustness while keeping the accuracy nearly unchanged. In particular, any smooth activation 
+    function at least improved robustness by a factor of $5.7\%$. 
+    \begin{figure}[t]
+        \centering
+        \includegraphics[width=0.75\textwidth]{smoothresults}
+        \caption{Compared to ReLU, all smooth activation functions showed a significant increase in robustness
+        while some even improved accuracy. In the original work, 2 others smooth activation functions were used, namely 
+        SmoothReLU and Softplus. We did not include them since they are not commonly used in practice. Source: (Ref. Adversarlial Smoothness)}
+        \label{fig:smoothresults}
+    \end{figure}
+    Best results were achieved with Swish, which enabled
+    ResNet50 to achieve $42.3\%$ robustness and $69.7\%$ standard accuracy as shown 
+    in Fig. \ref{fig:smoothresults}
+
+    To test further the issue with ReLU and generalize the smoothness conjecture, another 
+    experiment was made targetting ELUs. As we said, when we set the parameter $\alpha$ to be different to 
+    1, the function becomes non-differentiable in the origin, with the gradient
+    abruption increasing for larger values of $\alpha$. With no surprise, if we perform the same evaluation with no change in the settings
+    except for equipping the network with non-smooth ELUs,
+    we observe that the adversarial robustness is highly dependent on the value of $\alpha$. 
+    The highest robustness is achieved when the function is smooth while for all other choices of 
+    $\alpha$ the robustness monotonically decreases when we gradually approache $\alpha = 2.0$. 
+    In particular, with $\alpha$ being $2.0$, robustness drops to $33.2\%$, that is, $7.9\%$ lower than that of smooth ELU. 
+    The observed results are consistent with previous conclusions on ReLU: non-smooth activation functions significantly
+    weaken adversarial training.
+
+    From a broader perspective, the work on smooth activation functions might
+    hints towards the draft of a more general design principle, which is that,
+    architectural smoothness might play an essential role in enhancing 
+    adversarial rbustness, at least for what concerns defenses against 
+    gradient-based attacks.
+
+    With a combination of lessons just learned from both Xiao et al. and
+    Xie et al., the focus of the following chapters will then be on the evaluation
+    of a novel kind of activation functions. Functions that we believe might have 
+    , by laveraging, among other properties, strong smoothness
+    and flexibility, the potential of surpassing both k-WTAs and Swish 
+    for what concerns robustness and, in particular, the trade-off
+    between accuracy and robustness. Distinguished activation functions that 
+    satifsy such prerequisites are the previously introduced non-parametric 
+    kernel-based activation functions (KAFs). 
+
 
 
 \chapter{Solution Approach}
