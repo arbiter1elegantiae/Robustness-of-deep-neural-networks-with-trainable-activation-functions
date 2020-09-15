@@ -1194,6 +1194,94 @@ verso il prof. Enrico Gregorio.
         the attack on the whole network in reasonable time and, moreover, because we only wanted to a rough estimate to begin with. To actually implement such attacks we 
         will use the \textit{Adversarial Robustness Toolbox} (ART) from IBM (Ref. ? should i cite this?).
 
+        The first results are not really in line with what was expected. In particular, in (Ref. KWTA) a ResNet18 equipped with ReLUs results in 0\% accuracy 
+        against the aforementioned attacks, whereas in our case the net manages, even if with small numbers, to correclty classify 11\% of the 1000 samples 
+        attacked. This means that, even if we assume that every of the remaining samples were to be classified wrongly, we would have still classified in the 
+        right way the 1.1\% of the test set, in contraddiction with the 0\% gained in the original article. However, it plausible that this depends by the model 
+        being used, indeed, it is likely that ResNet18 equipped with ReLUs is more prone get fooled by the attack. Despite this inconsitency, k-WTAs on the other 
+        hand behave similarly, getting 13,2\% of the samples correclty classified. Another surprise concerns KAFs as well: we managed to reach 15.7\% of accuracy 
+        which already a big improvement if we consider k-WTAs were specifically designed to resist gradient based attacks and still, a straightforward implementation 
+        of the KAFs allowed us to overcome them.
+        
+        Moved by this results, we decided to go more in depth with the analysis and look at what is actually happening inside these different implementations of our 
+        net when we give adversarial inputs. In particular, we wanted to examine, for each layer, the distributions of the activation values, i.e., the inputs on which activation
+        functions act, to see if we could spot any evidence of the observed results. Fig. \ref{fig:actdist13} shows plots for the distributions we obtained when we 
+        consider the first neuron of the layer, namely, the fist neuron of the first filter in the case of convolutional layers or the first neuron in the 
+        fully-connected layer before classification. Distributions are computed with respect to both perturbed (violet) and non perturbed (light-green) samples. 
+
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=1.1\textwidth]{actdist11.png}
+            \label{fig:actdist11}
+        \end{figure}
+        \begin{figure}[t]
+            \centering
+            \includegraphics[width=1.1\textwidth]{actdist12.png}
+            \label{fig:actdist12}
+        \end{figure}
+        \begin{figure}[t!]
+            \centering
+            \includegraphics[width=1.1\textwidth]{actdist13.png}
+            \caption{Each histogram shows the distribution of the activation values for the first neuron of the first channel, for each layer.
+            The distribution colored in violet represents the activations for the batch of perturbed samples while the light-green stands for the 
+            distribution of values the neuron gets when we feed the network with original samples. We also plot, when possible, the actual shape of the activation function acting 
+            on the neuron with a red line. The effects of the perturbation can be appreciated especially in the last layer where distributions differ the most.}
+            \label{fig:actdist13}
+        \end{figure}
+
+        The rationale behind these plots is to observe, the more we go deep in the network, how the two distributions, very similar in the initial stages, tend to diverge into two distant distributions.
+        This behavior is precisely what we would excpect since the networks are making, for the majority of the 1000 samples, different predictions. However, despite 
+        the fact that our expectations are confirmed by these histograms, a more careful analysis would also find that the distance in the last KAF layer 
+        seem to be smaller in comparison to the distance (between distributions) that we see in the last layer for k-WTA and ReLU. Having said that, it is stil plausible 
+        that what we concluded might hold true just for the first neuron of the layer while being false in general for the others. For this reason, the next step is 
+        to repeat the experiment, this time considering the distribution for the whole layers, that is, the average mean for the activations of a given 
+        filter, in the case of convolutional layers, or taking the mean of the whole last layer's activations Fig. \ref{fig:actdist23}.
+
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=1.1\textwidth]{actdist21.png}
+            \label{fig:actdist21}
+        \end{figure}
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=1.1\textwidth]{actdist22.png}
+            \label{fig:actdist22}
+        \end{figure}
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=1.1\textwidth]{actdist23.png}
+            \caption{Each histogram shows the distribution of the mean value of the activations for a random layer's filter, in the case of a convolutive layer, or 
+             for every neurons in the layer, in the case of dense (last) layer. The effects of the perturbation 
+             are less visible when the net is equipped with KAF activation functions.}
+            \label{fig:actdist23}
+        \end{figure}
+
+        
+        \newpage
+        With more confidence, we can now observe that, what was previously happening in the case of a single neuron is actually happening in general: on average,
+        the Kafnet seem to be less prone to big changes within its layers and its output, than when we consider K-WTA, or, in particular, ReLU activation functions.  
+        Specifically, if we want to quantify this this distance, given $x$ the original input and $x^{\prime}$ its attacked version, we can compute the $L_2$ norm of the difference between perturbed 
+        and non-perturbed activations, for each layer. By doing so, and repeating it on many of the attacked inputs, for instance, when considering the first sample and its adversarial pair we get:
+        \begin{figure}[h!!]
+            \centering
+            \includegraphics[width=1.0\textwidth]{actdist31}
+        \end{figure}
+       \newline
+        , when considering the second pair:
+        \begin{figure}[h!!]
+            \centering
+            \includegraphics[width=1.0\textwidth]{actdist32}
+        \end{figure}
+        \newline
+        , the 50th pair:
+        \begin{figure}[h!!]
+            \centering
+            \includegraphics[width=1.0\textwidth]{actdist33}
+        \end{figure}
+        \newline
+        and so on. The Kafnet almost always results in smaller distances norms.
+
+
 
         
 
