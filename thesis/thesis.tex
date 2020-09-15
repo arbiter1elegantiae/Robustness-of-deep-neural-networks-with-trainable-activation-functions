@@ -1170,12 +1170,32 @@ verso il prof. Enrico Gregorio.
 
 \chapter{Solution Approach}
  
-    Comparing the activations's distributions for different activation functions (ReLU, KWTA, Kafs) 
-    seem to suggest Kafs might be good candidates to improve model robustness 
+    To start experiment novel architecuters or training techniques in practice, they need first to be implemented. In our case, we have chosen to use
+    Python with TensorFlow2 library to craft DL methods. In this way, relying on the \textit{Keras} backend, it is possible to describe complex activation functions, in which for instance the output depends on the input layer size, as for both k-WTAs and KAFs. To this end we implemented them inheriting from the 
+    \textit{tf.keras.layers.Layer} class. The code that implements both activation functions is located in \textit{activationsf.py}.
+     
 
-    \section{Lipschitz Constant Approach}
+    \section{KAFs May Be Good Candidates}
 
-        On the limitations of current Lipischitz-Constant based approaches especially when involving Kafs
+        Once the code is done, we can begin and perform some early evaluations. As a first thing, we reasonably chose to test the robustness of simple neural 
+        networks and in particular, we can already try to understand if there is any meaningful difference when we change activation functions.
+
+        The light first-developed model is made of few parameters, to conduct quick experiments and perhaps find an initial direction to follow. The network 
+        is composed by two convolutional blocks, each of which holding two convolutional layers followed by batch normalization. After those two convolutions we 
+        halve the dimensions with a maxPooling and then apply regularization with Dropout. In the first block we use 32 filters, in the second 64, each with window 
+        size 3. Finally, a global average pooling is used followed by a fully-connected layers with 128 units which is in charge of computing the output layer.
+        The dataset used, and the only one that we will be using for each evaluation, is CIFAR10. The code where such networks are built and trained can be found in 
+        \textit{light\_models.ipynb}.
+
+        Respectively, using ReLU, k-WTA and KAFs (with randomly initialized mixing coeffiecients and D=20) and using Adam optimizer, we obtained 77.96\%, 65.33\%
+        and 68.80\% standard accuracy. After that, we are ready to see how such trained nets behave against adversarial examples. Following the settings of 
+        (Ref. kWTA), a $PGD$ attack is crafted under the $L_{\infty}$ metric, with perturbation size $\epsilon = 0.031$, steps size $0.003$ and 40 random 
+        restarts. Importantly, we only attack 1000 random samples taken from the test set, since, due to resources limitations we were not capable of computing 
+        the attack on the whole network in reasonable time and, moreover, because we only wanted to a rough estimate to begin with. To actually implement such attacks we 
+        will use the \textit{Adversarial Robustness Toolbox} (ART) from IBM (Ref. ? should i cite this?).
+
+
+        
 
     \section{Fast is Better than Free Adversarial Training}
 

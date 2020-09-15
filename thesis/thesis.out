@@ -30,7 +30,7 @@
 \BOOKMARK [1][-]{section.5.1}{K-Winners Take All}{chapter.5}% 30
 \BOOKMARK [1][-]{section.5.2}{Smooth Adversarial Training}{chapter.5}% 31
 \BOOKMARK [0][-]{chapter.6}{Solution Approach}{part.2}% 32
-\BOOKMARK [1][-]{section.6.1}{Lipschitz Constant Approach}{chapter.6}% 33
+\BOOKMARK [1][-]{section.6.1}{KAFs May Be Good Candidates}{chapter.6}% 33
 \BOOKMARK [1][-]{section.6.2}{Fast is Better than Free Adversarial Training}{chapter.6}% 34
 \BOOKMARK [0][-]{chapter.7}{Evaluation}{part.2}% 35
 \BOOKMARK [1][-]{section.7.1}{VGG Inspired Architectures Results}{chapter.7}% 36
