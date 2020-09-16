@@ -650,6 +650,7 @@ verso il prof. Enrico Gregorio.
         \end{equation} 
 
     \subsection{Fast Gradient Sign Method}
+        \label{fgsm}
 
         For the sake of discussion, we will now see how to actually solve the proposed maximization problems, restricting ourself to indiscriminate attacks, since the same solutions will also
         work painlessy for the case of targeted attacks. 
@@ -795,21 +796,21 @@ verso il prof. Enrico Gregorio.
                 its effects by minimizing the empirical risk on such attack, as with standard training.
                 Moreover, notice that we just learned how to compute strong attacks e.g. with randomized PGD, thus we
                 can already go and implement Robust Optimization, which, to be precise, it is mostly reffered as \textit{Adversarial
-                Learning} (AL) when we approximate the solution instead of computing it exactly (Ref. https://arxiv.org/pdf/2007.00753.pdf ).
+                Training} (AT) when we approximate the solution instead of computing it exactly (Ref. https://arxiv.org/pdf/2007.00753.pdf ).
 
                 In practice, even if the training is performed employing random PGD to compute the inner maximization,
                 i.e., a very specific form of attack, it does generalize well to other attacks (Ref. Madry article in Robust Optimization), 
-                provided that we consider attacks under the same metric. Indeed, there is no real guarantee that AL
+                provided that we consider attacks under the same metric. Indeed, there is no real guarantee that AT
                 done under, say, $\|\cdot\|_2$ will result in a model also robust against $\|\cdot\|_{\infty}$ based 
                 attacks. To achive defenses against multiple metrics, we need to incorporate multiple attacks under the inner maximization,
                 however, as previously discussed, characterizing a priori every possible metric of perturbation seem to be 
                 a difficult task, hence the complexity of devising an universal defense mechanism.
 
-                The main drawback with AL, which is so far regarderd as the most effective method developed agains adversarial
+                The main drawback with AT, which is so far regarderd as the most effective method developed agains adversarial
                 Examples (Ref. ), is its computational demand. Indeed, due to the double optimization that needs to be
                 computed for each weight update on each sample, it requires a lot of resources, especially when it comes
                 to large networks and large datasets. For this reason, lately, different works tried to takle the
-                problem of speeding-up AL, proposing approximations and variations of it (Ref. Free AL)(Ref. Fast is better than free).
+                problem of speeding-up AT, proposing approximations and variations of it (Ref. Free AL)(Ref. Fast is better than free).
 
                 
             
@@ -858,6 +859,8 @@ verso il prof. Enrico Gregorio.
             Many other approaches try to provide certificates such as \textit{Randomized Smoothing}, \textit{estimation of the lower bound} (Ref. https://arxiv.org/pdf/2007.00753.pdf)
             . However, provable Robustness struggles to scale up to real-world applications
             due to the complexity of computing such bounds that are usually based on generally intractable methods or ad-hoc methods.
+            %While certified defenses have been scaled to reasonably sized networks (Wong et al., 2018; Mirman et al., 2018; Gowal et al.,
+            % 2018; Cohen et al., 2019; Salman et al., 2019), the guarantees don’t match the empirical robustness obtained through adversarial training.
 
 
 
@@ -1079,10 +1082,10 @@ verso il prof. Enrico Gregorio.
     \end{figure}
     
     Authors claim substantial improvements in the robustness of this defense against white-box attacks. Specifically, they were 
-    able to evaluate a ResNet-18 against PGD, C\&W (Ref. ) and DeepFool (Ref. ) attacks, training both classically and with AL \ref{robopt}.
+    able to evaluate a ResNet-18 against PGD, C\&W (Ref. ) and DeepFool (Ref. ) attacks, training both classically and with AT \ref{robopt}.
     Using CIFAR10 for the dataset, ResNet-18 with ReLUs achieved 0\% and 43.6\% accuracy under the most effective attack,
     respectively with standard and adversarial training. On the other hand, when k-WTAs were used, the same network improved to
-    13.1\% with standard training and 50.7\% with AL.
+    13.1\% with standard training and 50.7\% with AT.
 
     In a recent work (Ref. ), Carlini \textit{et al.} highlighted fundamentals flaws in the defense that was just claimed for k-WTAs.
     Authors were in fact capable of showing how this method falls within a broader category of attacks, known as gradient-masking
@@ -1092,6 +1095,7 @@ verso il prof. Enrico Gregorio.
     we will make use of k-WTAs (for which we give a novel implementation in \textit{TensorFlow2}), as a benchmark for our evaluations.
 
     \section{Smooth Adversarial Training}
+    \label{SAT}
 
     The current wisdom among researchers, suggests that there probably is a fundamental trade-off between accuracy and robustness that we must deal with
     (Ref. There is no free lunch in adversarial robustness). That is, improving the resiliency of a model against adversarial examples will almost certainly 
@@ -1104,11 +1108,11 @@ verso il prof. Enrico Gregorio.
     sacrificing in neither accuracy nor resources. That is exaclty what was recently reported by Xie \textit{et al.} in (Ref. Smooth Adversarial Training), where authors 
     found a way to consistently improve robustness over different tasks, without giving up any other property of the model. Specifically, they found that,
     it is sufficient to prefer and adopt smooth activation functions over non-smooth ones, like the everywhere present ReLUs, to achieve 
-    better results in AL straightaway.
+    better results in AT straightaway.
 
     The rationale behind adopting smooth activation functions, i.e., non-linear functions that are continuous in their first derivative, lies in the 
     observation that, during AL, we are computing many times the gradients of the network that are normally required during standard training. Specifically,
-    in addition to compute gradients to update the network's parameters, adversarial learning also needs gradients computation for generating training 
+    in addition to compute gradients to update the network's parameters, adversarial training also needs gradients computation for generating training 
     adversarial samples. Moreover, the presence of non differentiable points and abrupt changes in the gradient's values during backpropagation, may 
     prevent from generating sufficiently strong adversarial samples. This particularly holds true in the case of ReLUs, where the gradient lacks of flexibility 
     and gets a severe jump in the origin Fig. \ref{fig:smoothaf}. 
@@ -1121,7 +1125,7 @@ verso il prof. Enrico Gregorio.
         \label{fig:smoothaf}
     \end{figure}
 
-    To test their hypothesis, Xie et al. evaluated a ResNet50 on ImageNet for different AL runs, by switching activation function after each training. For their experiment,
+    To test their hypothesis, Xie et al. evaluated a ResNet50 on ImageNet for different AT runs, by switching activation function after each training. For their experiment,
     parametrized \textit{Softplus} (Ref. ), Swish, \textit{GELU} (Ref. ) and ELU were used as smooth activations, whereas ReLU for the baseline. Notice that,
     for the case of ELU, the parameter $\alpha$ \ref{elu} should be set equal to 1 in order to avoid the gradient being undefined at the origin. Compared to the 
     baseline, all smooth activation functions substantially boosted robustness while keeping the accuracy nearly unchanged. In particular, any smooth activation 
@@ -1232,9 +1236,9 @@ verso il prof. Enrico Gregorio.
         The rationale behind these plots is to observe, the more we go deep in the network, how the two distributions, very similar in the initial stages, tend to diverge into two distant distributions.
         This behavior is precisely what we would excpect since the networks are making, for the majority of the 1000 samples, different predictions. However, despite 
         the fact that our expectations are confirmed by these histograms, a more careful analysis would also find that the distance in the last KAF layer 
-        seem to be smaller in comparison to the distance (between distributions) that we see in the last layer for k-WTA and ReLU. Having said that, it is stil plausible 
+        seem to be smaller in comparison to the distance (between distributions) that we see in the last layer for k-WTA and ReLU. Having said that, it is still plausible 
         that what we concluded might hold true just for the first neuron of the layer while being false in general for the others. For this reason, the next step is 
-        to repeat the experiment, this time considering the distribution for the whole layers, that is, the average mean for the activations of a given 
+        to repeat the experiment, this time considering the distribution over more neurons, that is, we consider the average mean for the activations of a given 
         filter, in the case of convolutional layers, or taking the mean of the whole last layer's activations Fig. \ref{fig:actdist23}.
 
         \begin{figure}[h!]
@@ -1279,15 +1283,85 @@ verso il prof. Enrico Gregorio.
             \includegraphics[width=1.0\textwidth]{actdist33}
         \end{figure}
         \newline
-        and so on. The Kafnet almost always results in smaller distances norms.
+        and so on. The Kafnet almost always results in smaller distance norms. The code for reproducing these experiments can be found in \textit{insights\_link\_rob\_activationsf.ipynb}.
 
-
-
-        
+        Thanks to an in-depth analysis on the architectural statistics we were able, at least from this point of view, to justify why a Kafnet is winning 
+        against the other two implementations. Moreover, this results seem to suggest that KAFs, especially when considered together with their flexibility 
+        properties, might be good candidates for enhancing robustness through the lens of Robust Optimization. In particular, they seem to fit well when it 
+        comes to regularization techniques bounding the effects of perturbations, such as the previously introduced Lipschitz constant regulatization.
+        Even though this regularization technique might appear as the natural approach to follow, it exhibits several difficulties to overcome, such as the lack 
+        of efficient and easy to use implementations in current Deep Learning frameworks, and, more importantly, it is in general difficult to come up with an explicit bound 
+        on the Lipschitz constant for (Gaussian) KAF layers (Ref. https://arxiv.org/abs/1903.11990). Therefore, we opted to approach Robust Optimization with 
+        the well studied method of adversarial training \ref{robopt} and perform the training laveraging also on the smoothness properties of Gaussian KAFs 
+        and the previously introduced results linking smoothness and AT together \ref{SAT}.  
 
     \section{Fast is Better than Free Adversarial Training}
+        Adversarial training (AT), can be an expensive procedure to accomplish, and it is not due to the lack of resources but rather to the way we
+        implemented it. For example, a textbook implementation of Madry's PGD adversarial training (Ref. ), as for 2019, required 4 days to run over 
+        CIFAR10 using a Titan X GPU, and, in order to scale to ImageNet, researchers had to deploy large clusters of GPUs at a scale far beyond the reach of many 
+        institutions (Ref. Adversarial Training for Free!). Consequently, many research has been devoted to improve this computational barrier. For 
+        instance, when performing multi-step PGD adversary in the inner maximization, it is possible to cut out redundant calculations during back 
+        propagation to gain additional speed-ups (Ref. Zhang et al. 2019). Or, again, insead of updating the network's weights after multiple 
+        forward and backwards passes needed to compute the PGD, we could update the weights together with the perturbation $\delta$ at each 
+        backward pass of the PGD, hence reducing the overall number of iterations needed to complete the training (Ref. Adversarial Training for Free!).
+        The latter method is know in literature as \textit{Free Adversarial Training} to refer to the apparent relief from the complexity of standard adaversarial
+        training.
+        Nevertheless, even employing these techniques can still result in prohibitive running times.
+        
+        A recent breakthrough was claimed by Wong \textit{et al.} in their article \textit{Fast is Better than Free: Revisiting Adversarial Training}(Ref. ),
+        where authors showed they were able to train models that matched state of the art robustness against full-strenght PGD attacks, for both CIFAR10
+        and ImageNet, in 6 minutes and 12 hours respectively. The proposed method, which allowed them to achieve such results, consists in a mixture of: 
+        a clever way for computing the inner maximization in one step, and novel techniques used in efficient 
+        training of deep networks, such as \textit{cyclical learning rates} (Ref. Smith et al.) and mixed-precision arithmetics. The letter being 
+        two frequently used key-components in top submissions for image classification competitions like DAWNBench (Ref. ).
+        
+        Regarding the method used to approximate the inner maximization, it was used a small variation of the FSGM \ref{fgsm} adversarial training.
+        The original FSGM AT works by computing a single step FSGM attack on the mini-batch with step size $\epsilon$ to generate the adversarial sample.
+        \newpage
+        \begin{algorithmic}[0]
+            \Procedure{FGSM\_AT\_ORIGINAL}{$epochs=T$,$dataset\_size=M$,$\epsilon$}
+            \For{$t\gets 1, T$} \Comment{For each epoch}
+            \For{$i\gets 1, M$} \Comment{For each minibatch}
+            \State $\delta \gets 0$
+            \State $\delta \gets \delta + \epsilon \cdot sign(\nabla_{\delta} \operatorname{LS}\left(f_{\theta}(x+\delta), y\right))$  \Comment{Perform FGSM}
+            \State $\delta \gets \mathcal{P}(\delta) $
+            \State $\theta=\theta-\nabla_{\theta} \ell\left(f_{\theta}\left(x_{i}+\delta\right), y_{i}\right)$ \Comment{Update model weights}
+            \EndFor
+            \EndFor
+            \EndProcedure
+        \end{algorithmic}
+        FSGM AT is generally known to be a weak defense against PGD attacks (Ref. Alexey Kurakin, Ian Goodfellow, and Samy Bengio. Adversarial examples in the physical world).
+        Wong \textit{et al.} extended this approach by adding a random initialization of the perturbation 
+        $\delta$ (within the allowed space $\Delta$) and by increasing the step size $\alpha$ by a factor of 1.25, making it $\alpha = 1.25 \epsilon$.
+        The overall algorithm to adversarially train the model then becomes:
+        \begin{algorithmic}[h]
+            \Procedure{FGSM\_AT\_Wong}{$epochs=T$,$dataset\_size=M$,$\epsilon$}
+            \For{$t\gets 1, T$} \Comment{For each epoch}
+            \For{$i\gets 1, M$} \Comment{For each minibatch}
+            \State $\delta \gets \mathcal{U}(-\epsilon, \epsilon) $ \Comment{Random init}
+            \State $\delta \gets \delta + 1.25\epsilon \cdot sign(\nabla_{\delta} \operatorname{LS}\left(f_{\theta}(x+\delta), y\right))$  \Comment{Perform extended FGSM}
+            \State $\delta \gets \mathcal{P}(\delta) $
+            \State $\theta=\theta-\nabla_{\theta} \ell\left(f_{\theta}\left(x_{i}+\delta\right), y_{i}\right)$ \Comment{Update model weights}
+            \EndFor
+            \EndFor
+            \EndProcedure
+        \end{algorithmic}
+        Notice how, for a standard effective AT, that computes adversarial samples via PGD using, say, $m$
+        steps, we need to compute $\mathcal{O}\left(mM\right)$ operations per epoch, whereas with $FSGM$ we shrink down 
+        to $\mathcal{O}(M)$ operations, i.e., asymptotically equal to number of operations required for standard training.
+        Therefore, with only these two small variations to the original FGSM AT, as well as the employment of cyclical learning 
+        rates and mixed-precision arithmetic to accelerate convergence, it is possible to devise an 
+        adversarial training method, with no significant computational overhead to standard training,
+        which achieves leading edge robustness-accuracy trade-offs.
 
-        Adversarial training (Madry et al.) and current methods to improve the efficiency (Fast is better than free)
+       Due to the recent nature of the method just discussed, there is, at the time of writing,
+       to the best of our knowledge, no
+       implementation available for TensorFlow2 or TensorFlow2 \textit{Addons} or on any other 
+       compatible library. For this reason, to perform our experiment, we gave a working implementation
+       which can reproduce the results of the original paper. The code can be found in 
+       \textit{fbfadvtrain.py}. 
+
+        
 
 
 \chapter{Evaluation}
@@ -1305,6 +1379,14 @@ verso il prof. Enrico Gregorio.
 
     Different Kernels, resolve the exploding gradient problem and scale to ImageNet
     Perform more adaptive attacks to assess the robustness of kafresnets as is the current standard (Carlini et al.)
+    With the proposal of many new defense mechanisms, of great concern in the community is the use
+    of strong attacks for evaluating robustness: weak attacks can give a misleading sense of security, and
+    the history of adversarial examples is littered with adversarial defenses (Papernot et al., 2016; Lu
+    et al., 2017; Kannan et al., 2018; Tao et al., 2018) which were ultimately defeated by stronger attacks
+    (Carlini \& Wagner, 2016; 2017b; Athalye et al., 2017; Engstrom et al., 2018; Carlini, 2019). This
+    highlights the difficulty of evaluating adversarial robustness, as pointed out by other work which
+    began to defeat proposed defenses en masse (Uesato et al., 2018; Athalye et al., 2018). Since then,
+    several best practices have been proposed to mitigate this problem (Carlini et al., 2019).
 
 
 \chapter{Conclusions}
