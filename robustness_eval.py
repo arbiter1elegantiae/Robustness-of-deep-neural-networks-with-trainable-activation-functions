@@ -19,9 +19,9 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 # Configure GPU
 # Hardware specific, comment out or tweak as your own preferences
-gpus = tf.config.list_physical_devices('GPU')
-print(gpus)
-tf.config.experimental.set_visible_devices(gpus[5],'GPU')
+#gpus = tf.config.list_physical_devices('GPU')
+#print(gpus)
+#tf.config.experimental.set_visible_devices(gpus[5],'GPU')
 
 print('\n Loading CIFAR10...\n')
 from tensorflow.keras.datasets import cifar10

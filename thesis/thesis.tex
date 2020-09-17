@@ -1296,6 +1296,7 @@ verso il prof. Enrico Gregorio.
         and the previously introduced results linking smoothness and AT together \ref{SAT}.  
 
     \section{Fast is Better than Free Adversarial Training}
+    \label{fbf}
         Adversarial training (AT), can be an expensive procedure to accomplish, and it is not due to the lack of resources but rather to the way we
         implemented it. For example, a textbook implementation of Madry's PGD adversarial training (Ref. ), as for 2019, required 4 days to run over 
         CIFAR10 using a Titan X GPU, and, in order to scale to ImageNet, researchers had to deploy large clusters of GPUs at a scale far beyond the reach of many 
@@ -1366,9 +1367,31 @@ verso il prof. Enrico Gregorio.
 
 \chapter{Evaluation}
 
+In this chapter, experiments assessing the robustness of Kafnets are discussed.
+As seen in the previous chapter, this seems to be a direction worth exploring. In fact, vanilla 
+Kafnets already show some sort of resiliency against attacks and, in particular, they are also good candidates in 
+improving the effects of adversarial training. Thanks to the smoothness of Gaussian KAFs \ref{SAT}
+and to their adaptable nature, we conjecture KAFs will improve both the inner maximization of adversarial
+training:
+\begin{equation}
+    \delta = \delta + \alpha \cdot sign(\nabla_{\delta}\operatorname{LS}(f_\theta(x + \delta), y)),
+\end{equation}
+where the adversarial attack is crafted, and the outer minimization:
+\begin{equation}
+    \theta = \theta + \beta \cdot \nabla_{\theta}\operatorname{LS}(f_\theta(x + \delta), y),
+\end{equation}
+where we try to counter the effects of the attack, by making the net robust to adversarial perturbations.
+
+Adversarial training will be implemented with the enhanced FSGM AT discussed above \ref{fbf}, since it allows
+us to perform multiple evaluations in reasonable time. For each experiment we will be comparing the 
+accuracy of an adversarially trained Kafnet against the same adversarially trained net, this time 
+equipped with other different activation functions, ranging from the ReLU baseline
+to more secure ones like k-WTAs, ELUs and Swish functions. Moreover, we will always use CIFAR10 for the dataset,
+SGD for the optimization algorithm and PGD to attack the trained networks. 
+
     \section{VGG Inspired Architectures Results}
 
-    \section{Explofing Gradients with KafNets}
+    \section{Exploding Gradients with KafNets}
 
         The exploding gradients problem with KafResNet, why is it happening? (still to clarify)
 
