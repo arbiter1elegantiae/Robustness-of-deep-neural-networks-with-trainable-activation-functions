@@ -477,6 +477,7 @@ verso il prof. Enrico Gregorio.
             as we shall see in the next section. 
 
         \section{From Neural Networks to Deep Neural Networks}
+        \label{dnns}
         Assume to develop a CNN as we have just seen to perform an image classification task. If the built network is sufficiently large, and the chosen dataset limited
         in number of samples, it might happen that our network will \textit{memorize} the entire trainset instead of learning anything useful from it (Ref. 
         UNderstanding DL requieres rethinking generalization). The described scenario is an infamous problem in learning theory and goes under the name of \textit{overfitting},
@@ -961,6 +962,7 @@ verso il prof. Enrico Gregorio.
     \end{equation}
     As for which kernel method one should use, to perform our experiments in the following chapters, we will stick to the original paper and use the 1-dimenstional \textit{Gaussian kernel}:
     \begin{equation}
+        \label{gauskaf}
         \kappa\left(x, d_{i}\right)=\exp \left\{-\gamma\left(x-d_{i}\right)^{2}\right\},
     \end{equation}
     where the normalization term $\gamma$ is called \textit{kernel bandwidth} and is empirically chosen to be $ \gamma = \frac{1}{6 \cdot \Delta^2} $.
@@ -1173,11 +1175,13 @@ verso il prof. Enrico Gregorio.
 
 
 \chapter{Solution Approach}
- 
-    To start experiment novel architecuters or training techniques in practice, they need first to be implemented. In our case, we have chosen to use
-    Python with TensorFlow2 library to craft DL methods. In this way, relying on the \textit{Keras} backend, it is possible to describe complex activation functions, in which for instance the output depends on the input layer size, as for both k-WTAs and KAFs. To this end we implemented them inheriting from the 
-    \textit{tf.keras.layers.Layer} class. The code that implements both activation functions is located in \textit{activationsf.py}.
-     
+
+    \label{swenv}
+    To test novel architecture components or training techniques with real data, we first need to implement them as software. In our case, 
+    we use \textit{Python} (Ref. ) programming language and, in particular, experiments are conducted using \textit{TensorFlow2} (Ref. ) (TF2), a modern 
+    framework for differentiable-programming. In turn, TF2 integrates another famous library, \textit{Keras} (Ref. ), which provides high-level 
+    API to build neural networks based models. Specifically, Keras allows to describe customized layers hence it can be used to implement k-WTA and KAF
+    activation functions. A working implementation is given in \textit{activationsf.py}.
 
     \section{KAFs May Be Good Candidates}
 
@@ -1354,43 +1358,108 @@ verso il prof. Enrico Gregorio.
         rates and mixed-precision arithmetic to accelerate convergence, it is possible to devise an 
         adversarial training method, with no significant computational overhead to standard training,
         which achieves leading edge robustness-accuracy trade-offs.
+        \newpage
+        Moved by the early results obtained on vanilla (i.e. classically trained) Kafnets, and by the 
+        feasability of performing strong adversarial trainings, we argue that an evaluation of the robustness of adversarially trained 
+        Kafnets is a direction worth taking. More importantly, as previously discussed, the smoothness of network's components, such as 
+        activation functions, can additionally boost the resiliency against adversarial examples, and that is precisely the case for Gaussian 
+        KAFs. Indeed, recall that the first derivative of a KAF with Gaussian 1D kernel \ref{gauskaf} is given by:
+        \begin{equation}
+            \frac{\partial g(x)}{\partial x}=\sum_{i=1}^{D} \alpha_{i} \frac{\partial \kappa\left(x, d_{i}\right)}{\partial x},
+        \end{equation}
+        which is a sum of a finite number of continuous functions $\alpha_{i} \frac{\partial \kappa\left(x, d_{i}\right)}{\partial x}$
+        , which makes the whole derivative continuous. Therefore, together with their adaptable nature, we conjecture
+        KAFs will improve, with respect to traditional activation functions, both the inner product of adversarial training:
+        \begin{equation}
+            \delta = \delta + \alpha \cdot sign(\nabla_{\delta}\operatorname{LS}(f_\theta(x + \delta), y)),
+        \end{equation}
+        in terms of crafting stronger attacks thanks to smoothness, as well as the outer minimization:
+        \begin{equation}
+            \theta = \theta + \beta \cdot \nabla_{\theta}\operatorname{LS}(f_\theta(x + \delta), y),
+        \end{equation}
+        where the 'learning' of the attack will benefit from having trainable activation functions, as it happens with standard training
+        \ref{tab:scardapanekafexp}.
 
-       Due to the recent nature of the method just discussed, there is, at the time of writing,
-       to the best of our knowledge, no
-       implementation available for TensorFlow2 or TensorFlow2 \textit{Addons} or on any other 
-       compatible library. For this reason, to perform our experiment, we gave a working implementation
-       which can reproduce the results of the original paper. The code can be found in 
-       \textit{fbfadvtrain.py}. 
+        This theoretically principled hypothesis on the potential advantages that might come from adversarially train Kafnets 
+        needs however an empirical validation. For this reason, the rest of this thesis will be directed into presenting 
+        the findings resulted from different experiments we made evaluating the robustness of Kafnets.
+
+       
 
         
 
 
 \chapter{Evaluation}
 
-In this chapter, experiments assessing the robustness of Kafnets are discussed.
-As seen in the previous chapter, this seems to be a direction worth exploring. In fact, vanilla 
-Kafnets already show some sort of resiliency against attacks and, in particular, they are also good candidates in 
-improving the effects of adversarial training. Thanks to the smoothness of Gaussian KAFs \ref{SAT}
-and to their adaptable nature, we conjecture KAFs will improve both the inner maximization of adversarial
-training:
-\begin{equation}
-    \delta = \delta + \alpha \cdot sign(\nabla_{\delta}\operatorname{LS}(f_\theta(x + \delta), y)),
-\end{equation}
-where the adversarial attack is crafted, and the outer minimization:
-\begin{equation}
-    \theta = \theta + \beta \cdot \nabla_{\theta}\operatorname{LS}(f_\theta(x + \delta), y),
-\end{equation}
-where we try to counter the effects of the attack, by making the net robust to adversarial perturbations.
+% Goal:
+In this chapter, experiments assessing the robustness of Kafnets are discussed. In a comparison with their traditional counterparts, we try to understand 
+what is the preferable way to leverage KAFs in this context. If it is by using random initialization of the coefficients, or if we should use them 
+to approximate a specific function and use ridge regression initialization. Or again, what happens if we push flexibility even further and we let 
+the network train dictionary elements and kernel bandwidths too? Do we gain any improvement? Is there a more advisable architecture for robust 
+Kafnets and how well do they perform when we scale to deeper networks? The follwing sections will cover each of these points. After several evaluations,
+we try to interpret the obtained results and highlight why they are or not consistent with our initial hypothesis, what could be the shortcomings of our 
+work and, in particular, what are the implications. \par
+% Method
+To perform each test we make use of the same software environment presented before in \ref{swenv}, with the additon of \textit{TensorFlow Addons} (Ref. ),
+a library that contains niche functionalities such as the cyclical learning rate technique reccommended by Wong \textit{et al.} in (Ref. FBF) to speed-up adversarial training. 
+With respect to adversarial training, to the best of our knowledge, there is no implementation available for the extended fast FGSM AT compatible with TF2
+at the time of writing. For this reason, we give a working solution in \textit{fbfadvtrain.py} which can reproduce the results
+of the original paper. We choose \textit{Google Colab} (Ref. ) for the platform since it provides a built-in installation of the environment plus free access 
+to fast GPUs such as NVIDIA Tesla T4, Tesla P100s that can significantly boost the running time. With these settings, each adversarial train 
+or attack, the two most expensive operations, 
+requires at most 4 hours to complete.
 
-Adversarial training will be implemented with the enhanced FSGM AT discussed above \ref{fbf}, since it allows
-us to perform multiple evaluations in reasonable time. For each experiment we will be comparing the 
-accuracy of an adversarially trained Kafnet against the same adversarially trained net, this time 
-equipped with other different activation functions, ranging from the ReLU baseline
+% What
+We propose two main experiments, where the only discriminating factor between the 
+two is the model architecture. For the first one we are going to employ a VGG-inspired
+\ref{dnns} convolutional neural network, whereas for the second one a ResNet20. In
+both cases, the task is to devise robust networks for CIFAR10, where robust optimization 
+is approached using adversarial learning and specifically we will be using the extended 
+FSGM adversarial training discussed above. Following, the resulting trained networks 
+are attacked by means of a multi-step PGD attack whose parameters are taken from 
+(Ref. FBF), i.e., with 50 iterations, step size $\alpha = 2/255$, $10$ random restarts
+and perturbation metric $\| \cdot \|_{\infty}$. For the optimization algorithm we use 
+\textit{Stochastic Gradient Descent } (SGD) (Ref. ), as it is the standard choice for 
+adversarial training (Ref. Towards Evaluating). The learning rate is scheduled following
+the one-cycle triangular learning rate policy where we let the learning rate linearly 
+increase starting from a minimum value in the first epoch to a maximum value in the 
+middle of the training and then decrease back with the same ratio until it reaches 
+again the minimum value in the last epoch. Additionally, the net can be trained for 
+few more epochs were we decrese the learning rate even more from the minimum value 
+by another order of magnitude Fig. \ref{fig:oclr}.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{oclrp}
+    \caption{Learning rate evolution during a one-cyclic triangular learning rate schedule.
+    Here the minimum value is 0.00005 and maximum value is 0.0005.}
+    \label{fig:oclr}
+\end{figure}
+The minimum and maximum values are picked through a process called \textit{learning 
+rate range finder} in which the network gets trained (in our case, adversarially trained)
+for few epochs and in the mean time the learning rate is exponentially increased starting from a 
+very small value up to a very large one. The overall evolution of the loss 
+during this learning rate escalation is then inspected: the minimum value is 
+heuristically chosen to be the one from which the loss starts decreasing for the first time 
+whereas the maximum value is picked when the loss reaches a plateau Fig. \ref{fig:lrf}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{lrf}
+    \caption{Loss evolution plot with respect to exponentially increasing learning rates. The 
+    vertical dot-dashed red line denote the learning rate value where the loss has the steepest decrease.
+    While the minimum value matches with the smallest learning rate, the maximum one should be picked around
+    $10^{-1}$.}
+    \label{fig:lrf}
+\end{figure}
+
+
+
+
+
 to more secure ones like k-WTAs, ELUs and Swish functions. Moreover, we will always use CIFAR10 for the dataset,
-SGD for the optimization algorithm and PGD to attack the trained networks. 
-
+SGD for the optimization algorithm and PGD to attack the trained networks
     \section{VGG Inspired Architectures Results}
-
+this is a test of paragraph \par
+and this is another paragrapoh
     \section{Exploding Gradients with KafNets}
 
         The exploding gradients problem with KafResNet, why is it happening? (still to clarify)
