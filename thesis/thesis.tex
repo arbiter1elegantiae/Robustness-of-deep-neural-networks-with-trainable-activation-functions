@@ -1495,7 +1495,7 @@ Swish smooth activation functions.
         Once the basic structure is built, we only need to plug the specific activation function and test the robustness.
         We start with ReLU, which we consider our baseline. First of all, LRF is run and we find that the min and max learning rate bounds are,
         respectively, 0.0001 and 0.08. We adversarially train for 60 epochs. At the end of the training the model achieves 78.1\% of accuracy 
-        on the test set. Lastly, PGD is performed and the overall accuracy of our network against the perturbed images is 45.61\%. Therefore, we were able to
+        on the test set. Lastly, PGD is performed and the overall accuracy of our network against the perturbed images is 45.41\%. Therefore, we were able to
         develop a relatively resilient networks against full PGD attacks. To be precise, 
         at this point we ran different version of our PGD by varying the \textit{max\_iter} parameter. It turns out that, for ReLU, just like for 
         the following experiments, the attack converges around the 50th iteration. It is in fact not possible to harm significantly more even if we push 
@@ -1503,10 +1503,27 @@ Swish smooth activation functions.
         \begin{figure}[h!]
             \centering
             \includegraphics[width=0.50\textwidth]{pgditers.png}
-            \caption{}
+            \caption{Increasing the number of attack iterations inside PGD stops being effective after a certain threshold. WIth our set-up, 50 iterations are enough to craft an 
+            optimal attack. Moreover, notice how the Kafnet improves robustness over the baseline. }
             \label{fig:pgditers}
         \end{figure}
-        For this reason we are going to consider only PGD with 50 steps attacks for the evaluations.
+        For this reason we are going to consider only PGD with 50 steps when evaluating.
+
+        We repeat the process equipping the same network with ELU non-linearities. This small change results in a minor improvement over the baseline in terms of robustness, with 45.49\% 
+        of the perturbed examples correclty classified. However, the accuracy on clean samples drops to 73.99\%, from an original 78.1\% when using ReLUs. This latter result is 
+        apparently in contrast with the claims in (Ref. SAT), indeed, according the paper, we should have observed an increase in both accuracy and robustness with respect to 
+        the baseline. Nevertheless, this drop could also be explained with a wrong choice of learning rates bounds during LRF. To better understand why this is happening, we test other activation functions, this time using KAFs. In particular, KAFs with randomly initialized mixing 
+        coefficients and dictionary size $D=20$ are able to basically match ReLU accuracy, with 77.95\%, and at the same time, to significantly improve robustness achieving 46.80\%
+        against our PGD.
+
+        It is reasonable to think that the promising gains that we experiment with KAFs might help us in improving or even leveraging the properties of smooth activation functions
+        to achieve better scores. Specifically, we build another network where activation functions are KAFs with same dictionary size but, in this case, mixing coefficients
+        are ridge initialized to approximate the ELU function. We call such function KAF\_ELU activation function. Evaluating the network with KAF\_ELUs returns 74.93\% accuracy 
+        and 45.4\% robustness, i.e., even if slightly better than fixed ELU, these results are still worse than the baseline. Therefore, it is then reasonable to believe that the poor 
+        results with ELU and KAF\_ELU are caused by the architecture itself, which is somehow less suitable to ELUs like shapes.
+
+        We are then left to test the activation function which gained top results in (Ref. SAT), the Swish function. Accordingly to our expectations, with Swish the 
+        , 
         - Relu Case : number of parameters, epochs, time per epoch, result,
         - Kaf Case: number of params, epochs, time per epoch, results,
         - ELU 
