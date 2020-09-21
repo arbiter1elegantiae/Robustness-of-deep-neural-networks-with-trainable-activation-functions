@@ -1417,7 +1417,7 @@ both cases, the task is to devise robust networks for CIFAR10, where robust opti
 is approached using adversarial learning and specifically we will be using the extended 
 FSGM adversarial training discussed above. Following, the resulting trained networks 
 are attacked by means of a multi-step PGD attack whose parameters are taken from 
-(Ref. FBF), i.e., with 50 iterations, step size $\alpha = 2/255$, $10$ random restarts
+(Ref. FBF), i.e., with 50 iterations, max perturation $\epsilon = 8/255$, step size $\alpha = 2/255$, $10$ random restarts
 and perturbation metric $\| \cdot \|_{\infty}$. For the optimization algorithm we use 
 \textit{Stochastic Gradient Descent } (SGD) (Ref. ), as it is the standard choice for 
 adversarial training (Ref. Towards Evaluating). The learning rate is scheduled following
@@ -1429,13 +1429,13 @@ few more epochs were we decrese the learning rate even more from the minimum val
 by another order of magnitude Fig. \ref{fig:oclr}.
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.7\textwidth]{oclrp}
+    \includegraphics[width=0.50\textwidth]{oclrp}
     \caption{Learning rate evolution during a one-cyclic triangular learning rate schedule.
     Here the minimum value is 0.00005 and maximum value is 0.0005.}
     \label{fig:oclr}
 \end{figure}
 The minimum and maximum values are picked through a process called \textit{learning 
-rate range finder} in which the network gets trained (in our case, adversarially trained)
+rate range finder}(LRF) in which the network gets trained (in our case, adversarially trained)
 for few epochs and in the mean time the learning rate is exponentially increased starting from a 
 very small value up to a very large one. The overall evolution of the loss 
 during this learning rate escalation is then inspected: the minimum value is 
@@ -1443,24 +1443,84 @@ heuristically chosen to be the one from which the loss starts decreasing for the
 whereas the maximum value is picked when the loss reaches a plateau Fig. \ref{fig:lrf}
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.7\textwidth]{lrf}
+    \includegraphics[width=0.50\textwidth]{lrf}
     \caption{Loss evolution plot with respect to exponentially increasing learning rates. The 
     vertical dot-dashed red line denote the learning rate value where the loss has the steepest decrease.
     While the minimum value matches with the smallest learning rate, the maximum one should be picked around
     $10^{-1}$.}
     \label{fig:lrf}
 \end{figure}
+Different LRF versions are available online, in our case we use one from a public \textit{GitHub} repository\footnote{https://github.com/beringresearch/lrfinder}
+since it offers integration with TF2.
 
+Despite the fact that we previously used k-WTAs to show the potential of KAFs, it is worth to 
+mention that such comparison was only meaningful for the purpose of our toy eperiments, but, in general, 
+k-WTAs should not be used as a benchmark for assessing true robustness.
+Indeed, as shown in (Ref. Carilini https://arxiv.org/abs/2002.08347), only adding k-WTAs to the network 
+is not an effective defense method at all, since they ''make adversarial training worse''.
+It turned out that it is actually possible to devise an adaptive, gradient-based attack capable 
+of finding many adversarial examples, that brought down the accuracy of the original paper's k-WTA ResNet from 50\% to 16\%. 
+Notice how this is not the case for other, standard, activation 
+functions: there is currently no gradient-based attack which is known to break a proper adversarially trained network that uses, for instance,
+ReLUs activation functions. Therefore, K-WTAs should be considered unsecure. In the following 
+sections, we will only be concerned in assessing KAF robustness against well-enstablished counterparts 
+like ReLU, that will act as our baseline, or, as previously argued, the preferable ELU and 
+Swish smooth activation functions.
 
-
-
-
-to more secure ones like k-WTAs, ELUs and Swish functions. Moreover, we will always use CIFAR10 for the dataset,
-SGD for the optimization algorithm and PGD to attack the trained networks
     \section{VGG Inspired Architectures Results}
-this is a test of paragraph \par
-and this is another paragrapoh
+        
+        % Architecture
+        To begin, we consider a CNN made from convolutional blocks, loosely inspired by the well-known 
+        VGG architecture (Ref. VGG). Each block is composed by two convolutional layers with the same 
+        number of filters, kernel size 3, interleaved by batch normalization applied before the 
+        non-linearities. After convolutions, we apply a $2\times2$ max pooling to reduce dimensionality 
+        and dropout for regularization, where the probability for a neuron to get dropped increases
+        by 0.05 factor in each application starting from 0.2 in the first one to 0.4 in the last dropout layer.
+        We use 3 convolutional blocks with 32 filters in the first one, 64 in the second one and 128 in the third.
+        The second stage of the network begins with a 1-dimensional flattening layer applied after the last convolution. 
+        Then we fully connect the flattened vector to a 128 neurons dense layer, followed by dropout again,
+        and finally the decision layer is another fully connected layer where the number of neurons is equal 
+        to the number of classes (10 for CIFAR10) and logits are generated applying a \textit{softmax} application 
+        function Fig \ref{fig:vgg}.
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.85\textwidth]{VGG_inspired_arch}
+            \caption{Visualization of the general structure of a VGG inspired CNN. During the experiments
+            we will modify the activation function.}
+            \label{fig:vgg}
+        \end{figure}
+        Additionally, we employ \textit{He-uniform} initialization on kernel weights and 
+        \textit{$l_2$} regularization on each dense layer with $\lambda$ penality equal to $0.0012$. 
+        
+        Once the basic structure is built, we only need to plug the specific activation function and test the robustness.
+        We start with ReLU, which we consider our baseline. First of all, LRF is run and we find that the min and max learning rate bounds are,
+        respectively, 0.0001 and 0.08. We adversarially train for 60 epochs. At the end of the training the model achieves 78.1\% of accuracy 
+        on the test set. Lastly, PGD is performed and the overall accuracy of our network against the perturbed images is 45.61\%. Therefore, we were able to
+        develop a relatively resilient networks against full PGD attacks. To be precise, 
+        at this point we ran different version of our PGD by varying the \textit{max\_iter} parameter. It turns out that, for ReLU, just like for 
+        the following experiments, the attack converges around the 50th iteration. It is in fact not possible to harm significantly more even if we push 
+        the number of iterations up to 150 Fig \ref{fig:pgditers}.
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.50\textwidth]{pgditers.png}
+            \caption{}
+            \label{fig:pgditers}
+        \end{figure}
+        For this reason we are going to consider only PGD with 50 steps attacks for the evaluations.
+        - Relu Case : number of parameters, epochs, time per epoch, result,
+        - Kaf Case: number of params, epochs, time per epoch, results,
+        - ELU 
+        - Swish 
+        - Elu Kaf
+        - Swish Kaf,
+        - Free Kaf 
+        - Evolution of the attack perturbation 
+
+
+
     \section{Exploding Gradients with KafNets}
+
+
 
         The exploding gradients problem with KafResNet, why is it happening? (still to clarify)
 

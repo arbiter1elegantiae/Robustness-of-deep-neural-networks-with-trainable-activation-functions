@@ -44,7 +44,7 @@ print('\n..Done\n')
 model_art = TensorFlowV2Classifier(model=model, nb_classes=10, input_shape=(32, 32, 3), loss_object=tf.keras.losses.SparseCategoricalCrossentropy(), clip_values=(0, 1))
 
 # Set up a PGD attack w/ parameters as described in FBF ref paper
-pgd = ProjectedGradientDescent(estimator= model_art, eps= 8/255, eps_step=2/255, max_iter=50, num_random_init=10, norm=np.inf)
+pgd = ProjectedGradientDescent(estimator= model_art, eps= 8/255, eps_step=2/255, max_iter=50, num_random_init=10, batch_size = 128, norm=np.inf)
 
 # Create PGD Examples
 print('\nCrafting pgd adversarial examples for the whole test set, this might take a while...\n')
