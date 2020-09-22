@@ -1534,8 +1534,8 @@ Swish smooth activation functions.
 
         Ultimately, we test another KAF version where kernel badwidth and dictionary elements are trainable parameters of the network, together with mixing coefficients. In this 
         way, by doubling the number of parameters required for KAFs, we give in principle as freedom as possible in the modelling of an optimal activation function shape. Nevertheless,
-        even with this last attempt, the model scores 77.54\% and 46.2\% in accuracy and robustness respectively, positioning these last "moving" KAFs (that we call KAF\_Free), 
-        in terms of perfomances,  under the previously used KAF\_Swish. In particular, KAF\_Swish, KAFs and Swish activation functions resulted in best accuracy/robustness trade-offs,
+        even with this last attempt, the model scores 77.54\% and 46.2\% in accuracy and robustness respectively, positioning these last "moving" KAFs (KAF\_Free), 
+        in terms of perfomances, under the previously used KAF\_Swish. In particular, KAF\_Swish, KAFs and Swish activation functions resulted in best accuracy/robustness trade-offs,
         with Swish achieving strongest robustness and KAF\_Swish strongest accuracy Fig. \ref{fig:accrob1}, Tab. \ref{tab:vggrob}.    
         \begin{figure}[h!]
             \centering
@@ -1545,7 +1545,7 @@ Swish smooth activation functions.
             to improve both robustness and accuracy with respect to a ReLU baseline.}
             \label{fig:accrob1}
         \end{figure}
-        Code and in-depth visualizations on KAF's shapes evolutions are located in \textit{fbf\_training\_kafvgg.ipynb}
+        Code to reproduce the experiment and in-depth visualizations on KAF's shapes evolutions are located in \textit{fbf\_training\_kafvgg.ipynb}
         \begin{table}
             \centering
             \begin{tabular}{ |p{2.5cm}||p{3.5cm}|p{1.7cm}|p{2.1cm}|  }
@@ -1570,7 +1570,7 @@ Swish smooth activation functions.
         Is the Swish function hence the go-to transformation when it comes to robustness? These are all 
         legitimate questions, in fact, somehow our initial hypothesis on the strong properties of KAFs seems
         to be only partially true. From our experiments it emerged that Swish function works better than KAFs
-        , if our only concern is robustness. However, a couple of things shoud be highlighted here. First of all, 
+        if our only concern is robustness. However, a couple of things shoud be highlighted here. First of all, 
         in many cases with KAFs and its variations (KAF\_ELU, ..) we noticed, at the end of adversarial 
         training, that there was still room for learning Fig. \ref{fig:vgghistory} and thus, 60 epochs might as well 
         acted as a limitation in our evaluation process. 
@@ -1601,6 +1601,40 @@ Swish smooth activation functions.
 
     \section{Exploding Gradients with KafNets}
 
+        For the implementation in TF2, we follow the architecure described in the original paper by He \textit{et al.} (Ref. ResNet).
+        In their study, authors design and evaluate two different ResNets, regardless of the number of layers, depending on the dataset used 
+        : one for ImageNet and the other for CIFAR10. Since we are using the latter dataset, we are going to stick to that specific ResNet.
+        As for VGG, the basic structure of the architecure is a block of convolutions, made of two $3\times3$ convolutions interleaved by BN and non-linearities 
+        plus a residual connection between the input to the block and the output of the second convolution. Moreover, we divide the convolutive stage 
+        of the network in three sections articulated by the features map dimensionality which are $\{32, 16, 8\}$ respectively. Instead of using 
+        max-pooling to reduce the features map size we use strides of $2$ in the first convolution of the block. The number of filters for 
+        each section are $\{16, 32, 64\}$ respectively. Before these sections there is another $3\times3$ convolutional layer which halves the input dimension.
+        Finally, the network ends with a global average-pooling, a fully-connected layer with 10 units and a softmax.
+        In total, the number of layers of such ResNet is given by:
+        \begin{equation}
+            6n+2
+        \end{equation}
+        stacked weighted layers, where $n$ denotes the number of residual block in each stage.
+        Differently to the previous experiment with VGGs, this time we use the following data augmentation on the training set:
+        4 pixels are padded on each side of the image and a $32\times32$ crop is randomly sampled from the resulting image or its horizontal flip.
+
+        To check if we correclty implemented the described network, we try to replicate the results obtained by the authors in the paper for $n=\{3, 9\}$ therefore 
+        for a ResNet20 and a deep ResNet56 using the original training settings. The models are trained with a mini-batch size of 128 and for 150 epochs, with a learning rate of $0.1$ and ReLU
+        activation functions. At the end of the last epoch, our implementation for ResNet20 returns 91.8\% of standard accuracy which matches the original results. Similarly, when scaling to ResNet56 we get 93.22\% which, even if slightly
+        worse than the originally reported 94\%, is still sufficiently accurate. We then manage to have a working implementation for ResNet and we can start our evaluations.  
+        
+        Since we are mainly concerned in testing the model with other activation functions, we perform a sanity check with KAFs, to make sure that we dont experience drastically 
+        changes in the outcome. Therefore we train, with equal settings, a KafResNet20 and a KafResNet56. Surprisingly, if with 20 KAF layers we get a resonable 90.07\% of standard accuracy, that may be 
+        improved by tuning KAF parameters, in the second case, our 56-layered Kafnet is unable to learn anything at all from the data. 
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{explgrad.png}
+            \caption{}
+            \label{fig:explgrad}
+        \end{figure} 
+        As can be seen from Fig. \ref{fig:explgrad}, after 10 epochs the classification is still performing randomly. Moreover, this trend does not change even if we let the network train longer or if we tune learning rate, KAF parameters 
+        or convolutive's kernel weights initialization.    
+            
 
 
         The exploding gradients problem with KafResNet, why is it happening? (still to clarify)
