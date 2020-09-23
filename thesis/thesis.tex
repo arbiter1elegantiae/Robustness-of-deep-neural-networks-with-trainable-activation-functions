@@ -1595,33 +1595,33 @@ Swish smooth activation functions.
 
         In light of such considerations, we decided to repeat the experiment this time employing another 
         architecture which was free from non-smooth components. A natural choice in this regard, 
-        due to its simplicity and great performances was to implement and evaluate a ResNet neural 
-        network \ref{dnns}.  
+        due to its simplicity and great performances was to implement and evaluate a residual neural 
+        network (ResNet) \ref{dnns}.  
 
 
     \section{Exploding Gradients with KafNets}
 
         For the implementation in TF2, we follow the architecure described in the original paper by He \textit{et al.} (Ref. ResNet).
-        In their study, authors design and evaluate two different ResNets, regardless of the number of layers, depending on the dataset used 
-        : one for ImageNet and the other for CIFAR10. Since we are using the latter dataset, we are going to stick to that specific ResNet.
+        In their study, authors design and evaluate two different ResNets, regardless of the number of layers, depending on the dataset used: 
+        one for ImageNet and the other for CIFAR10. Since we are using the latter dataset, we are going to stick to that specific ResNet.
         As for VGG, the basic structure of the architecure is a block of convolutions, made of two $3\times3$ convolutions interleaved by BN and non-linearities 
         plus a residual connection between the input to the block and the output of the second convolution. Moreover, we divide the convolutive stage 
-        of the network in three sections articulated by the features map dimensionality which are $\{32, 16, 8\}$ respectively. Instead of using 
+        of the network in three sections articulated by their features map dimensionality which are $\{32, 16, 8\}$ respectively. Instead of using 
         max-pooling to reduce the features map size we use strides of $2$ in the first convolution of the block. The number of filters for 
         each section are $\{16, 32, 64\}$ respectively. Before these sections there is another $3\times3$ convolutional layer which halves the input dimension.
         Finally, the network ends with a global average-pooling, a fully-connected layer with 10 units and a softmax.
         In total, the number of layers of such ResNet is given by:
         \begin{equation}
-            6n+2
+            6n+2,
         \end{equation}
-        stacked weighted layers, where $n$ denotes the number of residual block in each stage.
+        stacked weighted layers, where $n$ denotes the number of residual blocks in each stage.
         Differently to the previous experiment with VGGs, this time we use the following data augmentation on the training set:
         4 pixels are padded on each side of the image and a $32\times32$ crop is randomly sampled from the resulting image or its horizontal flip.
 
         To check if we correclty implemented the described network, we try to replicate the results obtained by the authors in the paper for $n=\{3, 9\}$ therefore 
         for a ResNet20 and a deep ResNet56 using the original training settings. The models are trained with a mini-batch size of 128 and for 150 epochs, with a learning rate of $0.1$ and ReLU
         activation functions. At the end of the last epoch, our implementation for ResNet20 returns 91.8\% of standard accuracy which matches the original results. Similarly, when scaling to ResNet56 we get 93.22\% which, even if slightly
-        worse than the originally reported 94\%, is still sufficiently accurate. We then manage to have a working implementation for ResNet and we can start our evaluations.  
+        worse than the originally reported 94\%, is still sufficiently accurate. We then managed to have a working implementation for ResNet and we can start our evaluations.  
         
         Since we are mainly concerned in testing the model with other activation functions, we perform a sanity check with KAFs, to make sure that we dont experience drastically 
         changes in the outcome. Therefore we train, with equal settings, a KafResNet20 and a KafResNet56. Surprisingly, if with 20 KAF layers we get a resonable 90.07\% of standard accuracy, that may be 
@@ -1632,12 +1632,69 @@ Swish smooth activation functions.
             \caption{}
             \label{fig:explgrad}
         \end{figure} 
-        As can be seen from Fig. \ref{fig:explgrad}, after 10 epochs the classification is still performing randomly. Moreover, this trend does not change even if we let the network train longer or if we tune learning rate, KAF parameters 
-        or convolutive's kernel weights initialization.    
-            
+        As can be seen from Fig. \ref{fig:explgrad}, after 10 epochs the classification is still performing randomly. Moreover, this trend does not change even if we let the network train longer or if we tune learning rates, KAF parameters 
+        or kernel weights initialization. 
+        
+        Since we know that the overall architecure works correctly when ReLUs are used, the problem needs to be related with the integration of KAFs. Nevertheless, we also know that KafResNet20 works flawlessly and thus,
+        this issue only arise with the application of KAFs in deep scenarios. For this reason, we argue that the behavior we are facing is probably due to an issue with gradients updates in the network such as 
+        vanishing or exploding gradients.
 
+        To test if this is indeed the case, we log and analyze the distribution of the \textit{Euclidean} norm for each weight, gradient pair inside the model during the first few epochs of the training. The analysis is carried out 
+        on every developed network, i.e., for both ResNet20 and ResNet56 when equipped with ReLU or KAF activation functions. To mitigate the running time, we only log the first epoch for KafResNet56 and the first 4 for the remaining architectures.
+        After logging the inner statistics, we compare each model with their graphical visualization of the
+        evolution of weights and gradients values. The idea is that, in the presence of vanishing or exploding gradients, we should be able to graphically spot where the problem happens, by means of macro variations in the 
+        KafResNet56 plots. All the visualization are made using the \textit{TensorBoard} (Ref. ) tool.
+        
+        To showcase the effects of a potential gradient issue, we inspect three different areas of the network: the early layers, some of the middle layers, and the very last layers. In fact, 
+        wether we are dealing with exploding or vanishing gradients it would eventually become clear in the early stages of the network, however, since our goal is to understand where the phonomenon starts to emerge
+        we need to inspect also the remaining layers. 
+        
+        As can be seen analyzing the first convolution and the first KAF Fig. \ref{fig:gradkaf1} \ref{fig:gradconv1}, the norm of the gradient for the KafResNet56 is undefined (NaN) starting from the first training iteration.
+        This is in turn reflected on the corresponding weight value which never gets updated. On the contrary, gradients and weights in the other architectures tend toward similar values \ref{fig:gradconv1}. 
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[scale=0.32]{kaf1.png}
+            \caption{}
+            \label{fig:gradkaf1}
+        \end{figure}      
+        
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[scale=0.32]{conv1.png}
+            \caption{}
+            \label{fig:gradconv1}
+        \end{figure}
+        NaN values are usually the result of unrepresentable operations such as division by zero or square root of a negative number. In our specific case however, it is more likely that they are generated as a result 
+        of a vanishing or exploding gradient computation. Indeed, in either case, we would have a weight-update that underflows or overflows the numerical precision in place. Subsequently, the gradient computation for that 
+        specific weight will become undefined, producing, from that point backwards, in the backpropagation, only NaN values as the error flows through the network. We are then left to show if the observed NaNs are generating 
+        from an exploding or vanishing gradient problem.
 
-        The exploding gradients problem with KafResNet, why is it happening? (still to clarify)
+        As we continue to analyze deeper layers and their weights, we discover that, around the 15th hidden layer, gradients norm stops being undefined, becoming extremely large instead Fig. \ref{fig:gradkaf15}.
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[scale=0.38]{15grad.png}
+            \caption{}
+            \label{fig:gradkaf15}
+        \end{figure} 
+        The difference between the plotted norms is strongly noticeable. For both the kernel convolution and the mixing coefficients, KafResnet56 gradients norm is close to $2 \cdot 10^5$, thus being several orders of magnitude 
+        bigger than the same norm applied on shallow or ReLU equipped ResNets. The latter norm in fact, fluctuates between 0 and 1, even if it may appear as a straight single-valued line from the plot.
+
+        Our analysis seems to confirm our belief that what is actually happening is a gradient issue, in particular, the extreme grow of gradients which eventually lead to NaN values in the early layers is exaclty the 
+        description of exploding gradients, hence the inability to learn.
+        
+        If we keep plotting towards the last layers, we observe how gradients gradually become more and more close to eachother Fig \ref{fig:gradconv49}.
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[scale=0.38]{gradconv45.png}
+            \caption{}
+            \label{fig:gradconv49}
+        \end{figure}
+        Again, this hints to the fact that exploding gradients is actually caused by the large number of layers and not due to some strange, sudden gradient explosion caused by the integration of KAFs.
+        More importantly, we deduce that such issue can be mitigated, if not completely avoided — as for KafResNet20 —, decreasing the number of layers.
+        
+        Ultimately, it is important to mention that exploding gradients afflict many models in the field of machine learning (Ref. LSTM, ReLU) and thus, as a consequence, many techniques are available nowadays to try to tackle this obstacle. 
+        Even if we did try some of them, it is still plausible that a more careful design, such as the use of another kernel method for KAFs specifically targeted to prevent gradient issues, or the adoption of more 
+        sophisticated methods such as gradient clipping or spectral-norm regularization (Ref. ), might have made possible to train a 56-layered KafNet.  
 
     \section{ResNet20 Inspired Architectures Results}
 
