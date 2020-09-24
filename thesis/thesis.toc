@@ -36,6 +36,6 @@
 \contentsline {chapter}{\numberline {7}Evaluation}{47}{chapter.7}% 
 \contentsline {section}{\numberline {7.1}VGG Inspired Architectures Results}{49}{section.7.1}% 
 \contentsline {section}{\numberline {7.2}Exploding Gradients with KafNets}{53}{section.7.2}% 
-\contentsline {section}{\numberline {7.3}ResNet20 Inspired Architectures Results}{56}{section.7.3}% 
-\contentsline {chapter}{\numberline {8}Future Works}{59}{chapter.8}% 
-\contentsline {chapter}{\numberline {9}Conclusions}{61}{chapter.9}% 
+\contentsline {section}{\numberline {7.3}ResNet20 Inspired Architectures Results}{57}{section.7.3}% 
+\contentsline {chapter}{\numberline {8}Future Works}{61}{chapter.8}% 
+\contentsline {chapter}{\numberline {9}Conclusions}{63}{chapter.9}% 

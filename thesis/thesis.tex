@@ -17,6 +17,7 @@
 \usepackage{lipsum}
 \usepackage{curve2e}
 \usepackage{algpseudocode}
+\usepackage{dblfloatfix}
 \definecolor{gray}{gray}{0.4}
 \newcommand{\bs}{\textbackslash}
 
@@ -818,6 +819,7 @@ verso il prof. Enrico Gregorio.
             
             \subsection{Provable Robustness}
 
+            \label{provrob}
             Provable defenses try to theoretically find certificates in distances or probabilities to certify the robustness of DNNs.
             Can \ref{robopt} be exactly solved? Namely, can we find the optimal set of weights such to minimize 
             the error on Adversarial Examples? This is in principle a legitimate question to ask, and several 
@@ -1293,7 +1295,7 @@ verso il prof. Enrico Gregorio.
         Thanks to an in-depth analysis on the architectural statistics we were able, at least from this point of view, to justify why a Kafnet is winning 
         against the other two implementations. Moreover, this results seem to suggest that KAFs, especially when considered together with their flexibility 
         properties, might be good candidates for enhancing robustness through the lens of Robust Optimization. In particular, they seem to fit well when it 
-        comes to regularization techniques bounding the effects of perturbations, such as the previously introduced Lipschitz constant regulatization.
+        comes to regularization techniques bounding the effects of perturbations, such as the previously introduced Lipschitz constant regulatization \ref{provrob}.
         Even though this regularization technique might appear as the natural approach to follow, it exhibits several difficulties to overcome, such as the lack 
         of efficient and easy to use implementations in current Deep Learning frameworks, and, more importantly, it is in general difficult to come up with an explicit bound 
         on the Lipschitz constant for (Gaussian) KAF layers (Ref. https://arxiv.org/abs/1903.11990). Therefore, we opted to approach Robust Optimization with 
@@ -1689,7 +1691,7 @@ Swish smooth activation functions.
             \caption{}
             \label{fig:gradconv49}
         \end{figure}
-        Again, this hints to the fact that exploding gradients is actually caused by the large number of layers and not due to some strange, sudden gradient explosion caused by the integration of KAFs.
+        Again, this hints to the fact that exploding gradients is actually caused by the large number of layers employed and not due to some strange, sudden gradient explosion with KAFs.
         More importantly, we deduce that such issue can be mitigated, if not completely avoided — as for KafResNet20 —, decreasing the number of layers.
         
         Ultimately, it is important to mention that exploding gradients afflict many models in the field of machine learning (Ref. LSTM, ReLU) and thus, as a consequence, many techniques are available nowadays to try to tackle this obstacle. 
@@ -1697,6 +1699,59 @@ Swish smooth activation functions.
         sophisticated methods such as gradient clipping or spectral-norm regularization (Ref. ), might have made possible to train a 56-layered KafNet.  
         The code to reproduce the results discussed in this section can be found in \textit{reskafnets\_n\_exploding\_grads.ipynb}.
     \section{ResNet20 Inspired Architectures Results}
+
+        In order to satifsy the initial requirement on the need for a smooth architecture, that would also be compatible with KAFs, we showed, in the previous section, how a relatively shallow residual neural network is 
+        ultimately a good choice. Despite the fact that deeper ResNets achieve better performances (Ref. ResNet article), using 20 layers is indeed already sufficient to classify correclty the 90\% of the images in our dataset, beating 
+        any VGG we previously developed. It is then reasonable to expect better results in terms of accuracy/robustness as well from a ResNet20. Moreover, our main intent is to assess the robustness properties that comes with 
+        KAFs and it is not to achieve state of-the-art results. Therefore, for our last experiment, we decided to evaluate the robustness of a ResNet20, as we change activation functions.
+
+        We follow the same procedure used in the case of VGGs to perform evaluations. Namely, we first adversarially train the network using the enhanced FGSM AT and then a full strenght PGD to craft adversarial examples.
+        Differently from before, we extended the number of epochs during training to 80 epochs and, importantly, we augment the train set with data augmentation as described in the previous section on exploding gradients.
+        The learning rate policy, as well as the optimizer, PGD and KAF hyperparameters are unchanged. The details for the model architecture 
+        are again the same provided in the previous section. Finally, the code to reproduce the following results can be found in \textit{fbf\_training\_kafresnets.ipynb}
+
+        In order to give a fair comparison with the VGG case, we evaluate the network with the same set of activation functions, plus 
+        a KAF approximation for ReLU (KAF\_ReLU). The outcome of each evaluation is given in Tab. \ref{tab:resnetrob}. Moreover, an accuracy-robustness
+        plot Fig. \ref{fig:rob_af2} allows for a graphical visualization of each of the produced trade-offs.
+
+        \begin{table*}[!h]
+            \centering
+            \begin{tabular}{ |p{2.5cm}||p{1.7cm}|p{2.1cm}|  }
+                \hline
+                \textbf{Activation} & \textbf{Accuracy} & \textbf{Robustness}\\
+                \hline
+                ReLU & 77.52\% & 50.17\% \\
+                ELU & 75.42\% & 51.69\% \\
+                KAF & 78.08\% & 52.23\% \\
+                KAF\_ReLU & \textbf{79.65}\% & 51.44\% \\
+                KAF\_ELU & 78.69\% & 52.76\% \\
+                Swish & \underline{78.68\%} & \underline{\textbf{53.88\%}} \\
+                KAF\_Swish & 79.21\%& 52.10\% \\
+                KAF\_Free & 78.88\%& 52.07\% \\
+                \hline
+            \end{tabular}
+            \caption{Summary of the robustness gained from changing activation functions in an 
+            adversarially trained ResNet20. Bold denotes best result while underline best trade-off.}
+            \label{tab:resnetrob}
+        \end{table*}
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=0.8\textwidth]{rob_af2.png}
+            \caption{Robustness/accuracy visualization for a ResNet20 equipped with different activation functions. 
+            Fixed activation functions are shown with a thin diamond whereas non-parametric KAFs with a filled x. Swish achieves best robustness and KAFs generally tend 
+            to improve both robustness and accuracy with respect to a ReLU baseline.}
+            \label{fig:rob_af2}
+        \end{figure}
+
+
+        Before we start to comment on each single activation function's score, it is important to remark how, regardless of the 
+        activation function being used, the network significantly improves in robustness over the VGG case. In fact, even in the least 
+        performant case -- corresponing to the ReLU baseline --, we are still outperforming the best 47.73\% robustness obained
+        with Swish equipped VGG. This highlights the importance of choosing the right architecture, which in our case corresponded to 
+        a non-smooth component free architecture, adding value to the smoothness thesis. Moreover, note how this comparison is especially
+        meaningful since the standard accuracies and total number of weights between the two architectures are nearly the same, therefore,
+        given equal resources, the ResNet seems to be really more robust.
+
 
 
 \chapter{Future Works}

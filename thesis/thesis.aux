@@ -89,6 +89,7 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Metzen \textit  {et al.} (Ref. ) used a ResNet as original classifier, plus dections is made thanks to many interleaving detectors between each residual block. Each detector is implemented as a DNN that learns how to spot the presence of an attack by looking at the activations layer's distributions during training.\relax }}{24}{figure.caption.17}\protected@file@percent }
 \newlabel{fig:detection}{{3.1}{24}{Metzen \textit {et al.} (Ref. ) used a ResNet as original classifier, plus dections is made thanks to many interleaving detectors between each residual block. Each detector is implemented as a DNN that learns how to spot the presence of an attack by looking at the activations layer's distributions during training.\relax }{figure.caption.17}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2.3}Provable Robustness}{25}{subsection.3.2.3}\protected@file@percent }
+\newlabel{provrob}{{3.2.3}{25}{Provable Robustness}{subsection.3.2.3}{}}
 \newlabel{LC}{{3.12}{26}{Provable Robustness}{equation.3.2.12}{}}
 \@writefile{toc}{\contentsline {chapter}{\numberline {4}Non-Parametric Activation Functions}{27}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
@@ -126,12 +127,12 @@
 \@writefile{lot}{\addvspace {10\p@ }}
 \newlabel{swenv}{{6}{39}{Solution Approach}{chapter.6}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {6.1}KAFs May Be Good Candidates}{39}{section.6.1}\protected@file@percent }
-\newlabel{fig:actdist11}{{\caption@xref {fig:actdist11}{ on input line 1224}}{40}{KAFs May Be Good Candidates}{figure.caption.24}{}}
-\newlabel{fig:actdist12}{{\caption@xref {fig:actdist12}{ on input line 1229}}{41}{KAFs May Be Good Candidates}{figure.caption.25}{}}
+\newlabel{fig:actdist11}{{\caption@xref {fig:actdist11}{ on input line 1226}}{40}{KAFs May Be Good Candidates}{figure.caption.24}{}}
+\newlabel{fig:actdist12}{{\caption@xref {fig:actdist12}{ on input line 1231}}{41}{KAFs May Be Good Candidates}{figure.caption.25}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces Each histogram shows the distribution of the activation values for the first neuron of the first channel, for each layer. The distribution colored in violet represents the activations for the batch of perturbed samples while the light-green stands for the distribution of values the neuron gets when we feed the network with original samples. We also plot, when possible, the actual shape of the activation function acting on the neuron with a red line. The effects of the perturbation can be appreciated especially in the last layer where distributions differ the most.\relax }}{41}{figure.caption.26}\protected@file@percent }
 \newlabel{fig:actdist13}{{6.1}{41}{Each histogram shows the distribution of the activation values for the first neuron of the first channel, for each layer. The distribution colored in violet represents the activations for the batch of perturbed samples while the light-green stands for the distribution of values the neuron gets when we feed the network with original samples. We also plot, when possible, the actual shape of the activation function acting on the neuron with a red line. The effects of the perturbation can be appreciated especially in the last layer where distributions differ the most.\relax }{figure.caption.26}{}}
-\newlabel{fig:actdist21}{{\caption@xref {fig:actdist21}{ on input line 1252}}{42}{KAFs May Be Good Candidates}{figure.caption.27}{}}
-\newlabel{fig:actdist22}{{\caption@xref {fig:actdist22}{ on input line 1257}}{42}{KAFs May Be Good Candidates}{figure.caption.28}{}}
+\newlabel{fig:actdist21}{{\caption@xref {fig:actdist21}{ on input line 1254}}{42}{KAFs May Be Good Candidates}{figure.caption.27}{}}
+\newlabel{fig:actdist22}{{\caption@xref {fig:actdist22}{ on input line 1259}}{42}{KAFs May Be Good Candidates}{figure.caption.28}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces Each histogram shows the distribution of the mean value of the activations for a random layer's filter, in the case of a convolutive layer, or for every neurons in the layer, in the case of dense (last) layer. The effects of the perturbation are less visible when the net is equipped with KAF activation functions.\relax }}{43}{figure.caption.29}\protected@file@percent }
 \newlabel{fig:actdist23}{{6.2}{43}{Each histogram shows the distribution of the mean value of the activations for a random layer's filter, in the case of a convolutive layer, or for every neurons in the layer, in the case of dense (last) layer. The effects of the perturbation are less visible when the net is equipped with KAF activation functions.\relax }{figure.caption.29}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {6.2}Fast is Better than Free Adversarial Training}{44}{section.6.2}\protected@file@percent }
@@ -161,14 +162,18 @@
 \newlabel{fig:gradkaf1}{{7.8}{55}{\relax }{figure.caption.41}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {7.9}{\ignorespaces \relax }}{56}{figure.caption.42}\protected@file@percent }
 \newlabel{fig:gradconv1}{{7.9}{56}{\relax }{figure.caption.42}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.3}ResNet20 Inspired Architectures Results}{56}{section.7.3}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {7.10}{\ignorespaces \relax }}{57}{figure.caption.43}\protected@file@percent }
 \newlabel{fig:gradkaf15}{{7.10}{57}{\relax }{figure.caption.43}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {7.11}{\ignorespaces \relax }}{57}{figure.caption.44}\protected@file@percent }
 \newlabel{fig:gradconv49}{{7.11}{57}{\relax }{figure.caption.44}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {8}Future Works}{59}{chapter.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7.3}ResNet20 Inspired Architectures Results}{57}{section.7.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7.2}{\ignorespaces Summary of the robustness gained from changing activation functions in an adversarially trained ResNet20. Bold denotes best result while underline best trade-off.\relax }}{58}{table.caption.45}\protected@file@percent }
+\newlabel{tab:resnetrob}{{7.2}{58}{Summary of the robustness gained from changing activation functions in an adversarially trained ResNet20. Bold denotes best result while underline best trade-off.\relax }{table.caption.45}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.12}{\ignorespaces Robustness/accuracy visualization for a ResNet20 equipped with different activation functions. Fixed activation functions are shown with a thin diamond whereas non-parametric KAFs with a filled x. Swish achieves best robustness and KAFs generally tend to improve both robustness and accuracy with respect to a ReLU baseline.\relax }}{58}{figure.caption.46}\protected@file@percent }
+\newlabel{fig:rob_af2}{{7.12}{58}{Robustness/accuracy visualization for a ResNet20 equipped with different activation functions. Fixed activation functions are shown with a thin diamond whereas non-parametric KAFs with a filled x. Swish achieves best robustness and KAFs generally tend to improve both robustness and accuracy with respect to a ReLU baseline.\relax }{figure.caption.46}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {8}Future Works}{61}{chapter.8}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {chapter}{\numberline {9}Conclusions}{61}{chapter.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {9}Conclusions}{63}{chapter.9}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
