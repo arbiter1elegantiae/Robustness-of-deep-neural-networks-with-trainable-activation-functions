@@ -38,3 +38,5 @@
 \contentsline {section}{\numberline {7.2}Exploding Gradients with KafNets}{53}{section.7.2}% 
 \contentsline {section}{\numberline {7.3}ResNet20 Inspired Architectures Results}{57}{section.7.3}% 
 \contentsline {chapter}{\numberline {8}Conclusions and Future Works}{61}{chapter.8}% 
+\contentsline {section}{\numberline {8.1}Conclusions}{61}{section.8.1}% 
+\contentsline {section}{\numberline {8.2}Future Works}{62}{section.8.2}% 
