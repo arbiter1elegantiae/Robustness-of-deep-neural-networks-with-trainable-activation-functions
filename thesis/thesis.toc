@@ -19,7 +19,7 @@
 \contentsline {subsection}{\numberline {3.1.3}White, Grey and Black Box Attacks}{22}{subsection.3.1.3}% 
 \contentsline {section}{\numberline {3.2}Defenses}{23}{section.3.2}% 
 \contentsline {subsection}{\numberline {3.2.1}Detection Methods}{23}{subsection.3.2.1}% 
-\contentsline {subsection}{\numberline {3.2.2}Robust Optimization}{24}{subsection.3.2.2}% 
+\contentsline {subsection}{\numberline {3.2.2}Robust Optimization and Adversarial Training}{24}{subsection.3.2.2}% 
 \contentsline {subsection}{\numberline {3.2.3}Provable Robustness}{25}{subsection.3.2.3}% 
 \contentsline {chapter}{\numberline {4}Non-Parametric Activation Functions}{27}{chapter.4}% 
 \contentsline {section}{\numberline {4.1}Adaptive Piece-Wise Linear Activation Functions}{28}{section.4.1}% 
@@ -37,5 +37,4 @@
 \contentsline {section}{\numberline {7.1}VGG Inspired Architectures Results}{49}{section.7.1}% 
 \contentsline {section}{\numberline {7.2}Exploding Gradients with KafNets}{53}{section.7.2}% 
 \contentsline {section}{\numberline {7.3}ResNet20 Inspired Architectures Results}{57}{section.7.3}% 
-\contentsline {chapter}{\numberline {8}Future Works}{61}{chapter.8}% 
-\contentsline {chapter}{\numberline {9}Conclusions}{63}{chapter.9}% 
+\contentsline {chapter}{\numberline {8}Conclusions and Future Works}{61}{chapter.8}% 

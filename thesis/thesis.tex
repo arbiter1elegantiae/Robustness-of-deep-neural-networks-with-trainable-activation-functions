@@ -781,7 +781,7 @@ verso il prof. Enrico Gregorio.
             the objective of this thesis.
             
             
-            \subsection{Robust Optimization}
+            \subsection{Robust Optimization and Adversarial Training}
 
                 What if we train a DNN such that, together with minimizing the loss we also
                 train to minimize the effects of adversarial examples? That is, how do we go and train
@@ -1752,9 +1752,45 @@ Swish smooth activation functions.
         meaningful since the standard accuracies and total number of weights between the two architectures are nearly the same, therefore,
         given equal resources, the ResNet seems to be really more robust.
 
+        A second key point to highlight concerns how, this time, ReLU is definitely acting as a base line.
+        Indeed, any of the tested smooth activation functions, even the ELU, manages to substantially 
+        increase the robustness of the network with respect to the 50.17\% achieved by ReLU. Again, 
+        this behavior is in line with (Ref. SAT) evaluations. 
+        
+        Furthermore, extending (Ref. SAT)
+        observations, we discover that, in a much noticeable way than with VGG, the usage of KAFs 
+        in ResNet20 always results in a boost in standard accuray, wether we consider the baseline 
+        but, more in general, it applies to any fixed activation function since, approximating the  
+        initial shape of a KAF with a fixed activation function leads, in every instance, to greater 
+        accuracies Fig. \ref{fig:rob_af2}.
+
+        Ultimately, the most remarkable result for our study concerns the robustness obtained 
+        with Swish functions. Achieving a total robustness of 53.88\% and thus improving 
+        by a margin of almost 4 points from the baseline and also considerably from the second best performing functions (KAF\_ELU), Swish is confirmed once again as the 
+        preferable function to pick for maximizing the robustness of a deep neural network. 
+        Moreover, Swish performs resonably well in terms of standard accuracy too, being less than one point away 
+        from the maximum reached with KAF\_ReLU. Therefore, after having evaluated several activation 
+        functions and strucutrally different architectures, we argue that is tipically convenient to 
+        choose Swish activation functions when we want to build a robust neural network.
 
 
-\chapter{Future Works}
+
+\chapter{Conclusions and Future Works}
+
+        Our initial hyphotesis on the potential of Gaussian kernel-based activation functions in improving
+        adversarial training was only marginally validated by the experiments we made. Even though
+        it is still plausible that a fine-grained optimization of hyperparameters such as the dictionary size or the kernel-bandwidth,
+        or even the regularization of the mixing coefficients, might have led to stronger results, we conclude (or believe?) that the main reason behind the 
+        observed lack in effectiveness, is to be found in the properties of the KAF itself. That is, as much as an user can exploit 
+        smoothness and flexibility to improve accuracy and, in particular, to strenght adversarial training, we should not forget that this also holds 
+        true from the adversary side. Enhanced flexibility means more resiliency against attacks, but it also means more space for the attacker to 
+        search for even stronger adversarial examples. The addiction of non-linearity in the output space of $f_{\theta}$ that comes with KAFs, can in fact
+        be laveraged by any gradient-based attack, including PGD. On the contrary, fixed activation functions do not introduce new parameters or flexibility in the network. Therefore,
+        only through smoothness, we can train a model against strong attacks, that cannot, loosely speaking, be made stronger by any adversary.
+        It is this lack of unbalanceness towards the defense side that is missing with KAFs, preventing them to overcome, for instance, the performance of Swish activation functions.
+
+
+This thesis tries to add to the bag of evidences in literature that smoother architectures might benefit improvements in adversarial resiliency
 
     Different Kernels, resolve the exploding gradient problem and scale to ImageNet
     Perform more adaptive attacks to assess the robustness of kafresnets as is the current standard (Carlini et al.)
@@ -1766,12 +1802,7 @@ Swish smooth activation functions.
     highlights the difficulty of evaluating adversarial robustness, as pointed out by other work which
     began to defeat proposed defenses en masse (Uesato et al., 2018; Athalye et al., 2018). Since then,
     several best practices have been proposed to mitigate this problem (Carlini et al., 2019).
-
-
-\chapter{Conclusions}
-
-    This thesis tries to add to the bag of evidences in literature that smoother architectures might benefit improvements in adversarial resiliency
-    
+   
     
 \appendix
 
