@@ -73,6 +73,18 @@ verso il prof. Enrico Gregorio.
 
     \section{Intriguing Properties of Neural Networks}
 
+        The vast majority of cutting-edge \textit{neural networks} based classifiers is currently vulnerable to imperceptible non-random perturbations of the input.
+        As first shown by C. Szegedy \textit{et al.} in (Ref. Intriguing), and then subsequently in many other publications (Ref. 43 survey), (Ref. 44 survey),
+        it is sufficient for an \textit{adversary} to add a small amount of targeted noise on an input in order to induce the model to predict, with high confidence,
+        a wrong class. Despite the fact that such \textit{attacks} are relevant for many different domains, it is typical to introduce the problem with concrete examples dealing with images.
+        Indeed, in the framework of image classification, perturbations have a nice interpretation in terms of norms and the problem itself can be appreciated visually.
+
+        \begin{figure}[h]
+            \centering
+            \includegraphics[width=0.95\textwidth]{prt.png}
+            \caption{Adversarial Example}
+        \end{figure}
+
         Here we informally state the problem of adversarial attacks in ML models 
         especially wrt to Neural Networks.
         Why is it of fundamental importance for the progress of the field from
@@ -80,7 +92,7 @@ verso il prof. Enrico Gregorio.
         and theoretical (Madry arguments around interpertability and robustness)
         perspectives
 
-        %Recent work has shown that state-of-the-art classifiers are quite brittle, in the sense that a small adversarial change of an originally with high confidence correctly classified input 
+        Recent work has shown that state-of-the-art classifiers are quite brittle, in the sense that a small adversarial change of an originally with high confidence correctly classified input 
         %leads to a wrong classification again with high confidence. 
         %This raises concerns that such classifiers are vulnerable to attacks and calls into question their usage in safety-critical systems.
 %
@@ -96,18 +108,18 @@ verso il prof. Enrico Gregorio.
         %traditional risk. The reason for this is that it is very difficult to actually draw samples i.i.d. from the true underlying distribution. 
         %Instead, any procedure we use to collect data is an empirical attempt at accessing the true underlying distribution, and may ignore certain dimensions, especially if these appear “obvious” 
         %to humans. This is hopefully somewhat obvious even on the previous image classification example. 
-        %There has been a lot of recent claims that algorithms have “surpassed human performance” on image classification, using classifiers like the one we saw as an example. 
-        %But, as the above example illustrates, algorithms are nowhere near human performance, if they cannot even recognize that an image that looks exactly the same, 
+        There has been a lot of recent claims that algorithms have “surpassed human performance” on image classification, using classifiers like the one we saw as an example. 
+        But, as the above example illustrates, algorithms are nowhere near human performance, if they cannot even recognize that an image that looks exactly the same, 
         %by any visual definition, as the original image, in fact belongs to the same class. Some may argue that these cases “shouldn’t count” because they were specifically designed to fool 
         %the algorithm in question, and may not correspond to an image that will ever be viewed in pratice, but much simpler pertrubations such as translations and rotations also can serve as 
         %adversarial examples.
 %
-        %The fundamental problem is that when claims are made of “human level” performance by ML systems, they really mean “human level on data generated exactly by the sampling mechanism used 
-        %in this experiment.” But humans don’t do well just on one sampling distribution; humans are amazingly resilient to changes in the environment. So when people are told that machine learning 
-        %algorithms “surpass human performance” (especially when conjoined, as they often are, by claims that the associated deep learning algorithms “work like the human brain”), 
-        %it often leads to the implicit assumption that the algorithms will also be similarly resilient. But they are not; deep learning algorithms are incredibly brittle, 
-        %and adversarial examples lay this fact bare, in a very obvious and intuitive manner. Put another way, can’t we at least agree to cool it on the “human level”, and “works 
-        %like the human brain” talk for systems that are as confidence that the first image is a pig as as they are that the second image is an airplane?
+        The fundamental problem is that when claims are made of “human level” performance by ML systems, they really mean “human level on data generated exactly by the sampling mechanism used 
+        in this experiment.” But humans don’t do well just on one sampling distribution; humans are amazingly resilient to changes in the environment. So when people are told that machine learning 
+        algorithms “surpass human performance” (especially when conjoined, as they often are, by claims that the associated deep learning algorithms “work like the human brain”), 
+        it often leads to the implicit assumption that the algorithms will also be similarly resilient. But they are not; deep learning algorithms are incredibly brittle, 
+        and adversarial examples lay this fact bare, in a very obvious and intuitive manner. Put another way, can’t we at least agree to cool it on the “human level”, and “works 
+        like the human brain” talk for systems that are as confidence that the first image is a pig as as they are that the second image is an airplane?
 
 
 
