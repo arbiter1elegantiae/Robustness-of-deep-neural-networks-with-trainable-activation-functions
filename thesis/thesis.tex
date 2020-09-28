@@ -98,7 +98,7 @@ verso il prof. Enrico Gregorio.
         Thus, making them all prone to suffer from some kind of adversarial attack, if no defense technique is explicitly implemented.
         
         Along with the obvious security concerns that we have just discussed, there is another fundamental reason to develop methods capable of preventing adversarial examples, which is, the opportunity of 
-        building a more human-aligned models. Any claim about state-of-the-art classifiers that have surpassed "human performances" is indeed far from being true, if we look at the task through the lens of adversarial examples.
+        building more human-aligned models. Any claim about state-of-the-art classifiers that have surpassed "human performances" is indeed far from being true, if we look at the task through the lens of adversarial examples.
         In particular, any person would have no trouble in correclty classify an adversarially perturbed image on which state-of-the-art models are consistently fooled. That is likely because humans tend to learn features that are 
         extremely resilient towards sampling distribution changes, whereas neural networks are eventually prone to learn brittle, sampling-specific features (Ref. Adversarial examples are not bug are features).
         Moreover, recent works have showed how the \textit{interpretability} of a model, which is usually very difficult to assess in performant deep neural networks, is instead significantly increased 
@@ -107,7 +107,7 @@ verso il prof. Enrico Gregorio.
 
         Nowadays, despite the relevance for the field, no truly robust model for real-world applications has been developed yet. For CIFAR10 (Ref. ), a relatively small toy dataset used in image classification, 
         the current state-of-the-art model achieves 43.96\% of accuracy against the most effective attack (Ref. github cifar10\_challenge).
-        Furthermore, things get even more complicated when we try to scale up to larger, more realistic models, since it generally becomes extremely expensive to train robust models (Ref. Free adversarial training).
+        Furthermore, things get even more complicated when we try to scale up to larger, more realistic models, since it generally becomes extremely expensive to train robust models in these settings (Ref. Free adversarial training).
         Specifically, it is commonly believed that, to improve robustness, one needs to either largely extend the size of the dataset or increase the network capacity (Ref. there is no free lunch in adversarial robustness).
         Due to the lack of a global understanding of the nature of adversarial examples, the critical security alarms that arise with them and the complexity of developing effective defenses,
         the area of adversarial robustness is costantly attracting more and more research interest (Ref carlini towards..)
@@ -136,7 +136,7 @@ verso il prof. Enrico Gregorio.
         the common wisdom (Ref. no free adversarial lunch).
         
         Building up from this result, we propose the evaluation, within the same framework, of a novel class of activation functions called \textit{kernel-based activation functions} (KAFs).
-        KAFs were first introduced in (Ref. Scardapane) as a promising class of trainable activation functions aiming to overcome the limitations of other alternatives present in the literature. 
+        KAFs were first introduced in (Ref. Scardapane) as a promising class of trainable activation functions, aiming to overcome the limitations of other alternatives present in the literature. 
         In particular, trainable activation functions are non-linearities whose shape can be trained together with the other weights of the network, by means of 
         trainable parameters present in the formulation. By laveraging cheap kernel expansions, the locality effects of their parameters and other desiderable 
         properties, KAFs allows for fast convergence, universal shape approximations and generalization of the network (Ref. On the Stability and Generalization).
@@ -154,7 +154,7 @@ verso il prof. Enrico Gregorio.
     fixed and parametric activation functions, focusing in particular on KAFs. The reader familiar with the relevant literature and notation on adversarial 
     examples (Szegedy et al., 2014; Carlini  Wagner, 2017b; Madry et al. Athalye et al., 2018a, ecc.), can safely skip to Chapter 4.
     Following, Chapter 5 gives a detailed description of the related works which corroborate our hyphotesis, Chapter \ref{chap:6} introduces theoretical 
-    and empirical insights on why we conjecture the potentials of KAFs and finally in Chapter \ref{chap:7} experiments, using different architectures, 
+    and empirical insights on why we conjecture the potentials of KAFs, and finally in Chapter \ref{chap:7}, experiments, using different architectures, 
     are presented and commented. Chapter 8 conludes the work by drawing a final comment on the results obtained, apported contributions 
     as well as the shortcomings faced and relevant ideas for future works.
 
