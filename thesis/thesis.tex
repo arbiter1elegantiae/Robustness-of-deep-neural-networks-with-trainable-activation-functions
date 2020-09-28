@@ -95,15 +95,22 @@ verso il prof. Enrico Gregorio.
         a humanoid robot are proposed whereas (Ref. Darts: Deceiving autonomous cars with toxic signs) and (Ref. https://arxiv.org/abs/1907.00374) illustrate the feasability of fooling autonomous-driving car systems.
         Moreover, as the performances of intelligent systems increase (Ref. 27) (Ref. 28), and their availability becomes ever more within the reach of fundamentally anyone who can connect to the internet, these algorithms 
         are already finding their way into other security-critical scenarios such as aerial vehicles face authentication (Ref. 33), social engineering detection, network anomalies detection (Ref. 36) (Ref. 37) and so on. 
-        Thus, making them all prone to suffer from some kind adversarial attack, if no defense technique is explicitly implemented.
+        Thus, making them all prone to suffer from some kind of adversarial attack, if no defense technique is explicitly implemented.
         
         Along with the obvious security concerns that we have just discussed, there is another fundamental reason to develop methods capable of preventing adversarial examples, which is, the opportunity of 
-        building more human-aligned models. Any claim about state-of-the-art classifiers that have surpassed "human performances" is indeed far from being true, if we look at the task through the lens of adversarial examples.
+        building a more human-aligned models. Any claim about state-of-the-art classifiers that have surpassed "human performances" is indeed far from being true, if we look at the task through the lens of adversarial examples.
         In particular, any person would have no trouble in correclty classify an adversarially perturbed image on which state-of-the-art models are consistently fooled. That is likely because humans tend to learn features that are 
         extremely resilient towards sampling distribution changes, whereas neural networks are eventually prone to learn brittle, sampling-specific features (Ref. Adversarial examples are not bug are features).
         Moreover, recent works have showed how the \textit{interpretability} of a model, which is usually very difficult to assess in performant deep neural networks, is instead significantly increased 
         when we evaluate \textit{adversarially robust} networks (Ref. Madry 1) (Ref. Madry 2) (Ref. Interpreting Adversarial Examples by Activation Promotion). Therefore, broadly speaking, adversarial examples 
-        seem to be only one of the many syntoms of the discrepancy between the way human and intelligent systems currently learn.
+        seem to be only a syntom of the discrepancy between the way human and intelligent systems currently learn.
+
+        Nowadays, despite the relevance for the field, no truly robust model for real-world applications has been developed yet. For CIFAR10 (Ref. ), a relatively small toy dataset used in image classification, 
+        the current state-of-the-art model achieves 43.96\% of accuracy against the most effective attack (Ref. github cifar10\_challenge).
+        Furthermore, things get even more complicated when we try to scale up to larger, more realistic models, since it generally becomes extremely expensive to train robust models (Ref. Free adversarial training).
+        Specifically, it is commonly believed that, to improve robustness, one needs to either largely extend the size of the dataset or increase the network capacity (Ref. there is no free lunch in adversarial robustness).
+        Due to the lack of a global understanding of the nature of adversarial examples, the critical security alarms that arise with them and the complexity of developing effective defenses,
+        the area of adversarial robustness is costantly attracting more and more research interest (Ref carlini towards..)
 
         % Abbiamo quindi capito per quale motivo molta ricerca e' stata indirizzata verso lo studio degli esempi avversari. Tuttavia qual'e lo stato attuale?
         % Brevemente, non siamo ancora in grado di avere modelli performanti e che siano anche resistenti, su cifar 10 la rete piu robusta attualmente sviluppata ha un accuracy di 60 percento su perturbazioni 
@@ -113,31 +120,49 @@ verso il prof. Enrico Gregorio.
 
     \section{Activation Functions and Robustness}
 
-        Recently a link has been proposed between activation functions and the robustness of
-        Neural Networks (Smooth Adversarial Training). In particular, authors showed how they managed
-        to improve the robustness by replacing the traditional Rectified Linear Units activation functions
-        with smoother alternatives such as ELUs, SWISH, PReLUs
+        In this thesis, we focus on analyzing the effects of structural changes in deep neural networks, in terms of adversarial robustness.
+        In particular, we try to assess how \textit{adversarial training} (Ref. adversarial training), i.e., the act of training using adversarial examples,
+        may benefit from theoretically principled changes in the model's architecture.
+        As previously anticipated, one known method to boost the resiliency --during such training-- consists in naively adding more capacity to the model, by simply 
+        introducing more parameters.  
+        However, such technique requires to build a significantly bigger network which is ultimately different from the original one. On the contrary, we are concerned with 
+        minor modifications, leaving the overall structure unchanged.
+
+        Recently, a link between activation functions and robustness has been proposed. In (Ref. SAT), authors showed that it is possible to strengthen
+        adversarial training by means of activation functions that are \textit{smooth} or, in other words, functions whose first derivative is continuous everywhere\footnote{Formally we say this functions are $\mathcal{C}^1$ continuous.}. 
+        Indeed, their experiments consistently reported greater performances when, instead of the 
+        typical rectified linear unit (ReLU) (Ref. relu), the model's non-linearities were substituted by a smooth counterpart, such as: ELU, GELU or Swish functions(Ref. )(Ref. )(Ref. ).
+        It is worth to note that such improvement comes for "free", in the sense that no data augmentation or network growth were carried out, in contraddiction with 
+        the common wisdom (Ref. no free adversarial lunch).
         
-        Building up from this result we thought we could find benefits by laveraging recently proposed smooth
-        trainable activation functions called Kernel Based Activation Functions (Scardapane et al.), 
-        which already showed great results in standard tasks, in the context of adversarial attacks.
+        Building up from this result, we propose the evaluation, within the same framework, of a novel class of activation functions called \textit{kernel-based activation functions} (KAFs).
+        KAFs were first introduced in (Ref. Scardapane) as a promising class of trainable activation functions aiming to overcome the limitations of other alternatives present in the literature. 
+        In particular, trainable activation functions are non-linearities whose shape can be trained together with the other weights of the network, by means of 
+        trainable parameters present in the formulation. By laveraging cheap kernel expansions, the locality effects of their parameters and other desiderable 
+        properties, KAFs allows for fast convergence, universal shape approximations and generalization of the network (Ref. On the Stability and Generalization).
+        Compared to the fixed and trainable counterparts, KAFs result in better empirical performances on a variety of tasks (Ref. Kafnets). Ultimately,
+        KAFs can be made smooth with the employment of smooth kernels, such as the 1-dimensional Gaussian kernel(Ref. ).
+
+        Through a combination of both flexibility --resulting from their trainable nature-- and smoothness, we argue that the adversarial training of a 
+        deep neural networks will benefit from the presence of KAFs inside the model's architecture.
         
     \section{Structure of the Thesis}
 
-    This paper studies the robustness of defenses to adversarial examples. Readers familiar with the
-    relevant literature and notation (Szegedy et al., 2014; Carlini  Wagner, 2017b; Madry et al. Athalye et al., 2018a) can continue with Section 3 where we describe our methodology.
-    In this first part, the building blocks needed in order to understand the main arguments of the thesis are introduced. Even if, at first sight, 
-    the concepts that are going to follow may appear apart, the scope of this work is to make an attempt at discovering connections that might instead lie between them.     
-    For this reason, we will extensively introduce what Neural Networksis important that we cover the basicsDue to the deep and wide nature depth and the wide  
-    Pointers to more appropriate and detailed resources on the topics are given throughout
-    
-    Description of the remaining chapters 
+    From an high-level, this thesis is dived into two parts. The first part, which ranges from Chapter \ref{chap:2} to Chapter \ref{chap:4}, is in charge of introducing the reader 
+    to the basics concepts needed in order to understand the second part, where main ideas are developed and evaluated. The latter starts from Chapter \ref{chap:5} and ends with Chapter \ref{chap:8}.
+    Specifically, Chapter 2 discusses the fundamentals of Deep Learning, Chapter \ref{chap:3} the formal theory of adversarial examples and Chapter 4 is a brief review of
+    fixed and parametric activation functions, focusing in particular on KAFs. The reader familiar with the relevant literature and notation on adversarial 
+    examples (Szegedy et al., 2014; Carlini  Wagner, 2017b; Madry et al. Athalye et al., 2018a, ecc.), can safely skip to Chapter 4.
+    Following, Chapter 5 gives a detailed description of the related works which corroborate our hyphotesis, Chapter \ref{chap:6} introduces theoretical 
+    and empirical insights on why we conjecture the potentials of KAFs and finally in Chapter \ref{chap:7} experiments, using different architectures, 
+    are presented and commented. Chapter 8 conludes the work by drawing a final comment on the results obtained, apported contributions 
+    as well as the shortcomings faced and relevant ideas for future works.
 
 \part{Fundamentals}
 
 
 \chapter{Neural Networks}
-
+        \label{chap:2}
         Broadly speaking, the field of Machine Learning is the summa of any algorithmic methodology whose aim is to automatically find meaningful patterns inside data without
         being explicitly programmed on how to do it. Well known examples are: Decision Trees (ref.), Support Vector Machines (ref. ), Clustering (ref.),
         Neural Networks (Ref. ) and, more recently, 
@@ -581,6 +606,7 @@ verso il prof. Enrico Gregorio.
 
 
     \chapter{Adversarial Examples Theory}
+    \label{chap:3}
 
     In recent years, AI-based systems are finding an ever growing number of applications in the industry, ranging from medical, multimedia, telecomunications, to even military, political and legal sectors. 
     As a consequence of the importance of such systems to the modern world, it is currently reasonable to think that they might become potential threats to the eyes of
@@ -871,7 +897,7 @@ verso il prof. Enrico Gregorio.
 
 
     \chapter{Non-Parametric Activation Functions}
-
+    \label{chap:4}
     As anticipated shortly in the section concerning Activation Functions, it is possible to increase the flexibility of a Neural Network replacing a fixed activation function with a parametrized, differentible, non-linear function.
     These transformations can in fact be trained along with the remaining weights of the network allowing each neuron to model its own optimal shape.
 
@@ -1048,8 +1074,7 @@ verso il prof. Enrico Gregorio.
 \part{Robustness of Kafnets}
 
     \chapter{Related Works}
-
-    Among t
+    \label{chap:5}
        
     \section{K-Winners Take All}
     In (Ref. ENHANCING ADVERSARIAL DEFENSE BY k-W INNERS-TAKE-ALL), Xiao \textit{et al.} advocate the use of a $C^0$-discontinuous activation function, called
@@ -1179,7 +1204,7 @@ verso il prof. Enrico Gregorio.
 
 \chapter{Solution Approach}
 
-    \label{swenv}
+    \label{chap:6}
     To test novel architecture components or training techniques with real data, we first need to implement them as software. In our case, 
     we use \textit{Python} (Ref. ) programming language and, in particular, experiments are conducted using \textit{TensorFlow2} (Ref. ) (TF2), a modern 
     framework for differentiable-programming. In turn, TF2 integrates another famous library, \textit{Keras} (Ref. ), which provides high-level 
@@ -1393,7 +1418,7 @@ verso il prof. Enrico Gregorio.
 
 
 \chapter{Evaluation}
-
+\label{chap:7}
 % Goal:
 In this chapter, experiments assessing the robustness of Kafnets are discussed. In a comparison with their traditional counterparts, we try to understand 
 what is the preferable way to leverage KAFs in this context. If it is by using random initialization of the coefficients, or if we should use them 
@@ -1403,7 +1428,7 @@ Kafnets and how well do they perform when we scale to deeper networks? The follw
 we try to interpret the obtained results and highlight why they are or not consistent with our initial hypothesis, what could be the shortcomings of our 
 work and, in particular, what are the implications. \par
 % Method
-To perform each test we make use of the same software environment presented before in \ref{swenv}, with the additon of \textit{TensorFlow Addons} (Ref. ),
+To perform each test we make use of the same software environment presented before in \ref{chap:6}, with the additon of \textit{TensorFlow Addons} (Ref. ),
 a library that contains niche functionalities such as the cyclical learning rate technique reccommended by Wong \textit{et al.} in (Ref. FBF) to speed-up adversarial training. 
 With respect to adversarial training, to the best of our knowledge, there is no implementation available for the extended fast FGSM AT compatible with TF2
 at the time of writing. For this reason, we give a working solution in \textit{fbfadvtrain.py} which can reproduce the results
@@ -1777,6 +1802,7 @@ Swish smooth activation functions.
 
 \chapter{Conclusions and Future Works}
 
+        \label{chap:8}
         \section{Conclusions}
 
         In this thesis, we addressed the problem of the importance of activation functions for the robustness of deep neural networks, 
