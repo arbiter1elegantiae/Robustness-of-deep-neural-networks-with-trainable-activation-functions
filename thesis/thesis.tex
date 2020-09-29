@@ -13,11 +13,14 @@
 \usepackage{hyperref}
 \hypersetup{pdftitle={Robustness of Deep Neural Networks Using Trainable Activation Functions},pdfauthor={Federico Peconi}}
 
+
 % Remove in a normal thesis
 \usepackage{lipsum}
 \usepackage{curve2e}
 \usepackage{algpseudocode}
 \usepackage{dblfloatfix}
+\usepackage{biblatex}
+\addbibresource{adversarial.bib}
 \definecolor{gray}{gray}{0.4}
 \newcommand{\bs}{\textbackslash}
 
@@ -31,7 +34,7 @@
 \copyyear{2020}
 \advisor{Prof. Simone Scardapane}
 %\advisor{Dr. Nome Cognome}
-%\coadvisor{Dr. Nome Cognome}
+%\coadvisor{Dr. Nome Cognome}s
 \authoremail{peconi.1823570@studenti.uniroma1.it}
 
 \examdate{Something October 2020}
@@ -74,7 +77,7 @@ verso il prof. Enrico Gregorio.
     \section{Intriguing Properties of Neural Networks}
 
         The vast majority of cutting-edge \textit{neural networks} based classifiers is currently vulnerable to imperceptible non-random perturbations of the input.
-        As first shown by C. Szegedy \textit{et al.} in (Ref. Intriguing), and then subsequently in many other publications (Ref. 43 survey), (Ref. 44 survey),
+        As first shown by C. Szegedy \textit{et al.} in \cite{szegedy2013-intriguing} (Ref. Intriguing), and then subsequently in many other publications (Ref. 43 survey), (Ref. 44 survey),
         it is sufficient for an \textit{adversary} to add a small amount of targeted noise on a sample in order to induce the model to predict, with high confidence,
         a wrong class. Despite the fact that such \textit{attacks} are relevant in many different domains, ranging from natural language processing (Ref. Generating Natural Language Adversarial Examples) to automatic speech recognition (Ref. https://arxiv.org/pdf/1903.10346.pdf), 
         it is typical to introduce the problem with concrete examples dealing with images.
@@ -1844,7 +1847,7 @@ Swish smooth activation functions.
 
             \item Other than PGD, perform other famous attacks such as \textit{C\&W} (Ref. ), \textit{DeepFool} (Ref. ) or, more importantly, \textit{adaptive attacks} to assess the robustness of adversarially trained Kafnets. 
             Adaptive attacks are attacks that were specifically designed to target a given defense and it is nowadays become the standard to perform true robustness evaluations (Ref. Carlini et al. Towards evaluating).
-            Indeed, just as was showed for k-WTA (Carlini https://arxiv.org/pdf/2002.08347.pdf), there might a subtle gradient-based attacks which could target the presence of trainable activation functions in the network 
+            Indeed, just as was showed for k-WTA (Carlini https://arxiv.org/pdf/2002.08347.pdf), there might be a subtle gradient-based attacks which could target the presence of trainable activation functions in the network 
             to produce adversarial examples capable of making adversarial training worse than when using, for instance, ReLU activation functions. Several best practices have been proposed to help spotting possible flaws 
             in a defense and design adapative attacks (Ref. https://arxiv.org/pdf/2002.08347.pdf).
         \end{itemize}
@@ -1862,5 +1865,6 @@ Swish smooth activation functions.
 %\phantomsection
 %\bibliographystyle{sapthesis} % BibTeX style
 %\bibliography{bibliography} % BibTeX database without .bib extension
+\printbibliography
 
 \end{document}
