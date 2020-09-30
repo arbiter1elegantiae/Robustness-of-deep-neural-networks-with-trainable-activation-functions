@@ -19,7 +19,7 @@
 \usepackage{curve2e}
 \usepackage{algpseudocode}
 \usepackage{dblfloatfix}
-\usepackage{biblatex}
+\usepackage[backend=biber]{biblatex}
 \addbibresource{adversarial.bib}
 \definecolor{gray}{gray}{0.4}
 \newcommand{\bs}{\textbackslash}
@@ -77,9 +77,9 @@ verso il prof. Enrico Gregorio.
     \section{Intriguing Properties of Neural Networks}
 
         The vast majority of cutting-edge \textit{neural networks} based classifiers is currently vulnerable to imperceptible non-random perturbations of the input.
-        As first shown by C. Szegedy \textit{et al.} in \cite{szegedy2013-intriguing} (Ref. Intriguing), and then subsequently in many other publications (Ref. 43 survey), (Ref. 44 survey),
+        As first shown by C. Szegedy \textit{et al.} in \cite{szegedy2013-intriguing}, and then subsequently in many other publications \cite{journals/corr/NguyenYC14}, \cite{journals/corr/BiggioCNRMFGR14},
         it is sufficient for an \textit{adversary} to add a small amount of targeted noise on a sample in order to induce the model to predict, with high confidence,
-        a wrong class. Despite the fact that such \textit{attacks} are relevant in many different domains, ranging from natural language processing (Ref. Generating Natural Language Adversarial Examples) to automatic speech recognition (Ref. https://arxiv.org/pdf/1903.10346.pdf), 
+        a wrong class. Despite the fact that such \textit{attacks} are relevant in many different domains, ranging from natural language processing \cite{nlp_adv} to automatic speech recognition \cite{speechrec_adv}, 
         it is typical to introduce the problem with concrete examples dealing with images.
         Indeed, within the framework of image classification, perturbations have a nice interpretation in terms of norms and the problem itself can be appreciated visually.
         For instance, assume to have an image $x$ of a \textit{dog} and a performant classifier which correctly recognizes the subject. Then, by means of few lines of code\footnote{Using modern Deep Learning libraries.},
@@ -91,60 +91,55 @@ verso il prof. Enrico Gregorio.
             \caption{By means of a noisy perturbation of the image, an image classifier model can be fooled into believing with high confidence that what was correclty labeled as a dog is now a cat.}
             \label{fig:aecatdog}
         \end{figure}
-        More alarming is the fact that such misclassifications can be targeted, just as easily, by the adversary towards any desired class (Ref. where targeted ae were first introduced?). Any crafted input designed to 
+        More alarming is the fact that such misclassifications can be targeted, just as easily, by the adversary towards any desired class. Any crafted input designed to 
         cause an incorrect output is called \textit{adversarial example}.
 
-        Adversarial examples pose a vital threat for the deployability of autonomous systems in safety-critical applications. In (Ref. Melis\_Is\_Deep\_Learning\_ICCV\_2017\_paper.pdf) real-world adversarial examples for 
-        a humanoid robot are proposed whereas (Ref. Darts: Deceiving autonomous cars with toxic signs) and (Ref. https://arxiv.org/abs/1907.00374) illustrate the feasability of fooling autonomous-driving car systems.
-        Moreover, as the performances of intelligent systems increase (Ref. 27) (Ref. 28), and their availability becomes ever more within the reach of fundamentally anyone who can connect to the internet, these algorithms 
-        are already finding their way into other security-critical scenarios such as aerial vehicles face authentication (Ref. 33), social engineering detection, network anomalies detection (Ref. 36) (Ref. 37) and so on. 
+        Adversarial examples pose a vital threat for the deployability of autonomous systems in safety-critical applications. In \cite{iCub} real-world adversarial examples for 
+        a humanoid robot are proposed whereas \cite{darts} and \cite{autonomous_adv} illustrate the feasability of fooling autonomous-driving car systems.
+        Moreover, as the performances of intelligent systems increase \cite{residual_nets} \cite{inception}, and their availability becomes ever more within the reach of fundamentally anyone who can connect to the internet, these algorithms 
+        are already finding their way into other security-critical scenarios such as aerial vehicles face authentication \cite{aerial_adv}, social engineering detection, network anomalies detection \cite{socialeng_adv} \cite{anomalydet_adv} and so on. 
         Thus, making them all prone to suffer from some kind of adversarial attack, if no defense technique is explicitly implemented.
         
         Along with the obvious security concerns that we have just discussed, there is another fundamental reason to develop methods capable of preventing adversarial examples, which is, the opportunity of 
         building more human-aligned models. Any claim about state-of-the-art classifiers that have surpassed "human performances" is indeed far from being true, if we look at the task through the lens of adversarial examples.
         In particular, any person would have no trouble in correclty classify an adversarially perturbed image on which state-of-the-art models are consistently fooled. That is likely because humans tend to learn features that are 
-        extremely resilient towards sampling distribution changes, whereas neural networks are eventually prone to learn brittle, sampling-specific features (Ref. Adversarial examples are not bug are features).
+        extremely resilient towards sampling distribution changes, whereas neural networks are eventually prone to learn brittle, sampling-specific features \cite{features_notbugs}.
         Moreover, recent works have showed how the \textit{interpretability} of a model, which is usually very difficult to assess in performant deep neural networks, is instead significantly increased 
-        when we evaluate \textit{adversarially robust} networks (Ref. Madry 1) (Ref. Madry 2) (Ref. Interpreting Adversarial Examples by Activation Promotion). Therefore, broadly speaking, adversarial examples 
+        when we evaluate \textit{adversarially robust} networks \cite{robustness_accuracy} \cite{interpret_adv}. Therefore, broadly speaking, adversarial examples 
         seem to be only a syntom of the discrepancy between the way human and intelligent systems currently learn.
 
-        Nowadays, despite the relevance for the field, no truly robust model for real-world applications has been developed yet. For CIFAR10 (Ref. ), a relatively small toy dataset used in image classification, 
-        the current state-of-the-art model achieves 43.96\% of accuracy against the most effective attack (Ref. github cifar10\_challenge).
-        Furthermore, things get even more complicated when we try to scale up to larger, more realistic models, since it generally becomes extremely expensive to train robust models in these settings (Ref. Free adversarial training).
-        Specifically, it is commonly believed that, to improve robustness, one needs to either largely extend the size of the dataset or increase the network capacity (Ref. there is no free lunch in adversarial robustness).
+        Nowadays, despite the relevance for the field, no truly robust model for real-world applications has been developed yet. For CIFAR10, a relatively small toy dataset used in image classification, 
+        the current state-of-the-art model achieves 43.96\% of accuracy against the most effective attack \cite{cifar10challange}.
+        Furthermore, things get even more complicated when we try to scale up to larger, more realistic models, since it generally becomes extremely expensive to train robust models in these settings \cite{free_adv_train}.
+        Specifically, it is commonly believed that, to improve robustness, one needs to either largely extend the size of the dataset or increase the network capacity \cite{nofree_lunch}.
         Due to the lack of a global understanding of the nature of adversarial examples, the critical security alarms that arise with them and the complexity of developing effective defenses,
-        the area of adversarial robustness is costantly attracting more and more research interest (Ref carlini towards..)
-
-        % Abbiamo quindi capito per quale motivo molta ricerca e' stata indirizzata verso lo studio degli esempi avversari. Tuttavia qual'e lo stato attuale?
-        % Brevemente, non siamo ancora in grado di avere modelli performanti e che siano anche resistenti, su cifar 10 la rete piu robusta attualmente sviluppata ha un accuracy di 60 percento su perturbazioni 
-        % inoltre, scalare a dataset maggiori eg imagenet richiede l utilizzo di molte risorse
-        % per questo motivo l adversarial robustness e tutt ora un aria di ricerca molto attiva
+        the area of adversarial robustness is costantly attracting more and more research interest \cite{towards_eval_robustness}.
 
 
     \section{Activation Functions and Robustness}
 
         In this thesis, we focus on analyzing the effects of structural changes in deep neural networks, in terms of adversarial robustness.
-        In particular, we try to assess how \textit{adversarial training} (Ref. adversarial training), i.e., the act of training using adversarial examples,
+        In particular, we try to assess how \textit{adversarial training} \cite{madry_adv_training}, i.e., the act of training using adversarial examples,
         may benefit from theoretically principled changes in the model's architecture.
         As previously anticipated, one known method to boost the resiliency --during such training-- consists in naively adding more capacity to the model, by simply 
         introducing more parameters.  
         However, such technique requires to build a significantly bigger network which is ultimately different from the original one. On the contrary, we are concerned with 
         minor modifications, leaving the overall structure unchanged.
 
-        Recently, a link between activation functions and robustness has been proposed. In (Ref. SAT), authors showed that it is possible to strengthen
+        Recently, a link between activation functions and robustness has been proposed. In \cite{smooth_adversarial_training}, authors showed that it is possible to strengthen
         adversarial training by means of activation functions that are \textit{smooth} or, in other words, functions whose first derivative is continuous everywhere\footnote{Formally we say this functions are $\mathcal{C}^1$ continuous.}. 
         Indeed, their experiments consistently reported greater performances when, instead of the 
-        typical rectified linear unit (ReLU) (Ref. relu), the model's non-linearities were substituted by a smooth counterpart, such as: ELU, GELU or Swish functions(Ref. )(Ref. )(Ref. ).
+        typical rectified linear unit (ReLU) \cite{relu}, the model's non-linearities were substituted by a smooth counterpart, such as: ELU, GELU or Swish functions \cite{elu} \cite{gelu} \cite{swish}.
         It is worth to note that such improvement comes for "free", in the sense that no data augmentation or network growth were carried out, in contraddiction with 
-        the common wisdom (Ref. no free adversarial lunch).
+        the common wisdom \cite{nofree_lunch}.
         
         Building up from this result, we propose the evaluation, within the same framework, of a novel class of activation functions called \textit{kernel-based activation functions} (KAFs).
-        KAFs were first introduced in (Ref. Scardapane) as a promising class of trainable activation functions, aiming to overcome the limitations of other alternatives present in the literature. 
+        KAFs were first introduced in \cite{kafnets} as a promising class of trainable activation functions, aiming to overcome the limitations of other alternatives present in the literature. 
         In particular, trainable activation functions are non-linearities whose shape can be trained together with the other weights of the network, by means of 
         trainable parameters present in the formulation. By laveraging cheap kernel expansions, the locality effects of their parameters and other desiderable 
-        properties, KAFs allows for fast convergence, universal shape approximations and generalization of the network (Ref. On the Stability and Generalization).
-        Compared to the fixed and trainable counterparts, KAFs result in better empirical performances on a variety of tasks (Ref. Kafnets). Ultimately,
-        KAFs can be made smooth with the employment of smooth kernels, such as the 1-dimensional Gaussian kernel(Ref. ).
+        properties, KAFs allows for fast convergence, universal shape approximations and generalization of the network \cite{kafnets_generalization}.
+        Compared to the fixed and trainable counterparts, KAFs result in better empirical performances on a variety of tasks \cite{kafnets}. Ultimately,
+        KAFs can be made smooth with the employment of smooth kernels, such as the 1-dimensional Gaussian kernel.
 
         Through a combination of both flexibility --resulting from their trainable nature-- and smoothness, we argue that the adversarial training of a 
         deep neural networks will benefit from the presence of KAFs inside the model's architecture.
@@ -167,10 +162,10 @@ verso il prof. Enrico Gregorio.
 \chapter{Neural Networks}
         \label{chap:2}
         Broadly speaking, the field of Machine Learning is the summa of any algorithmic methodology whose aim is to automatically find meaningful patterns inside data without
-        being explicitly programmed on how to do it. Well known examples are: Decision Trees (ref.), Support Vector Machines (ref. ), Clustering (ref.),
-        Neural Networks (Ref. ) and, more recently, 
-        Deep Neural Networks (ref. ). During the last two decades Deep Neural Networks have gained a lot of attention for their outstanding performances in different tasks like
-        image classification (ref. ImageNet, over human level), speech and audio processing(ref ).
+        being explicitly programmed on how to do it. Well known examples are: Decision Trees \cite{decision_tree}, Support Vector Machines \cite{svm}, Clustering \cite{clusters},
+        Neural Networks \cite{perceptron} and, more recently, 
+        Deep Neural Networks \cite{deepnn}. During the last two decades Deep Neural Networks have gained a lot of attention for their outstanding performances in different tasks like
+        image classification \cite{imagenet}, speech and audio processing \cite{dlaudioprocessing}.
 
         \section{Definition}
             
@@ -211,7 +206,7 @@ verso il prof. Enrico Gregorio.
             \begin{figure}[h]
                 \centering
                 \includegraphics[width=0.5\textwidth]{slide1}
-                \caption{Graphic representation of a one layer NN also know as MLP(ref. )}
+                \caption{Graphic representation of a one layer NN also know as MLP.}
             \end{figure}
             \paragraph{}
             In general, the idea of a layer of neurons can be recursively extended by stacking more layers together, all of which are described by a matrix of weights, a bias and an activation function
@@ -226,7 +221,7 @@ verso il prof. Enrico Gregorio.
             \begin{figure}[h]
                 \centering
                 \includegraphics[scale=0.5]{fnn}
-                \caption{A Feedforward Neural Network with 3 hidden layers(ref. Michael A. Nielsen, Neural Networks and Deep Learning, Determination Press', 2015)}
+                \caption{A Feedforward Neural Network with 3 hidden layers. Source: Michael A. Nielsen, 'Neural Networks and Deep Learning, Determination Press', 2015}
                 \label{fig:fnn}
             \end{figure}
             This general but still basic form of Neural Network is known as \textit{Feed Forward Neural Network} Fig. \ref{fig:fnn}. 
@@ -236,7 +231,7 @@ verso il prof. Enrico Gregorio.
             \subsection{Loss Function}
                 Before we realized that our goal is to maximize the approximation of the ground-truth input-output relation that lies under the data, therefore there is a need to
                 introduce some metric to quantify this approximization. Call \textit{loss function} $ L(f_{\theta}\left(x\right), y) \colon \mathcal{Y} \times \mathcal{Y} \to \mathbb{R_+}$ 
-                such metric. Common choices are (ref.):
+                such metric. Common choices are:
                 \begin{itemize}
                     \item Least Square: $\norm{f_{\theta}\left(x\right) - y}^2$ for regression tasks 
                     \item Binary Cross-Entropy: $y \log (f_{\theta}(x))+(1-y) \log (1-f_{\theta}(x))$ for binary classification  
@@ -252,7 +247,7 @@ verso il prof. Enrico Gregorio.
             \subsection{Gradient Descent}
                So far we have described, given an input $ x $, how we can compute the output of a feedforward neural network by means of compositions of dot products 
                and non-linear transformations between matrices, starting from the first to the very last of the layers in what is called a \textit{forward pass}. As it turns out, to attempt to solve \ref{erm} we need to follow the exact
-               opposite path. Indeed, every optimization algorithm used in practice makes use of the same subroutine called Backpropagation (ref.  ) introduced in the 1970s, which allows to compute, starting from the output layer
+               opposite path. Indeed, every optimization algorithm used in practice makes use of the same subroutine called Backpropagation \cite{backprop} introduced in the 1970s, which allows to compute, starting from the output layer
                and going backwards, the partial derivative of the loss function with respect to each weight in the network. Moreover it does so efficiently requiring only one \textit{backward pass}.
 
                Let $i^l = W_l z_{l-1} + b_l$ be the weighted input to the $l$-th layer, then the key observation is that the only way $ W_l $ can affect the loss function is by affecting linearly
@@ -283,7 +278,7 @@ verso il prof. Enrico Gregorio.
                 then apply equation \ref{bp2} to compute $\delta^{L-1}$, then the same equation again to compute $\delta^{L-2}$, and so forth, 
                 all the way back until the input layer. Since our intent is to retrieve the gradients for every weights of the network, we are left to 
                 show how $ \delta^l $ relates to them, here we provide such relation without giving an explicit proof which instead can be found in many
-                texts like (ref Nielsen chapter 2).
+                texts like \cite{nielsen2015neural}.
                 \begin{equation}
                     \frac{\partial LS}{\partial b^{l}_{j}} = \delta^{l}_{j}
                 \end{equation}
@@ -293,13 +288,13 @@ verso il prof. Enrico Gregorio.
                 Remark how we already know how to compute each element on the right sides of these equations, moreover, given that the activation function
                 and its derivative is efficiently computable, we will be able to efficiently get the seeked gradients in just one pass.
                 It is worth mention that Backpropagation is actually a special case of a more generic set of programming techniques that go under
-                the name of \textit{Automatic Differentiation} (Ref. ) to numerically evaluate the derivative of a function specified by a computer program.
+                the name of \textit{Automatic Differentiation} \cite{adiff} to numerically evaluate the derivative of a function specified by a computer program.
                 Such techniques are usually implemented in modern numerical libraries building variations of a data structure called \textit{computational graph}.
-                Well known examples are \textit{Autograd} in \textit{Pytorch} (Ref. ) or \textit{GradientTape} in \textit{TensorFlow} (Ref. ).
+                Well known examples are \textit{Autograd} in \textit{Pytorch} \cite{pytorch} or \textit{GradientTape} in \textit{TensorFlow} \cite{tensorf}.
 
                What does it mean to be able to compute partial derivatives of the loss? It means being able to understand where and how 
                the loss decreases and thus we can exploit such information to find better and better weights solutions. 
-               This is the idea behind the Gradient Descent algorithm (Ref. ). In particular, the gradient of a weight is nothing but the
+               This is the idea behind the Gradient Descent algorithm \cite{sgd}. In particular, the gradient of a weight is nothing but the
                direction inside the weight-space where the loss function is increasing, therefore what we want to do is to follow the opposite
                direction. Formally, this translates in the following weight update rules:
                \begin{equation}
@@ -323,7 +318,7 @@ verso il prof. Enrico Gregorio.
             In practice, however, very often we are deling with thousands or milions of data points, becomes unfeasable to compute every pass over
             the entire training set, thus what is done is to split the data into so called \textit{mini-batches} and then apply the
             update rules on each mini-batch until we scanned the whole data. The entire scan is called \textit{epoch} and the 
-            resulting algorithm Stochastic Gradient Descent (Ref. ). Lastly, the size of a mini-batch is another hyperparameter 
+            resulting algorithm Stochastic Gradient Descent \cite{sgd}. Lastly, the size of a mini-batch is another hyperparameter 
             that should be tuned by the developer, keeping in mind that the bigger the size the more stable will be our training
             the smaller the size the faster the training.
 
@@ -338,9 +333,9 @@ verso il prof. Enrico Gregorio.
             Indeed, the optimal solution would be the global minimum of our weighted loss function but there is no apparent
             way for the algorithm to distinguish between global, local minimum or saddle points Fig. \ref{fig:globlocsad}.
             However, it turns out that in practice Gradient Descent works fairly well once we correctly tune
-            hyperparameters and run the algorithm from different initial values. (Ref .)
+            hyperparameters and run the algorithm from different initial values.
             Moreoever, lately authors have been proposed different methods to improve the convergence and the efficiency by 
-            smart changes of the learning rate during the training process (ref . cyclical learning rates) 
+            smart changes of the learning rate during the training process \cite{smith2017cyclical}. 
             \begin{figure}[h]
                 \centering
                 \includegraphics[scale=0.35]{globlocsad}
@@ -357,7 +352,7 @@ verso il prof. Enrico Gregorio.
             Thus if we think again about how Backpropagation works, we see that employing such activation function would make the weight updates impossible
             since already $ \delta^{L} $ would be either undefined or 0.
 
-            To deal with this issue, one of the first proposed activation functions was an approximation of the step function known as \textit{sigmoid} (Ref. ) 
+            To deal with this issue, one of the first proposed activation functions was an approximation of the step function known as \textit{sigmoid}: 
             \begin{equation}
                 \textnormal{sigmoid}(x) = \frac{1}{1 + e^{-x}}
             \end{equation}
@@ -369,7 +364,7 @@ verso il prof. Enrico Gregorio.
                 \caption{Plot of the Sigmoid function and its first derivative.}
                 \label{fig:sigmoid}
             \end{figure}
-            Nevertheless, as the number of layers increases and the network becomes sufficiently deep, the sigmoid suffers from the \textit{vanishing gradient} problem (Ref. ) Fig. \ref{fig:sigmoid}
+            Nevertheless, as the number of layers increases and the network becomes sufficiently deep, the sigmoid suffers from the \textit{vanishing gradient} problem \cite{expvangrads} Fig. \ref{fig:sigmoid}
             due to its derivative being $[0, 0.25]$ bounded. Mainly for this reason it is not widely adopted in practice.
 
             More in general, the sigmoid lies inside a class of activation functions known as \textit{squashing} i.e. monotonically non-decreasing functions $\varSigma$
@@ -382,19 +377,19 @@ verso il prof. Enrico Gregorio.
             \begin{equation}
                 \tanh (x)=\frac{\exp \{x\}-\exp \{-x\}}{\exp \{x\}+\exp \{-x\}},
             \end{equation}
-            which was find to allow for universal expressivness of nets (Ref. ). However, as for the sigmoid, squashing functions tend to be prone to vanishing 
-            and exploding gradients (Ref. ).
+            which was find to allow for universal expressivness of the model \cite{hypertanh}. However, as for the sigmoid, squashing functions tend to be prone to vanishing 
+            and exploding gradients.
 
             Nowadays, the most used activation function in neural networks for different applications is the \textit{rectifier linear unit} (ReLU),
-            first introduced in (Ref. Hahnloser et al. in 2000) and defined as the positive part of its argument
+            first introduced in \cite{relu} and defined as the positive part of its argument
             \begin{equation}
                 \textnormal{ReLU}(x) = \max(0, x),
             \end{equation}
             allows for efficient training and alleviates the exploding gradient problem (having derivative either 0 or 1), introducing only one point of
-            non-differentiability. Moreover, it promotes \textit{sparsness} in the network, which is usually beneficial (Ref. ). One problem with ReLUs though 
+            non-differentiability. Moreover, it promotes \textit{sparsness} in the network, which is usually beneficial \cite{sparseness}. One problem with ReLUs though 
             is that the neuron's value, that get pushed to a big negative number, might stay stucked in 0 for essentially all inputs, in a so called \textit{dead state}.
             If many neurons in the network die this can afflict the model capacity and can be seen as a form of vanishing gradient problem. To overcome this problem,
-            a slighlty different activation functions can be used, called \textit{leaky ReLU} (Ref. ):
+            a slighlty different activation functions can be used, called \textit{leaky ReLU}:
             \begin{equation}
                 \operatorname{Leaky ReLU}(x)=\left\{\begin{array}{ll}
                     x & \text { if } x \geq 0 \\
@@ -415,7 +410,7 @@ verso il prof. Enrico Gregorio.
             saturating negative values at a user-defined value $- \alpha$ which is usually set to 1. Conversly to ReLU and LeakyReLUs, the derivative is continuous
             therefore the function is smooth and for the negative values is defined as $ELU(x) + \alpha$.
 
-            Finally, one more recent activation function which gained a lot of attention is the \textit{Swish} function (Ref. ):
+            Finally, one more recent activation function which gained a lot of attention is the \textit{Swish} function \ref{swish}:
             \begin{equation}
                 \operatorname{swish}(x)= \operatorname{sigmoid}(x) * x,
             \end{equation}
@@ -429,13 +424,13 @@ verso il prof. Enrico Gregorio.
             which again does look like another approximation of a ReLU Fig. \ref{fig:afuncs}, but in this case it manages in not loosing any useful property. Indeed, since
             it also saturates at 0 for negative values, it allows for sparsity and being smooth around 0 it helps reducing dying neurons. Lastly, around 0 negative 
             values are kind of preserved which may still be relevant to patterns in the underlying data.
-            Swish function proved to consistently match if not outperform ReLU networks in different domains (Ref. ), and more recent studies showed how this function
-            can also help in training more \textit{robust} networks (Ref. Smooth Adversarial training).
+            Swish function proved to consistently match if not outperform ReLU networks in different domains \cite{swish}, and more recent studies showed how this function
+            can also help in training more \textit{robust} networks (\cite{smooth_adversarial_training}.
 
             Along with this list of more 'traditional' activation functions, which we will call \textit{fixed} activation functions, there is a whole branch of
             more sophisticated solutions, where the idea is to \textit{learn} the function's optimal shape employing suitable parametric functions. 
             Such functions can then be trained together with other weights of the net using backpropagation and gradient descent. Moreover, following the terminology
-            introduced in (Ref Scardapane t al KafNets) we can again distinguish between two classes of this learnable activation functions: the so called
+            introduced in \cite{kafnets} we can again distinguish between two classes of this learnable activation functions: the so called
             \textit{parametric activation functions} and \textit{Non-parametric activation functions}. The former being usually a parametrization of a fixed 
             activation function involving few constant parameters, whereas the latter is called non-parametric due to the number of parameters that can in principle
             grow without a bound and involves more complex shapes. At the end of this chapter we introduce a recently proposed class of non-parameteric activation functions,
@@ -456,7 +451,7 @@ verso il prof. Enrico Gregorio.
             from our point of view is clearly the same image. In some sense, there is no apparent way in which fully connected neural networks can take advantage of 
             concepts such as \textit{locality} or \textit{translation invariance} that are intrinsic to images.
             
-            To circumvent these limitations, reasearchers have developed a specific architecture targeted for computer vision tasks called \textit{Convolutional Neural Network} (CNN) (Ref. ).
+            To circumvent these limitations, reasearchers have developed a specific architecture targeted for computer vision tasks called \textit{Convolutional Neural Network} (CNN) \cite{cnn}).
             In a standard CNN, every layer is $3$-dimensional $(Width \times Height \times Dept) $ to reflect the fact that we are always dealing with images 
             and each neuron is connected only to a constant number of nearby neurons in the previous layer, shrinking down the number of total weights required.
             Layers can be either \textit{convolutive layers} or \textit{pooling layers} or \textit{fully-connected layers}, the latter being a normal hidden layer.
@@ -473,7 +468,7 @@ verso il prof. Enrico Gregorio.
                 \label{fig:conv}
             \end{figure}
             Intuitively, through backpropagation we learn filters tha are capable of recognizing specific shapes in the image, which we can see as features,
-            starting from very concise ones in the early layers to more global ones towards the end layers as the receptive field gets larger(Ref. ). 
+            starting from very concise ones in the early layers to more global ones towards the end layers as the \textit{receptive field} gets larger. 
             Typically, as for normal neural networks, we apply a non-linear transformation after each convolutive layer and by stacking many of these Convolutional
             layers we get a convolutional network.
             
