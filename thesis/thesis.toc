@@ -76,7 +76,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {7.2}Exploding Gradients with KafNets}{55}{section.7.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7.3}ResNet20 Inspired Architectures Results}{59}{section.7.3}%
+\contentsline {section}{\numberline {7.3}ResNet20 Inspired Architectures Results}{58}{section.7.3}%
 \defcounter {refsection}{0}\relax 
 \contentsline {chapter}{\numberline {8}Conclusions and Future Works}{63}{chapter.8}%
 \defcounter {refsection}{0}\relax 
