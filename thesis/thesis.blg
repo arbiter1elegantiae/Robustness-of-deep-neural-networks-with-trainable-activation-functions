@@ -1,19 +1,19 @@
 [0] Config.pm:312> INFO - This is Biber 2.15
 [0] Config.pm:315> INFO - Logfile is 'thesis.blg'
-[68] biber:330> INFO - === Thu Oct  1, 2020, 15:43:02
-[81] Biber.pm:415> INFO - Reading 'thesis.bcf'
-[160] Biber.pm:952> INFO - Found 93 citekeys in bib section 0
-[174] Biber.pm:4334> INFO - Processing section 0
-[183] Biber.pm:4523> INFO - Looking for bibtex format file 'adversarial.bib' for section 0
-[188] bibtex.pm:1682> INFO - LaTeX decoding ...
-[268] bibtex.pm:1494> INFO - Found BibTeX data source 'adversarial.bib'
-[831] Utils.pm:395> WARN - I didn't find a database entry for crossref 'conf/cvpr/2016' in entry 'inception' - ignoring (section 0)
-[831] Utils.pm:395> WARN - I didn't find a database entry for crossref 'conf/iccbr/2019w' in entry 'socialeng_adv' - ignoring (section 0)
-[832] Utils.pm:395> WARN - I didn't find a database entry for crossref 'conf/iclr/2019' in entry 'robustness_accuracy' - ignoring (section 0)
-[994] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[994] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[994] Biber.pm:4162> INFO - Sorting list 'nty/global//global/global' of type 'entry' with template 'nty' and locale 'en-US'
-[994] Biber.pm:4168> INFO - No sort tailoring available for locale 'en-US'
-[1067] bbl.pm:651> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
-[1128] bbl.pm:754> INFO - Output to thesis.bbl
-[1128] Biber.pm:128> INFO - WARNINGS: 3
+[60] biber:330> INFO - === Fri Oct  2, 2020, 16:39:57
+[73] Biber.pm:415> INFO - Reading 'thesis.bcf'
+[151] Biber.pm:952> INFO - Found 93 citekeys in bib section 0
+[164] Biber.pm:4334> INFO - Processing section 0
+[175] Biber.pm:4523> INFO - Looking for bibtex format file 'adversarial.bib' for section 0
+[179] bibtex.pm:1682> INFO - LaTeX decoding ...
+[258] bibtex.pm:1494> INFO - Found BibTeX data source 'adversarial.bib'
+[817] Utils.pm:395> WARN - I didn't find a database entry for crossref 'conf/cvpr/2016' in entry 'inception' - ignoring (section 0)
+[817] Utils.pm:395> WARN - I didn't find a database entry for crossref 'conf/iccbr/2019w' in entry 'socialeng_adv' - ignoring (section 0)
+[817] Utils.pm:395> WARN - I didn't find a database entry for crossref 'conf/iclr/2019' in entry 'robustness_accuracy' - ignoring (section 0)
+[909] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[909] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[909] Biber.pm:4162> INFO - Sorting list 'nty/global//global/global' of type 'entry' with template 'nty' and locale 'en-US'
+[909] Biber.pm:4168> INFO - No sort tailoring available for locale 'en-US'
+[984] bbl.pm:651> INFO - Writing 'thesis.bbl' with encoding 'UTF-8'
+[1048] bbl.pm:754> INFO - Output to thesis.bbl
+[1049] Biber.pm:128> INFO - WARNINGS: 3

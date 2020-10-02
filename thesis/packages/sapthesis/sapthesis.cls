@@ -1039,7 +1039,7 @@
   \newcommand{\SAP@ThesisTutorCoordsLabel}{Coordinating Tutors}
   \newcommand{\SAP@TFAschoolHeadLabel}{Training done at:}
   \newcommand{\SAP@TFAschoolPrincipalLabel}{Principal}
-  \newcommand{\SAP@ThesisNotDefensedLabel}{Thesis not yet defended}
+  \newcommand{\SAP@ThesisNotDefensedLabel}{}
   \newcommand{\SAP@ThesisDefensedLabelA}{Thesis defended on}
   \newcommand{\SAP@ThesisDefensedLabelB}{in front of a Board of Examiners composed by}
   \newcommand{\SAP@chairman}{chairman}

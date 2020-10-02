@@ -37,10 +37,10 @@
 %\coadvisor{Dr. Nome Cognome}s
 \authoremail{peconi.1823570@studenti.uniroma1.it}
 
-\examdate{Something October 2020}
-\examiner{Prof. Nome Cognome}
-\examiner{Prof. Nome Cognome}
-\examiner{Dr. Nome Cognome}
+%\examdate{Something October 2020}
+%\examiner{Prof. Nome Cognome}
+%\examiner{Prof. Nome Cognome}
+%\examiner{Dr. Nome Cognome}
 \versiondate{\today}
 
 
@@ -691,9 +691,9 @@ verso il prof. Enrico Gregorio.
         \begin{equation}
             \delta^{t+1} = \operatorname{clip} (L_{\infty}, \delta^{t+1}, [-\epsilon, \epsilon]),
         \end{equation}
-        where clipping acts by projecting $\delta^{t+1}$ back to the $\epsilon$-bounded $L_{\infty}$ ball it moved outside.
+        where clipping acts by projecting $\delta^{t+1}$ back to the $\epsilon$-bounded $L_{\infty}$-ball if it moved outside it.
 
-        Now, if we want to climb the slope of the loss as much as possible we will want to take a very large step size. However, by doing so, we are probably going to stick out the $L_{\infty}$ ball
+        Now, if we want to climb the slope of the loss as much as possible we will want to take a very large step size. However, by doing so, we are probably going to stick out the $L_{\infty}$-ball
         and thus our delta will be either be projected to $\epsilon$ or $- \epsilon$ with high probability. Based on this principle, one of the first proposed attack simply considered the following update rule 
         for delta:
         \begin{equation}
@@ -706,7 +706,7 @@ verso il prof. Enrico Gregorio.
         
     \subsection{Projected Gradient Descent}
     
-        The idea that the effect of any perturbation inside the $\|\delta\|\infty \leq \epsilon$ ball can be approximated, if not upper-bounded, by taking the perturbation at the boundary which
+        The idea that the effect of any perturbation inside the $\|\delta\|_\infty \leq \epsilon$ ball can be approximated, if not upper-bounded, by taking the perturbation at the boundary which
         is given by the direction where the loss is most increasing might be a little too strong as an assumption. Indeed, as previously seen, the optimization landscape is often extremely
         non-linear, even for very small neighbourhoods, thus, if we want stronger attacks, we likely want to consider better methods at maximizing the loss function than a single projected gradient step.
 
@@ -715,28 +715,28 @@ verso il prof. Enrico Gregorio.
 
 
             \begin{algorithmic}[0]
-            \Procedure{PGD}{$\alpha, \epsilon$}
+            \Procedure{PGD$_{\alpha, \epsilon}$}{$(x,y), \theta$}
             \State $\delta \gets 0$
             \For{$i\gets 1, n$}
             \State $\delta \gets \delta + \alpha \cdot \nabla_{\delta} \operatorname{LS}\left(f_{\theta}(x+\delta), y\right)$
-            \State $\delta \gets \mathcal{P}(\delta) $
+            \State $\delta \gets \mathcal{P_{\epsilon}}(\delta) $
             \EndFor
             \State \textbf{return} $\delta$
             \EndProcedure
             \end{algorithmic}
-        Where $\mathcal{P}$ denotes the projection for the specific metric used. Nowadays, PGD, or slighlty variations of it are standard methods when 
+        Where $\mathcal{P_{\epsilon}}$ denotes the projection for the specific metric used. Nowadays, PGD, or slighlty variations of it are standard methods when 
         it comes to evaluate the robustness of a network.
 
         As for Gradient Descent, PGD is still limited by the possibility of getting stuck inside a local maximum of our objective \ref{attackobj}.
-        Mitigations of the problem might arise adding random restarts, i.e., running PGD multiple times from randomly picked starting deltas (within our norm restricted ball).
-        It is in fact important to note that it is likely that there are local optima which will be found if we start with $\delta = 0$ and that could be avoided with randomization. 
+        It is possible to mitigate the problem adding random restarts, i.e., running PGD multiple times from randomly picked starting deltas (within our norm restricted ball).
+        It is likely that there are local optima which will be found if we start with $\delta = 0$ and that could be avoided with randomization. 
         Conversely, running multiple PGDs increases the runtime by a factor proportional to the number of restarts and it might not be practical in real-world scenarios, especially when it is used
         as a subroutine to train robust models \cite{free_adv_train}.
 
     \subsection{White, Grey and Black Box Attacks}
 
-        In the aforementioned attacks, various implicit assumptions are made about the knowledge of the adversary. Biggio et al. in \cite{biggio2013security}
-        , in alignment with the wider field of modern Cryptography, have advised making such assumptions explicit also for publications concerning the security of ML models. In particular,
+        In the aforementioned attacks, various implicit assumptions are made about the knowledge of the adversary. Biggio et al. in \cite{biggio2013security},
+        in alignment with the wider field of modern Cryptography, have advised making such assumptions explicit also for publications concerning the security of ML models. In particular,
         in any of the previously introduced attacks such as FSGM or PGD, we let the adversary the possibility to exploit the gradients and thus the entire model (perhaps with some hyperparameters excluded) 
         to perform the attack. Such a described scenario, where there is full knowledge about the resources and the model of the defender, is known as a \textit{White Box} attack. 
         Moreover, note as this scenario should be the preferred one since it allows us to devise more effective defenses and is actually compliant with the basic principle
@@ -775,7 +775,7 @@ verso il prof. Enrico Gregorio.
                 \includegraphics[scale=0.30]{detection}
                 \caption{Metzen \textit{et al.} \cite{adv_detect} used a ResNet as original classifier, plus dections is made thanks to many interleaving detectors
                 between each residual block. Each detector is implemented as a DNN that learns how to spot the presence
-                of an attack by looking at the activations layer's distributions during training.}
+                of an attack by looking at the activations layer's distributions during training. Source: \cite{adv_detect}}
                 \label{fig:detection}
             \end{figure}
 
@@ -794,7 +794,7 @@ verso il prof. Enrico Gregorio.
             They instead rely on an explicit null hypothesis and statistical models to work, such as based on PCA \cite{hendrycks2016early}, which again however showed uneffective against C\&W for CIFAR-10, 
             or on analyzing the joint density of a DNN's layer feature vector.
             In particular, based on the latter, recently Miller \textit{er al.} in \cite{miller2018anomaly} managed to develop the current state-of-the-art for detection
-            methods as stated in \cite{adv_survey1} The description of such a method is however quite involving and goes beyond the scope of this thesis.
+            methods as stated in \cite{adv_survey1}. The description of such a method is however quite involving and goes beyond the scope of this thesis.
             
             
             
@@ -842,16 +842,15 @@ verso il prof. Enrico Gregorio.
             the error on Adversarial Examples? This is in principle a legitimate question to ask, and several 
             strategies have been proposed, all of which somehow works providing an upper-bound for the inner maximization.
             In this way, defined the threat model, we can make stronger statements about the guarantees for the defense.
-            If we rewrite the innner maximization as the following adversarial loss:
+            If we rewrite the inner maximization as the following adversarial loss:
             \begin{equation}
-                \mathcal{L}_{a d v}=\max _{\sigma \in \Delta}\left\{\max _{i \neq y} f_{\theta}(x)\left(x + \delta\right)_{i}-f_{\theta}(x)\left(x + \delta\right)_{y}\right\},
+                \mathcal{L}_{a d v}=\max _{\sigma \in \Delta}\left\{\max _{i \neq y} f_{\theta}\left(x + \delta\right)_{i}-f_{\theta}\left(x + \delta\right)_{y}\right\},
             \end{equation}
-            then, if we are capable to define an always larger certificate $ C(x, f_{\theta}) > \mathcal{L}_{a d v}$ and prove
+            then, if we are capable of finding an always-larger certificate $ C(x, f_{\theta}) > \mathcal{L}_{a d v}$ and prove
             \begin{equation}
                 C(x, f_{\theta}) < 0
             \end{equation}
-            under certain constraints, the we are sure that, under the same constraints, e.g., on the bound of 
-            the perturbation, our model will always predict the correct class. Employing this argument,
+            under certain constraints (e.g. the perturbation bound), then we are sure that our model will always predict the correct class. Employing this argument,
             [112] transforms the problem into a linear programming problem and [111] derives the certificate using
             semidefinite programming.
             
@@ -866,20 +865,20 @@ verso il prof. Enrico Gregorio.
             \end{equation}
             Notice how $L_i$ by definition is an upperbound for the sensitivity of layer $i$ with respect
             to any perturbation $r$. Following the composition property of the
-            Lipschitz Constant, the overall network Lipschitz Constant will be, the smallest $L$ such that:
+            Lipschitz Constant, the overall sensibility of the entire network is bounded by:
             \begin{equation}
                 \left\|f_{\theta}\left(x \right)-f_{\theta}\left(x+r\right)\right\|_p \leq L\|r\|_p,
             \end{equation}
             where $L=\prod_{i=1}^{L} L_{i}$. It is important to note how this is only an upperbound, thus a conservative
             measure of the possible unstability of the network. For this reason, no conclusion about the existence of 
-            Adversarial Examples can be derived even from large Lipischitz Constants. We are however guaranteed 
-            that for very small Lipischitz Constants no Adversarial Example will exist. This is the idea behind 
+            Adversarial Examples can be derived from large Lipischitz Constants. We are however guaranteed 
+            that, for very small Lipischitz Constants, no Adversarial Example will exist within the guarded perturbation-ball. This is the idea behind 
             many regularization techniques that seek to penalize Lipschitz bounds on networks's components as 
             in \cite{lipschitz_train} 
 
-            Many other approaches try to provide certificates such as \textit{Randomized Smoothing}, \textit{estimation of the lower bound} \cite{randomizedsmooth_cert} \cite{lowerbound_cert}
-            . However, provable Robustness struggles to scale up to real-world applications
-            due to the complexity of computing such bounds that are usually based on generally intractable methods or ad-hoc methods.
+            Other approaches try to provide certificates such as \textit{Randomized Smoothing} or \textit{Estimation of the Lower Bound} \cite{randomizedsmooth_cert} \cite{lowerbound_cert}
+            . Nevertheless at the current state, provable Robustness struggles to scale up to real-world, general applications
+            due to the resulting high complexity of computing the certificates, which are usually based on intractable procedures and architecture-specific methods.
 
 
 
@@ -904,11 +903,11 @@ verso il prof. Enrico Gregorio.
     \end{equation}
     parametrized by $\{t^l,a^l,t^r,a^r\}$. Depending on the values assumed by the left ($l$) and right ($r$) parameters, SReLU can assume both convex and non convex shapes.
 
-    What happens if we give to activation functions greater modeling capabilities, what if we allow them to model any continuous segment? This question is instead addressed by the class of 'non-parametric activation functions'. These methods,
+    What happens if we give to activation functions greater modeling capabilities, what if we allow them to model any continuous segment? This question is instead addressed by the class of 'non-parametric activation functions'. These latter methods,
     usually introduce a further global hyper-parameter, allowing to balance the number of parameters that can in principle grow without a bound, hence the name.
 
-    In this section, we give an overview of three early proposals, describing the general idea and some of the drawbacks, if any. After that, we focus on a more recent kind of non-trainable activations called kernel-based activation Functions
-    (KAFs), highlighting their properties and experimental results.
+    In this section, we give an overview of three early proposals of non-parametric activation functions, describing the general idea and some of the main drawbacks. After that, a novel class called kernel-based activation functions
+    (KAFs) is discussed in details, together with empirical evaluations.
 
     \section{Adaptive Piece-Wise Linear Activation Functions}
             Introduced in \cite{agostinelli2014learning}, APL generalize the SReLU \ref{srelu} activation function summing up $S$ parametrized linear segments that are
@@ -924,8 +923,8 @@ verso il prof. Enrico Gregorio.
         \sigma(x) = \sum_{i=0}^{S} a_{i} x^{i},
     \end{equation}
     where we actually going to learn $S+1$ coefficients to pass through the desired $S$ points. Thus, in theory, we can at least approximate, by means of
-    a sufficiently large $S$, any smooth function albeit in practice, due to the global effect that any parameter has on the global shape, such approximation
-    is hard. Moreover, $x^i$ can easily grow too much and encounter numerical problems.
+    a sufficiently large $S$, any smooth function. In practice, due to the global effect that any parameter has on the global shape, such an approximation with polynomial interpolation
+    is hard to learn. Moreover, $x^i$ can easily grow too much and encounter numerical problems.
     
     Instead of using polynomial interpolation, \cite{saf} proposed the use of \textit{spline interpolation} that results in the so called spline activation functions (SAFs).
     Let $\{ x_1, x_2, \cdots, x_S \}$ be an equally spaced sampling of real values, symmetric to the origin and with step size $\Delta x$ and call \textit{knots}
@@ -943,8 +942,8 @@ verso il prof. Enrico Gregorio.
     to the optimal. Moreover, as with polynomial interpolation, SAFs can in principle approximate any smooth function. A drawback, however, 
     comparing to ALF, is that regularization techniques cannot be explicitly implemented.
     \section{Maxout Functions}
-    One slightly different non-parametric activation function, is given by the introduction of a whole new layer called \textit{maxout function}. With maxout, we compute $K$ different dot products
-    on each neuron and then take the maximum:
+    One slightly different, non-parametric activation function, is given by the introduction of a whole new layer called \textit{maxout function}. With maxout, we compute $K$ different dot products
+    on each neuron and then take their maximum:
     \begin{equation}
         \operatorname{maxout}(x) = \max \{  W_i^Tx + b_i \}_{i=1}^K .
     \end{equation}
@@ -958,7 +957,7 @@ verso il prof. Enrico Gregorio.
         \label{fig:maxout}
     \end{figure}
     more parameters than previous approaches, as we scale by a factor of $K$ the number of weights inside the net. Furthermore, maxout can only generate convex shapes and 
-    we lose the ability of plotting the activation function, except for input up to three-dimensional Fig. \ref{fig:maxout}.
+    we lose the ability of plotting the activation function, except for input up to three dimensions Fig. \ref{fig:maxout}.
     Different variations aim to solve the smoothness problem for Maxout Networks \cite{maxout1} \cite{maxout2}. 
 
     \section{Kernel-Based Activation Functions}
@@ -967,14 +966,14 @@ verso il prof. Enrico Gregorio.
     \begin{equation}
         \operatorname{KAF} (x) = \sum_{i=1}^{D} \alpha_{i} \kappa\left(x, d_{i}\right),
     \end{equation}
-    where $\{ \alpha_i\}_{i=1}^D $ are the usual parameters to adapt, called \textit{mixing coefficients}, $\kappa \colon \mathbb{R} \times \mathbb{R} \to \mathbb{R}$ is a 1D kernel method.  
-    and $\{ d_i\}_{i=1}^D $ the kernel's dictionary elements. Dictionary elements are usually sampled from training data, but in case of activation functions 
+    where $\{ \alpha_i\}_{i=1}^D $ are the usual parameters to adapt, called \textit{mixing coefficients} and $\kappa \colon \mathbb{R} \times \mathbb{R} \to \mathbb{R}$ is a 1D kernel method with  
+    $\{ d_i\}_{i=1}^D $ the kernel's dictionary elements. Dictionary elements are usually sampled from training data, but in case of activation functions 
     this would tie the size of the expansion $D$ to the specific dataset used. Since generality is preferred, KAFs use fixed dictionary elements by selecting
     $D$ equally spaced points on the x-axis centered at 0 with step size $\Delta$, similary to SAFs. In particular, there is a vast literature on kernel methods with fixed dictionary elements \cite{gaussianproc}.
     A Neural Network that makes use of KAFs is called \textit{Kafnet}.
 
     To allow for better optimization with Gradient Descent we want the kernel $\kappa(\cdot, \cdot)$ to be positive semi-definite and thus convex, i.e., for any choice of 
-    $\{ \alpha_i\}_{i=1}^D $ and $\{ d_i\}_{i=1}^D $ we have:
+    $\{ \alpha_i\}_{i=1}^D $ and $\{ d_i\}_{i=1}^D $ we would have:
     \begin{equation}
         \sum_{i=1}^{D} \sum_{j=1}^{D} \alpha_{i} \alpha_{j} \kappa\left(d_{i}, d_{j}\right) \geq 0 .
     \end{equation}
@@ -983,9 +982,9 @@ verso il prof. Enrico Gregorio.
         \label{gauskaf}
         \kappa\left(x, d_{i}\right)=\exp \left\{-\gamma\left(x-d_{i}\right)^{2}\right\},
     \end{equation}
-    where the normalization term $\gamma$ is called \textit{kernel bandwidth} and is empirically chosen to be $ \gamma = \frac{1}{6 \cdot \Delta^2} $.
-    The Gaussian kernel is easy to implement using vectorization libraries and quite cheap to compute provided that the dimensions don't grow too large. Moreover, 
-    concerning the backward pass, KAFs have pretty straightforward derivatives as well:
+    where the normalization term $\gamma$ is called \textit{kernel bandwidth} and is empirically chosen to be $ \gamma = \frac{1}{6  \Delta^2} $.
+    The Gaussian kernel is easy to implement using vectorization libraries and quite cheap to compute provided that the batch dimension of $x$ don't grow too large. Moreover, 
+    concerning the backward pass, KAFs have straightforward derivatives:
     \begin{equation}
         \frac{\partial g(x)}{\partial \alpha_{i}}=\kappa\left(x, d_{i}\right),
     \end{equation}
@@ -1027,7 +1026,7 @@ verso il prof. Enrico Gregorio.
     and the bandwidth. This further level of flexibility can indeed help reach better performances as will be shown in the Evaluation chapter.
 
     In the original paper authors performed different experiments to assess the performances of the proposed KAFs.
-    It turned out that KAFs managed to improve the results obtained with fixed activation functions over several benchmarks ranging from simple datasets 
+    It turned out that KAFs managed to improve the results obtained with the fixed counterparts for several benchmarks ranging from simple datasets 
     like the \textit{Sensorless} dataset  to larger ones such as \textit{SUSY} \cite{susy}, testing on shallow feedforward Neural Networks
     as well as deeper CNNs architectures and for both supervised and unsupervised tasks. A summary of the reported results is given in Table \ref{tab:scardapanekafexp}.  
     
@@ -1067,7 +1066,7 @@ verso il prof. Enrico Gregorio.
        
     \section{K-Winners Take All}
     In \cite{kwta}, Xiao \textit{et al.} advocate the use of a $C^0$-discontinuous activation function, called
-    \textit{k-Winners-Take-All} (k-WTA) activation, to improve, with no substantial overhead, the robustness of a neural network against gradient-based attacks such as PGD.
+    \textit{k-Winners-Take-All} (k-WTA), to improve, with no substantial overhead, the robustness of a neural network against gradient-based attacks such as PGD.
     k-WTAs work by acting on the whole layer $\mathbf{y}$, similarly to maxout, but in this case they filter the input retaining the k-largest values and deactivating to 0 the remaining ones.
     More formally, a k-WTA acting on an input vector of neurons $\mathbf{y} \in \mathbb{R}^{n}$ is a function $\phi_k(y) : \mathbb{R}^n \to \mathbb{R}^n$ such that:
     \begin{equation}
@@ -1082,8 +1081,8 @@ verso il prof. Enrico Gregorio.
     of the number of neurons of each layer to compute the correct $k$, simply as $k = \lambda \cdot |layer|$.
 
     K-WTAs foster robustness by making the computation of the gradient $\nabla_x f_{\theta}(x)$ \textit{undefined}.
-    Loosely speaking, this is achieved thanks to densely distributed discontinuities in the space of $x$. Indeed, this implies that,
-    with very high probability, any perturbation moving $x$ to it's neighbourhood will move over a non-differentiable spot Fig. \ref{fig:kwta}.
+    Loosely speaking, this is achieved thanks to densely distributed discontinuities in the space of $x$. Indeed
+    with very high probability, any perturbation moving $x$ to it's neighbourhood will also move over a non-differentiable spot Fig. \ref{fig:kwta}.
     in the adversary objective, making gradient-based search unfeasible. The meticulous reader may at this point start to wonder
     how is thus even possible to perform training with such discontinuous functions. However, it turns out that the gradient 
     with respect to the weights $\nabla_w f_{\theta}(x)$ is discontinuous but in a sparser way, presumably because the parameter 
@@ -1100,8 +1099,7 @@ verso il prof. Enrico Gregorio.
         \label{fig:kwta}
     \end{figure}
     
-    Authors claim substantial improvements in the robustness of this defense against white-box attacks. Specifically, they were 
-    able to evaluate a ResNet-18 against PGD, C\&W and DeepFool \cite{deepfool} attacks, training both classically and with AT \ref{robopt}.
+    Authors claim substantial improvements in the robustness of this defense against white-box attacks. Specifically, they tested a ResNet-18 against PGD, C\&W and DeepFool \cite{deepfool} attacks, training both classically and with AT \ref{robopt}.
     Using CIFAR10 for the dataset, ResNet-18 with ReLUs achieved 0\% and 43.6\% accuracy under the most effective attack,
     respectively with standard and adversarial training. On the other hand, when k-WTAs were used, the same network improved to
     13.1\% with standard training and 50.7\% with AT.
@@ -1125,13 +1123,13 @@ verso il prof. Enrico Gregorio.
     It seems nevertheless reasonable to believe that there could be other ways that would allows us to build more robust networks without 
     sacrificing in neither accuracy nor resources. That is exactly what was recently reported by Xie \textit{et al.} in \cite{smooth_adversarial_training}, where authors 
     found a way to consistently improve robustness over different tasks, without giving up any other property of the model. Specifically, they found that,
-    it is sufficient to prefer and adopt smooth activation functions over non-smooth ones, like the everywhere present ReLUs, to achieve 
+    it is sufficient to prefer and adopt smooth activation functions over non-smooth ones, to achieve 
     better results in AT straightaway.
 
     The rationale behind adopting smooth activation functions, i.e., non-linear functions that are continuous in their first derivative, lies in the 
-    observation that, during AL, we are computing many times the gradients of the network that are normally required during standard training. Specifically,
-    in addition to compute gradients to update the network's parameters, adversarial training also needs gradients computation for generating training 
-    adversarial samples. Moreover, the presence of non-differentiable points and abrupt changes in the gradient's values during backpropagation, may 
+    observation that, during AT, we are computing many times the gradients of the network that are normally required during standard training. Specifically,
+    in addition to compute gradients to update the network's parameters, adversarial training also needs gradients computation to generate training 
+    adversarial samples. Moreover, the presence of non-differentiable points and abrupt changes in the gradient's values during backpropagation may 
     prevent from generating sufficiently strong adversarial samples. This particularly holds true in the case of ReLUs, where the gradient lacks of flexibility 
     and gets a severe jump in the origin Fig. \ref{fig:smoothaf}. 
 
@@ -1176,13 +1174,13 @@ verso il prof. Enrico Gregorio.
     hints towards the draft of a more general design principle, which is that,
     architectural smoothness might play an essential role in enhancing 
     adversarial robustness, at least for what concerns defenses against 
-    gradient-based attacks.
+    gradient-based, test-time evasion attacks.
 
     With a combination of lessons just learned from both Xiao et al. and
     Xie et al., the focus of the following chapters will then be on the evaluation
-    of a novel kind of activation functions. Functions that we believe might have 
-    , by leveraging, among other properties, strong smoothness
-    and flexibility, the potential of surpassing both k-WTAs and Swish 
+    of a novel kind of activation functions. Functions that we believe might have, 
+    by leveraging, among other properties, smoothness
+    and strong flexibility, the potential of surpassing both k-WTAs and Swish 
     for what concerns robustness and, in particular, the trade-off
     between accuracy and robustness. Distinguished activation functions that 
     satisfy such prerequisites are the previously introduced non-parametric 
@@ -1196,24 +1194,24 @@ verso il prof. Enrico Gregorio.
     To test novel architecture components or training techniques with real data, we first need to implement them as software. In our case, 
     we use \textit{Python} \cite{python} programming language and, in particular, experiments are conducted using \textit{TensorFlow2}(TF2)\cite{tf2}, a modern 
     framework for differentiable-programming. In turn, TF2 integrates another famous library, \textit{Keras}, which provides high-level 
-    API to build neural networks based models. Specifically, Keras allows to describe customized layers hence it can be used to implement k-WTA and KAF
-    activation functions. A working implementation is given in \textit{activationsf.py}.
+    API to build neural networks based models. Specifically, Keras allows to describe customized layers hence it can be used to implement both k-WTAs and KAFs.
+    A working implementation is given in \textit{activationsf.py}.
 
     \section{KAFs May Be Good Candidates}
 
         Once the code is done, we can begin and perform some early evaluations. As a first thing, we reasonably chose to test the robustness of simple neural 
         networks and in particular, we can already try to understand if there is any meaningful difference when we change activation functions.
 
-        The light first-developed model is made of few parameters, to conduct quick experiments and perhaps find an initial direction to follow. The network 
+        The first-developed model is made of few parameters, to conduct quick experiments and perhaps find an initial direction to follow. The network 
         is composed by two convolutional blocks, each of which holding two convolutional layers followed by batch normalization. After those two convolutions we 
         halve the dimensions with a maxPooling and then apply regularization with Dropout. In the first block we use 32 filters, in the second 64, each with window 
         size 3. Finally, a global average pooling is used followed by a fully-connected layer with 128 units which is in charge of computing the output layer.
         The dataset used, and the only one that we will be using for each evaluation, is CIFAR10. The code where such networks are built and trained can be found in 
         \textit{light\_models.ipynb}.
 
-        Respectively, using ReLU, k-WTA and KAFs (with randomly initialized mixing coefficients and D=20) and using Adam optimizer, we obtained 77.96\%, 65.33\%
-        and 68.80\% standard accuracy. After that, we are ready to see how such trained nets behave against adversarial examples. Following the settings of 
-        \cite{kwta}, a $PGD$ attack is crafted under the $L_{\infty}$ metric, with perturbation size $\epsilon = 0.031$, steps size $0.003$ and 40 random 
+        Respectively, using ReLU, k-WTA and KAFs (with randomly initialized mixing coefficients and D=20) and using \textit{Adam} optimizer and batch size of 128, we obtained 77.96\%, 65.33\%
+        and 68.80\% for standard accuracies. After that, we are ready to see how such --classically-- trained nets behave against adversarial examples. Following the settings of 
+        \cite{kwta}, a $PGD$ attack is crafted under the $L_{\infty}$ metric, with perturbation size $\epsilon = 0.031$, steps size $\alpha = 0.003$ and 40 random 
         restarts. Importantly, we only attack 1000 random samples taken from the test set, since, due to resource-wise limitations we were not capable of computing 
         the attack on the whole network in a reasonable time and, moreover, because we only wanted to a rough estimate to begin with. To actually implement such attacks we 
         will use the \textit{Adversarial Robustness Toolbox} (ART) from IBM \cite{art}.
@@ -1224,13 +1222,12 @@ verso il prof. Enrico Gregorio.
         right way the 1.1\% of the test set, in contradiction with the 0\% gained in the original article. However, it plausible that this depends by the model 
         being used, indeed, it is likely that ResNet18 equipped with ReLUs is more prone get fooled by the attack. Despite this inconsistency, k-WTAs on the other 
         hand behave similarly, getting 13,2\% of the samples correctly classified. Another surprise concerns KAFs as well: we managed to reach 15.7\% of accuracy 
-        which already a big improvement if we consider k-WTAs were specifically designed to resist gradient-based attacks and still, a straightforward implementation 
-        of the KAFs allowed us to overcome them.
+        which is already a big improvement if we consider k-WTAs were specifically designed to resist gradient-based attacks.
         
         Moved by such a result, we decided to go more in-depth with the analysis and look at what is actually happening inside these different implementations of our 
         net when we give adversarial inputs. In particular, we wanted to examine, for each layer, the distributions of the activation values, i.e., the inputs on which activation
-        functions act, to see if we could spot any evidence of the observed results. Fig. \ref{fig:actdist13} shows plots for the distributions we obtained when we 
-        consider the first neuron of the layer, namely, the fist neuron of the first filter in the case of convolutional layers or the first neuron in the 
+        functions act, to see if we could understand why KAFs are outperforming k-WTAs. Fig. \ref{fig:actdist13} shows plots for the distributions we obtained when we 
+        consider the first neuron of the layer, namely, the first neuron of the first filter in the case of convolutional layers or the first neuron in the 
         fully-connected layer before classification. Distributions are computed with respect to both perturbed (violet) and non-perturbed (light-green) samples. 
 
         \begin{figure}[h]
@@ -1259,7 +1256,7 @@ verso il prof. Enrico Gregorio.
         seem to be smaller in comparison to the distance (between distributions) that we see in the last layer for k-WTA and ReLU. Having said that, it is still plausible 
         that what we concluded might hold true just for the first neuron of the layer while being false in general for the others. For this reason, the next step is 
         to repeat the experiment, this time considering the distribution over more neurons, that is, we consider the average mean for the activations of a given 
-        filter, in the case of convolutional layers, or taking the mean of the whole last layer's activations Fig. \ref{fig:actdist23}.
+        filter, in the case of convolutional layers, or taking the mean of the whole last Dense layer's activations Fig. \ref{fig:actdist23}.
 
         \begin{figure}[h!]
             \centering
@@ -1285,7 +1282,7 @@ verso il prof. Enrico Gregorio.
         With more confidence, we can now observe that, what was previously happening in the case of a single neuron is actually happening in general: on average,
         the Kafnet seem to be less prone to big changes within its layers and its output, than when we consider K-WTA, or, in particular, ReLU activation functions.  
         Specifically, if we want to quantify this distance, given $x$ the original input and $x^{\prime}$ its attacked version, we can compute the $L_2$ norm of the difference between perturbed 
-        and non-perturbed activations, for each layer. By doing so, and repeating it on many of the attacked inputs, for instance, when considering the first sample and its adversarial pair we get:
+        and non-perturbed activations, for each layer. By doing so, and repeating it on many inputs, we have a sample-wise measure of the distance. For example, when considering the first sample and its adversarial pair we get:
         \begin{figure}[h!!]
             \centering
             \includegraphics[width=1.0\textwidth]{actdist31}
@@ -1305,12 +1302,12 @@ verso il prof. Enrico Gregorio.
         \newline
         and so on. The Kafnet almost always results in smaller distance norms. The code for reproducing these experiments can be found in \textit{insights\_link\_rob\_activationsf.ipynb}.
 
-        Thanks to in-depth analysis on the architectural statistics we were able, at least from this point of view, to justify why a Kafnet is winning 
+        Thanks to an in-depth analysis on the architectural statistics we were able, at least from this point of view, to justify why KAFs are performing better 
         against the other two implementations. Moreover, these results seem to suggest that KAFs, especially when considered together with their flexibility 
         properties, might be good candidates for enhancing robustness through the lens of Robust Optimization. In particular, they seem to fit well when it 
         comes to regularization techniques bounding the effects of perturbations, such as the previously introduced Lipschitz constant regularization \ref{provrob}.
         Even though this regularization technique might appear as the natural approach to follow, it exhibits several difficulties to overcome, such as the lack 
-        of efficient and easy to use implementations in current Deep Learning frameworks. Therefore, we opted to approach Robust Optimization with 
+        of efficient and scalable implementations to work with custom models and large datasets. Therefore, we opted to approach Robust Optimization with 
         the well-studied method of adversarial training \ref{robopt} and perform the training leveraging also on the smoothness properties of Gaussian KAFs 
         and the previously introduced results linking smoothness and AT together \ref{SAT}.  
 
@@ -1330,12 +1327,12 @@ verso il prof. Enrico Gregorio.
         
         A recent breakthrough was claimed by Wong \textit{et al.} in their article \textit{Fast is Better than Free: Revisiting Adversarial Training}\cite{fast_adv_train},
         where authors showed they were able to train models that matched state-of-the-art robustness against full-strength PGD attacks, for both CIFAR10
-        and ImageNet, in 6 minutes and 12 hours respectively. The proposed method, which allowed them to achieve such results, consists in a mixture of: 
+        and ImageNet, in 6 minutes and 12 hours respectively, using lab-affordable hardware. The proposed method, which allowed them to achieve such results, consists in a mixture of: 
         a clever way for computing the inner maximization in one step, and novel techniques used in efficient 
         training of deep networks, such as \textit{cyclical learning rates} \cite{smith2017cyclical} and mixed-precision arithmetics. The letter being 
         two frequently used key-components in top submissions for image classification competitions like DAWNBench \cite{dawnbench}.
         
-        Regarding the method used to approximate the inner maximization, it was used a small variation of the FSGM \ref{fgsm} adversarial training.
+        Regarding the method used to approximate the inner maximization, a small yet crucial variation of the FSGM \ref{fgsm} adversarial training was used.
         The original FSGM AT works by computing a single step FSGM attack on the mini-batch with step size $\epsilon$ to generate the adversarial sample.
         \newpage
         \begin{algorithmic}[0]
@@ -1395,7 +1392,7 @@ verso il prof. Enrico Gregorio.
         where the 'learning' of the attack will benefit from having trainable activation functions, as it happens with standard training
         \ref{tab:scardapanekafexp}.
 
-        This theoretically principled hypothesis on the potential advantages that might come from adversarially train Kafnets 
+        This theoretically principled hypothesis on the potential advantages that might come from adversarially trained Kafnets 
         needs however an empirical validation. For this reason, the rest of this thesis will be directed into presenting 
         the findings resulted from different experiments we made evaluating the robustness of Kafnets.
 
@@ -1451,7 +1448,7 @@ by another order of magnitude Fig. \ref{fig:oclr}.
 \end{figure}
 The minimum and maximum values are picked through a process called \textit{learning 
 rate range finder}(LRF) in which the network gets trained (in our case, adversarially trained)
-for few epochs and in the mean time the learning rate is exponentially increased starting from a 
+for a few epochs and in the mean time the learning rate is exponentially increased starting from a 
 very small value up to a very large one. The overall evolution of the loss 
 during this learning rate escalation is then inspected: the minimum value is 
 heuristically chosen to be the one from which the loss starts decreasing for the first time 
@@ -1474,7 +1471,7 @@ k-WTAs should not be used as a benchmark for assessing true robustness.
 Indeed, as shown in \cite{carlinikwta}, only adding k-WTAs to the network 
 is not an effective defense method at all, since they ''make adversarial training worse''.
 It turned out that it is actually possible to devise an adaptive, gradient-based attack capable 
-of finding many adversarial examples, that brought down the accuracy of the original paper's k-WTA ResNet from 50\% to 16\%. 
+of finding many adversarial examples, that brings down the accuracy of the original paper's k-WTA ResNet from 50\% to 16\%. 
 Notice how this is not the case for other, standard, activation 
 functions: there is currently no gradient-based attack which is known to break a proper adversarially trained network that uses, for instance,
 ReLUs activation functions. Therefore, K-WTAs should be considered unsecure. In the following 
@@ -1509,7 +1506,7 @@ Swish smooth activation functions.
         
         Once the basic structure is built, we only need to plug the specific activation function and test the robustness.
         We start with ReLU, which we consider our baseline. First of all, LRF is run and we find that the min and max learning rate bounds are,
-        respectively, 0.0001 and 0.08, and then, we adversarially train the model for 60 epochs. At the end of the training the model with ReLUs achieves 78.1\% of standard accuracy 
+        respectively, 0.0001 and 0.08, and then, we adversarially train the model for 60 epochs, again with batch size set to 128. At the end of the training the model with ReLUs achieves 78.1\% of standard accuracy 
         on the test set. Lastly, PGD is performed and the overall accuracy of our network against the perturbed images of the test set is 45.41\%. Therefore, we were able to
         develop a relatively resilient network against full-strength PGD attacks. To be precise, 
         at this point we ran different versions of our PGD by varying the \textit{max\_iter} parameter. It turns out that, for ReLU, just like for 
@@ -1628,7 +1625,7 @@ Swish smooth activation functions.
         \begin{equation}
             6n+2,
         \end{equation}
-        stacked weighted layers, where $n$ denotes the number of residual blocks in each stage.
+        stacked weighted layers, where $n$ denotes the number of residual blocks in each section.
         Differently to the previous experiment with VGGs, this time we use the following data augmentation on the training set:
         4 pixels are padded on each side of the image and a $32\times32$ crop is randomly sampled from the resulting image or its horizontal flip.
 
@@ -1663,7 +1660,7 @@ Swish smooth activation functions.
         wether we are dealing with exploding or vanishing gradients it would eventually become clear in the early stages of the network, however, since our goal is to understand where the phenomenon starts to emerge
         we need to inspect also the remaining layers. 
         
-        As can be seen analyzing the first convolution and the first KAF Fig. \ref{fig:gradkaf1} \ref{fig:gradconv1}, the norm of the gradient for the KafResNet56 is undefined (NaN) starting from the first training iteration.
+        As can be seen analyzing the first convolution and the first KAF layers Fig. \ref{fig:gradkaf1} \ref{fig:gradconv1}, the norm of the gradient for the KafResNet56 is undefined (NaN) starting from the first training iteration.
         This is in turn reflected on the corresponding weight value which never gets updated. On the contrary, gradients and weights in the other architectures tend toward similar values \ref{fig:gradconv1}. 
         \begin{figure}[h!]
             \centering
@@ -1713,7 +1710,7 @@ Swish smooth activation functions.
     \section{ResNet20 Inspired Architectures Results}
 
         In order to satisfy the initial requirement on the need for a smooth architecture, that would also be compatible with KAFs, we showed, in the previous section, how a relatively shallow residual neural network is 
-        ultimately a good choice. Despite the fact that deeper ResNets achieve better performances \cite{resnet}, using 20 layers is indeed already sufficient to classify correclty the 90\% of the images in our dataset, beating 
+        a good choice in this regard. Despite the fact that deeper ResNets achieve better performances \cite{resnet}, using 20 layers is indeed already sufficient to classify correclty the 90\% of the images in our dataset, beating 
         any VGG we previously developed. It is then reasonable to expect better results in terms of accuracy/robustness as well from a ResNet20. Moreover, our main intent is to assess the robustness properties that comes with 
         KAFs and it is not to achieve state-of-the-art results. Therefore, for our last experiment, we decided to evaluate the robustness of a ResNet20, as we change activation functions.
 
@@ -1778,12 +1775,12 @@ Swish smooth activation functions.
 
         Ultimately, the most remarkable result for our study concerns the robustness obtained 
         with Swish functions. Achieving a total robustness of 53.88\% and thus improving 
-        by a margin of almost 4 points from the baseline and also considerably from the second-bestperforming functions (KAF\_ELU), Swish is confirmed once again as the 
+        by a margin of almost 4 points from the baseline and also considerably from the second-best performing KAF\_ELU, Swish is confirmed once again as the 
         preferable function to pick for maximizing the robustness of a deep neural network. 
         Moreover, Swish performs reasonably well in terms of standard accuracy too, being less than one point away 
         from the maximum reached with KAF\_ReLU. Therefore, after having evaluated several activation 
         functions and structurally different architectures, we argue that is typically convenient to 
-        choose Swish activation functions when we want to build a robust neural network.
+        choose Swish activation functions when we want to build a robust neural network through adversarial training.
 
 
 
