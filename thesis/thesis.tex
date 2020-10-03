@@ -50,19 +50,30 @@
 \frontmatter
 
 \maketitle
-\dedication{Dedicated to\\ Donald Knuth}
+\dedication{To my parents}
 
 \begin{abstract}
-This document is an example which shows the main features of
-the \LaTeXe\ class \texttt{sapthesis.cls} developed by 
-with the help of GuIT (Gruppo Utilizzatori Italiani di \TeX).
+Artificial deep neural networks (DNNs) are Machine Learning models known to be vulnerable to specifically-crafted perturbations of the input happening at inference-time.
+Such perturbations, called adversarial examples, are not easily detected by a machine and they cause a disagreement between the model's output and a human consensus. 
+It is commonly believed that improving the robustness of a DNN against adversarial examples comes with a price in accuracy, unless expensive architectural changes or data augmentation techniques 
+are implemented. By leveraging recent findings in the literature, we propose a novel method to improve both robustness and accuracy through the introduction of trainable activation
+functions in place of the widely-used rectified linear units. In particular, we conjecture that adversarial training can benefit from the presence, in the network's architecutre, of 
+kernel-based activation functions (KAFs), a class of non-parametric activation functions which already proved to improve the performances of neural networks in a variety of tasks.
+By means of properties such as flexibility and smoothness, KAFs allow for a better computation of gradients updates during adversarial training resulting in a general improvement of the 
+accuracy/robustness trade-off. Moreover, KAFs only introduce a linear number of parameters in the network, without changing the overall structure or requiring an increased number of training 
+samples. Empirical evaluations are performed over different adversarially trained DNNs and full strength projected-gradient descent attacks. We find that the employment of KAFs always 
+results in greater accuracies. Nevertheless we also find that the smooth, fixed Swish activation function consistently outperforms KAFs in terms of robusntess, showing some limitation with 
+our hypothesis. Furthermore, we detail and try to address the presence of an exploding gradient issue when training a ResNet-56 using KAFs.
+All code for reproducing the experiments in this thesis as well as adversarially pretrained models are availabe at \url{https://github.com/arbiter1elegantiae/Robustness-of-deep-neural-networks-with-trainable-activation-functions}.
 \end{abstract}
 
 \begin{acknowledgments}
-Ho deciso di scrivere i ringraziamenti in italiano
-per dimostrare la mia gratitudine verso i membri
-del GuIT, il Gruppo Utilizzatori Italiani di \TeX, e, in particolare,
-verso il prof. Enrico Gregorio.
+    First of all, I would like to express my sincere gratitude to my supervisor Dr Simone S. for his guidance during the running of this project and his 
+    constant willingness to share stimulating questions and thoughtful hints, which proved crucial to the development of this work.
+    Further, I am also thankful to the many interesting and curious classmates I have met when I was an undergrad in Bologna, more recently here at La Sapienza University, and finally at the 
+    Technische Universität in München --with a special mention to the "Quantum Friends"-- during my Erasmus. From your collaboration, I can say that I have learned as much as I have learned by staring at the 
+    blackboard. To conclude, I cannot forget to thank my family and my friends who always supported me throughout this whole long journey. Without you, this thesis would not have been possible.
+
 \end{acknowledgments}
 
 \tableofcontents
