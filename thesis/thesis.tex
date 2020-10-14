@@ -3,6 +3,7 @@
 % !TeX spellcheck = en_US
 
 \documentclass[LaM,binding=0.6cm]{./packages/sapthesis/sapthesis}
+\setlength{\parskip}{0pt}
 
 \usepackage{microtype}
 \usepackage{amssymb}
@@ -25,7 +26,7 @@
 \newcommand{\bs}{\textbackslash}
 
 % Commands for the titlepage
-\title{Robustness Of Deep Neural Networks \\Using Trainable Activation Functions}
+\title{Robustness Of Deep Neural Networks \\With Trainable Activation Functions}
 \author{Federico Peconi}
 \IDnumber{1823570}
 \course{Computer Science}
@@ -73,7 +74,6 @@ All code for reproducing the experiments in this thesis as well as adversarially
     Further, I am also thankful to the many interesting and curious classmates I have met when I was an undergrad in Bologna, more recently here at La Sapienza University, and finally at the 
     Technische Universität in München --with a special mention to the "Quantum Friends"-- during my Erasmus. From your collaboration, I can say that I have learned as much as I have learned by staring at the 
     blackboard. To conclude, I cannot forget to thank my family and my friends who have always supported me throughout this whole long journey. Without you, this thesis would not have been possible.
-
 \end{acknowledgments}
 
 \tableofcontents
@@ -117,8 +117,8 @@ All code for reproducing the experiments in this thesis as well as adversarially
         extremely resilient towards sampling distribution changes, whereas neural networks are eventually prone to learn brittle, sampling-specific features \cite{features_notbugs}.
         Moreover, recent works have showed how the \textit{interpretability} of a model, which is usually very difficult to assess in performant deep neural networks, is instead significantly increased 
         when we evaluate \textit{adversarially robust} networks \cite{robustness_accuracy} \cite{interpret_adv}. Therefore, broadly speaking, adversarial examples 
-        seem to be only a symptom of the discrepancy between the way humans and intelligent systems currently learn.
-
+        seem to be only a symptom of the discrepancy between the way humans and intelligent systems currently learn. 
+        
         Nowadays, despite the relevance for the field, no truly robust model for real-world applications has been developed yet. For CIFAR10, a relatively small toy dataset used in image classification, 
         the current state-of-the-art model achieves 43.96\% of accuracy against the most effective attack \cite{cifar10challange}.
         Furthermore, things get even more complicated when we try to scale up to larger, more realistic models, since it generally becomes extremely expensive to train robust models in these settings \cite{free_adv_train}.
