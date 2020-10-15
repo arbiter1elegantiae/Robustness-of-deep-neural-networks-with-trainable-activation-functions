@@ -17,13 +17,6 @@ LRFinder/
 # Ignore computed Adversarial Examples
 attacks/
 
-# Keep only thesis and presentation
-thesis/*
-!thesis/thesis_defense_169.pptx
-!thesis/thesis.pdf
-!thesis/thesis.tex
-
-
 # Ignore utility files
 *.log
 tmp.* 
