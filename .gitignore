@@ -18,7 +18,7 @@ LRFinder/
 attacks/
 
 # Keep only thesis and presentation
-thesis/**
+thesis/*
 !thesis/thesis_defense_169.pptx
 !thesis/thesis.pdf
 !thesis/thesis.tex
