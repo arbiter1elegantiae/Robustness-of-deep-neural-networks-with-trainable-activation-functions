@@ -1,0 +1,6 @@
+# Keep only thesis and presentation
+*
+!thesis_defense_169.pptx
+!thesis.pdf
+!thesis.tex
+!.gitignore
