@@ -62,5 +62,5 @@ tend to improve both robustness and accuracy with respect to a ReLU baseline.*
 
 ## Code
 
-The framework used is *TensorFlow 2*, the implementation of a KAF layer is given in ``src/activationsf.py``. To solve the min max robust optimization we implemented from scratch the *fast* adversarial training proposed in [Eric Wong, Leslie Rice et al. 2020] which can be found in ``src/fbfadvtrain.py``. The step-by-step adv. training of the tested models is extensively documented in the relative notebooks ``src/fbf_training_kaf[nameofthemodel]``. Lastly the PGD attack is computed using the *IBM Adversarial-Robustness-Toolbox* and can be found in ``robustness_eval.py``.
+The framework used is *TensorFlow 2*, the implementation of a KAF layer is given in ``src/activationsf.py``. To solve the min max robust optimization we implemented from scratch the *fast* adversarial training proposed in [Eric Wong, Leslie Rice et al. 2020] which can be found in ``src/fbfadvtrain.py``. The step-by-step adv. training of the tested models is extensively documented in the relative notebooks ``src/fbf_training_kaf[nameofthemodel]``. Lastly the PGD attack and the evaluation is computed using the *IBM Adversarial-Robustness-Toolbox* and can be found in ``robustness_eval.py``.
 
